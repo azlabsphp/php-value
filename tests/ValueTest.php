@@ -10,6 +10,8 @@ use Drewlabs\Immutable\Tests\Stubs\ValueStub;
 use Drewlabs\Immutable\Value;
 use PHPUnit\Framework\TestCase;
 
+use function Drewlabs\Immutable\Functions\CreateValue;
+
 class ValueTest extends TestCase
 {
 

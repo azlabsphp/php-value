@@ -1,5 +1,7 @@
 <?php
 
+namespace Drewlabs\Immutable\Functions;
+
 use Drewlabs\Immutable\Value;
 
 if (!function_exists('CreateValueObject')) {
