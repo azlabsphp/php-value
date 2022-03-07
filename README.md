@@ -97,7 +97,6 @@ $value1 = $value->copy([
 The value object is Array accessible meaning we can user [] operator to acces object properties. It also overrides magic [__get] method for properties accesibility and offers a [getAttribute()] method that query for a property on the object
 
 ```php
-// Example
 // Imports
 use function Drewlabs\Immutable\Functions\CreateValue;
 $value =  CreateValue([
