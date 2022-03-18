@@ -94,7 +94,6 @@ class ValueTest extends TestCase
             'name' => 'Azandrew Sidoine',
             'address' => 'KEGUE, LOME - TOGO',
         ]);
-
         $this->assertSame($value->name, 'Azandrew Sidoine', 'Expect name property value to equals Azandrew Sidoine');
     }
 

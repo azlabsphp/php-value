@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Drewlabs\Immutable;
 
 use Generator;
+use InvalidArgumentException;
 
 /**
  * PHP stdClass extension usable as array accessible object
@@ -194,10 +195,24 @@ class Accessible implements \ArrayAccess
         );
     }
 
+    /**
+     * 
+     * @param array<string,mixed> $attributes 
+     * @return self 
+     * @throws InvalidArgumentException 
+     */
+    public function merge(array $attributes = [])
+    {
+        foreach ($attributes as $key => $value) {
+            $this->offsetSet($key, $value);
+        }
+        return $this;
+    }
+
     private function validatePropertyName($property)
     {
         if (!\is_string($property)) {
-            throw new \InvalidArgumentException('Object accessible property must be of type string');
+            throw new \InvalidArgumentException('Object accessible property must be of type string, got :' . is_object($property) ? get_class($property) : gettype($property));
         }
     }
 }

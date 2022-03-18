@@ -2,9 +2,10 @@
 
 namespace Drewlabs\Immutable\Traits;
 
+use Drewlabs\Core\Helpers\Arr;
+use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\Immutable\Cast;
-use Drewlabs\Immutable\Exceptions\JsonEncodingException;
 
 /**
  * @description Provides composed class with properties and methods
@@ -24,39 +25,86 @@ trait Castable
         return $this;
     }
 
-    public function castAttribute(string $key, $value)
+    public function getCastableProperty(string $key, $value, \Closure $default)
     {
-        return (new Cast($this))($key, $value);
+        $cast =  new Cast($this);
+        return $cast->__invoke($key, $value) ?? $default();
     }
 
+    public function setCastableProperty(string $key, $value, \Closure $default)
+    {
+        $cast =  new Cast($this);
+        // Evaluate if property is enum castable
+        if ($cast->isEnumCastable($key)) {
+            return $this->setRawAttribute($key, $cast->computeEnumCastablePropertyValue($key, $value));
+        }
+
+        if ($cast->isClassCastable($key)) {
+            return $this->mergeRawAttributes($cast->computeClassCastablePropertyValue($key, $value) ?? []);
+        }
+
+        if (null !== $value && $cast->isJsonCastable($key)) {
+            return $this->setRawAttribute($key, $cast->computePropertyAsJson($key, $value));
+        }
+        if (Str::contains($key, '->')) {
+            return $this->setRawAttribute($key, $this->computeJsonAttributeAtPath($key, $value));
+        }
+        return $default();
+    }
+
+
+
     /**
-     * Cast the given attribute to JSON.
+     * Set a given JSON attribute on the model.
      *
      * @param  string  $key
      * @param  mixed  $value
-     * @return string
+     * @return $this
      */
-    private function castAttributeAsJson($key, $value)
+    public function computeJsonAttributeAtPath($key, $value)
     {
-        $value = $this->asJson($value);
-        if ($value === false) {
-            throw JsonEncodingException::forAttribute(
-                $this,
+        [$key, $path] = explode('->', $key, 2);
+
+        $value = json_encode(
+            $this->updateValueAtPath(
+                $path,
                 $key,
-                json_last_error_msg()
-            );
-        }
+                $value
+            )
+        );
         return $value;
     }
 
     /**
-     * Encode the given value as JSON.
+     * Get an array attribute with the given key and value set.
      *
+     * @param  string  $path
+     * @param  string  $key
      * @param  mixed  $value
-     * @return string
+     * @return $this
      */
-    private function asJson($value)
+    private function updateValueAtPath($path, $key, $value)
     {
-        return json_encode($value);
+        return Functional::tap($this->getArrayAttributeByKey($key), function (&$array) use ($path, $value) {
+            Arr::set($array, str_replace('->', '.', $path), $value);
+        });
+    }
+
+    /**
+     * Get an array attribute or return an empty array if it is not set.
+     *
+     * @param  string  $key
+     * @return array
+     */
+    private function getArrayAttributeByKey($key)
+    {
+        if (null === $this->getRawAttribute($key)) {
+            return [];
+        }
+
+        return json_decode(
+            $this->getRawAttribute($key),
+            true
+        );
     }
 }

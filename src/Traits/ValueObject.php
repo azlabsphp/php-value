@@ -14,7 +14,10 @@ declare(strict_types=1);
 namespace Drewlabs\Immutable\Traits;
 
 use Drewlabs\Contracts\Support\ArrayableInterface;
+use Drewlabs\Core\Helpers\Arr;
+use Drewlabs\Core\Helpers\Str;
 use Drewlabs\Immutable\Accessible;
+use Drewlabs\Immutable\Contracts\CastsAware;
 use Drewlabs\Immutable\Exceptions\ImmutableValueException;
 
 trait ValueObject
@@ -102,7 +105,7 @@ trait ValueObject
                 (function () use ($fillables) {
                     foreach ($fillables as $key => $value) {
                         if (!\in_array($key, $this->___hidden, true)) {
-                            yield $value => $this->callAttributeSerializer($key);
+                            yield $value => $this->callPropertyGetter($key);
                         }
                     }
                 })()
@@ -113,7 +116,7 @@ trait ValueObject
             (function () use ($fillables) {
                 foreach (array_values($fillables) as $key) {
                     if (!\in_array($key, $this->___hidden, true)) {
-                        yield $key => $this->callAttributeSerializer($key);
+                        yield $key => $this->callPropertyGetter($key);
                     }
                 }
             })()
@@ -221,22 +224,19 @@ trait ValueObject
      */
     public function getAttribute(string $key, $default = null)
     {
-        $callback = function ($name, $default_) {
-            $result = drewlabs_core_array_get(
-                $this->___attributes ? $this->___attributes->toArray() : [],
-                $name,
-                function () use ($name) {
-                    return $this->__get($name);
-                }
-            );
-
-            return $result ?? (\is_callable($default_) ? (new \ReflectionFunction($default_))->invoke() : $default_);
-        };
-
-        return $this->_propertyGetterExists($key) ?
-            $this->callAttributeSerializer($key) ?? (\is_callable($default) ?
-                (new \ReflectionFunction($default))->invoke() :
-                $default) : $callback($key, $default);
+        return $this->callPropertyGetter(
+            $key,
+            is_callable($default) ? $default : function () use ($key, $default) {
+                $result = drewlabs_core_array_get(
+                    $this->___attributes ? $this->___attributes->toArray() : [],
+                    $key,
+                    function () use ($key) {
+                        return $this->__get($key);
+                    }
+                );
+                return $result ?? $default;
+            }
+        );
     }
 
     public function setHidden(array $value)
@@ -296,21 +296,33 @@ trait ValueObject
      *
      * @return mixed
      */
-    protected function callAttributeDeserializer($name, $value)
+    protected function callPropertySetter($name, $value)
     {
-        if ($this->_propertySetterExists($name)) {
-            return $this->{'set' . drewlabs_core_strings_as_camel_case($name) . 'Attribute'}($value);
+        $result = call_user_func([$this, 'set' . Str::camelize($name) . 'Attribute'], $value);
+        if (null !== $result) {
+            $this->___attributes[$name] = $result;
         }
-
-        return $value;
+        return $this;
     }
 
-    protected function callAttributeSerializer($name)
+    protected function callPropertyGetter($name, \Closure $default = null)
     {
-        if ($this->_propertyGetterExists($name)) {
-            return $this->{'get' . drewlabs_core_strings_as_camel_case($name) . 'Attribute'}();
+        if ($this->hasPropertyGetter($name)) {
+            return call_user_func([$this, 'get' . Str::camelize($name) . 'Attribute']);
         }
-        return $this->___attributes[$name] ?? null;
+        $default = function () use ($name, $default) {
+            if (null === ($value = $this->getRawAttribute($name))) {
+                return $default ? call_user_func($default) : $value;
+            }
+            // Returns null if no matching found
+            return $value;
+        };
+        // If the current object is instance of {@see CastsAware} and interface
+        // exist {@see CastAware} we call the getCastableProperty method
+        if (interface_exists(CastsAware::class) && $this instanceof CastsAware) {
+            return $this->getCastableProperty($name, $this->getRawAttribute($name), $default);
+        }
+        return $default();
     }
 
     /**
@@ -329,9 +341,7 @@ trait ValueObject
     protected function initializeAttributes()
     {
         $this->___attributes = new Accessible;
-        $this->___associative = drewlabs_core_array_is_full_assoc(
-            $this->getJsonableAttributes()
-        );
+        $this->___associative = Arr::isallassoc($this->getJsonableAttributes());
         return $this;
     }
 
@@ -341,6 +351,12 @@ trait ValueObject
     final public function getRawAttributes()
     {
         return $this->___attributes->toArray();
+    }
+
+    final protected function mergeRawAttributes(array $attributes = [])
+    {
+        $this->___attributes->merge($attributes);
+        return $this;
     }
 
     /**
@@ -419,12 +435,20 @@ trait ValueObject
      */
     private function setAttribute(string $name, $value)
     {
-        $result = $this->callAttributeDeserializer($name, $value);
-        if (null !== $result) {
-            $this->___attributes[$name] = $result;
+        if ($this->hasPropertySetter($name)) {
+            return $this->callPropertySetter($name, $value);
         }
-
-        return $this;
+        $default = function () use ($name, $value) {
+            $this->setRawAttribute($name, $value);
+        };
+        // If the current class instance  implements {@see CastsAware} interface
+        // we calls {@see CastsAware::setCastableProperty} method to set property value
+        // using it cast conterpart
+        if (interface_exists(CastsAware::class) && $this instanceof CastsAware) {
+            return $this->setCastableProperty($name, $value, $default);
+        }
+        // Else set the raw property value
+        return $default();
     }
 
     /**
@@ -448,29 +472,29 @@ trait ValueObject
     {
         $fillables = $this->loadBindings() ?? [];
         if (!$this->___associative) {
-            return $this->callAttributeSerializer($name);
+            return $this->callPropertyGetter($name);
         }
         if (null !== $this->___attributes[$name] ?? null) {
-            return $this->callAttributeSerializer($name);
+            return $this->callPropertyGetter($name);
         }
         if (\array_key_exists($name, $fillables)) {
-            return $this->callAttributeSerializer($name);
+            return $this->callPropertyGetter($name);
         }
-        if ($key = drewlabs_core_array_search($name, $fillables)) {
-            return $this->callAttributeSerializer($key);
+        if ($key = Arr::search($name, $fillables)) {
+            return $this->callPropertyGetter($key);
         }
 
         return null;
     }
 
-    private function _propertyGetterExists($name)
+    private function hasPropertyGetter($name)
     {
-        return method_exists($this, 'get' . drewlabs_core_strings_as_camel_case($name) . 'Attribute');
+        return method_exists($this, 'get' . Str::camelize($name) . 'Attribute');
     }
 
-    private function _propertySetterExists($name)
+    private function hasPropertySetter($name)
     {
-        return method_exists($this, 'set' . drewlabs_core_strings_as_camel_case($name) . 'Attribute');
+        return method_exists($this, 'set' . Str::camelize($name) . 'Attribute');
     }
 
     // #endregion Private methods

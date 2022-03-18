@@ -5,6 +5,8 @@ namespace Drewlabs\Immutable;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Drewlabs\Core\Helpers\Arr;
+use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\Immutable\Contracts\CastPropertyInterface;
 use Drewlabs\Immutable\Contracts\CastsInboundProperties;
@@ -13,6 +15,7 @@ use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;
 use Drewlabs\Immutable\Contracts\CastsAware;
+use Drewlabs\Immutable\Exceptions\JsonEncodingException;
 
 class Cast
 {
@@ -149,7 +152,7 @@ class Cast
             return $this->getEnumCastableAttributeValue($name, $value, ...$params);
         }
         // Is cast a PHP Class
-        if ($this->isClassCastable($this, $name)) {
+        if ($this->isClassCastable($name)) {
             // Cast value into class type
             return $this->getClassCastableProperty($name, $value, ...$params);
         }
@@ -219,12 +222,11 @@ class Cast
     /**
      * Determine if the given key is cast using a custom class.
      * 
-     * @param mixed $model 
      * @param string $key 
      * @return bool 
      * @throws InvalidCastException 
      */
-    public function isClassCastable($model, string $key)
+    public function isClassCastable(?string $key = null)
     {
 
         if (!array_key_exists($key, $this->casts ?? [])) {
@@ -240,7 +242,7 @@ class Cast
         if (strpos($castType,  '\\') === false && class_exists(self::NAMESPACE . "\\" . ucfirst($castType))) {
             return true;
         }
-        throw new InvalidCastException($model, $key, $castType);
+        throw new InvalidCastException($this->castsAware, $key, $castType);
     }
 
     /**
@@ -340,6 +342,99 @@ class Cast
     public function setCasts(array $casts)
     {
         $this->casts = $casts ?? $this->casts ?? [];
+    }
+
+
+
+    /**
+     * Set the value of an enum castable attribute.
+     *
+     * @param  string  $key
+     * @param  \BackedEnum  $value
+     * @return void
+     */
+    public function computeEnumCastablePropertyValue($key, $value)
+    {
+        if (!isset($value)) {
+            return;
+        }
+        $enumClass = $this->casts[$key] ?? null;
+        if ($value instanceof $enumClass) {
+            return $value->value;
+        }
+        return $enumClass::from($value)->value;
+    }
+
+    public function computeClassCastablePropertyValue($key, $value)
+    {
+        $caster = $this->resolveCasterClass($key);
+
+        $valueNormalizer = function ($key, $value) {
+            return Arr::isallassoc($value) ? $value : [$key => $value];
+        };
+
+        if (null === $value) {
+            $result =  array_map(
+                function () {
+                },
+                $valueNormalizer(
+                    $key,
+                    method_exists($caster, 'set') ?
+                        $caster->set(
+                            $key,
+                            $value,
+                            $this->castsAware
+                        ) : $caster
+                )
+            );
+        } else {
+            $result =  $valueNormalizer(
+                $key,
+                method_exists($caster, 'set') ?
+                    $caster->set(
+                        $key,
+                        $value,
+                        $this->castsAware
+                    ) : $caster
+            );
+        }
+        if ($caster instanceof CastsInboundProperties || !is_object($value)) {
+            unset($this->castersCache[$key]);
+        } else {
+            $this->castersCache[$key] = $value;
+        }
+        return $result;
+    }
+
+    /**
+     * Cast the given attribute to JSON.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return string
+     */
+    public function computePropertyAsJson($key, $value)
+    {
+        $value = $this->asJson($value);
+        if ($value === false) {
+            throw JsonEncodingException::forAttribute(
+                $this,
+                $key,
+                json_last_error_msg()
+            );
+        }
+        return $value;
+    }
+
+    /**
+     * Encode the given value as JSON.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
+    private function asJson($value)
+    {
+        return json_encode($value);
     }
 
     /**

@@ -81,13 +81,13 @@ class CastTest extends TestCase
     public function test_is_class_castable_method()
     {
         $cast = new Cast();
-        $this->assertFalse($cast->isClassCastable(null, 'message'));
+        $this->assertFalse($cast->isClassCastable('message'));
         $cast->setCasts([
             'message' => Message::class,
             'test' => TestModel::class . ":hello"
         ]);
-        $this->assertTrue($cast->isClassCastable(null, 'message'));
-        $this->assertTrue($cast->isClassCastable(null, 'test'));
+        $this->assertTrue($cast->isClassCastable('message'));
+        $this->assertTrue($cast->isClassCastable('test'));
     }
 
     public function test_get_cast_class_property_method()

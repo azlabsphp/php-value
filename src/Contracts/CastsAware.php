@@ -25,4 +25,24 @@ interface CastsAware
      * @return array|mixed
      */
     public function getRawAttributes();
+
+    /**
+     * Get value of a property configured as castable
+     * 
+     * @param string $key 
+     * @param mixed $value 
+     * @param \Closure $default
+     * @return mixed 
+     */
+    public function getCastableProperty(string $key, $value, \Closure $default);
+
+    /**
+     * Set value of a property configured as castable
+     * 
+     * @param string $key 
+     * @param mixed $value 
+     * @param \Closure $default
+     * @return self 
+     */
+    public function setCastableProperty(string $key, $value, \Closure $default);
 }
