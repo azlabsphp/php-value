@@ -26,3 +26,7 @@ if (!function_exists('CreateValueObject')) {
         return $object->useProperties($properties);
     }
 }
+
+function CreatePropertyCaster($arguments) {
+    
+}

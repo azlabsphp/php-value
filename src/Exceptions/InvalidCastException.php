@@ -1,0 +1,46 @@
+<?php
+
+namespace Drewlabs\Immutable\Exceptions;
+
+use RuntimeException;
+
+class InvalidCastException extends RuntimeException
+{
+    /**
+     * The name of the affected Eloquent model.
+     *
+     * @var string
+     */
+    public $model;
+
+    /**
+     * The name of the column.
+     *
+     * @var string
+     */
+    public $property;
+
+    /**
+     * The name of the cast type.
+     *
+     * @var string
+     */
+    public $castType;
+
+    /**
+     * Create a new exception instance.
+     *
+     * @param  object  $model
+     * @param  string  $property
+     * @param  string  $castType
+     * @return static
+     */
+    public function __construct($model, $property, $castType)
+    {
+        $class = get_class($model);
+        parent::__construct("Call to undefined cast [{$castType}] on property [{$property}] in model [{$class}].");
+        $this->model = $class;
+        $this->property = $property;
+        $this->castType = $castType;
+    }
+}

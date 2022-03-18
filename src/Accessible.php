@@ -47,7 +47,7 @@ use Generator;
  * 
  * @package Drewlabs\Immutable
  */
-class Accessible extends \stdClass implements \ArrayAccess
+class Accessible implements \ArrayAccess
 {
     /**
      * {@inheritDoc}

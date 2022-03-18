@@ -14,11 +14,13 @@ declare(strict_types=1);
 namespace Drewlabs\Immutable;
 
 use Drewlabs\Contracts\Data\Model\Model;
+use Drewlabs\Core\Helpers\Arr;
+use Drewlabs\Core\Helpers\Str;
 use Drewlabs\Immutable\Traits\Proxy;
 use Drewlabs\Immutable\Traits\ValueObject;
 
 /**
- * Enhance the default {ValueObject} class with model bindings.
+ * Enhance the default {@see ValueObject} class with model bindings.
  */
 abstract class ModelValue
 {
@@ -115,9 +117,33 @@ abstract class ModelValue
 
     public function toArray()
     {
-        return $this->attributesToArray();
+        $attributes = $this->attributesToArray();
+        $hidden = array_merge($this->getHidden());
+        $relations = method_exists($this->___model, 'getRelations') ?
+            call_user_func([$this->___model, 'getRelations']) :
+            [];
+        // TODO: GET MODEL RELATIONS
+        foreach ($relations as $key => $value) {
+            if (in_array($key, $hidden)) {
+                continue;
+            }
+            // TODO: Provide a better implementation to avoid performance heck or
+            // remove implementation that strip hidden sub attributes as it can impact 
+            // application performance for large datasets.
+            $props = [];
+            foreach ($hidden as $k => $v) {
+                if (Str::startsWith($v, $key)) {
+                    $props[] = Str::after("$key.", $v);
+                    unset($hidden[$k]);
+                    continue;
+                }
+            }
+            $attributes[$key] = Arr::except($value->attributesToArray(), $props);
+            // #endregion TODO
+            // $attributes[$key] = $value;
+        }
+        return $attributes;
     }
-
     final public function jsonSerialize()
     {
         return $this->toArray();

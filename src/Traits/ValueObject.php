@@ -338,9 +338,9 @@ trait ValueObject
     /**
      * @return array
      */
-    final protected function getRawAttributes()
+    final public function getRawAttributes()
     {
-        return (array) $this->___attributes;
+        return $this->___attributes->toArray();
     }
 
     /**
@@ -387,7 +387,6 @@ trait ValueObject
                 }
             }
         }
-
         return $this;
     }
 
