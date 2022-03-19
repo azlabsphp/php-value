@@ -6,7 +6,6 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Drewlabs\Core\Helpers\Arr;
-use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\Immutable\Contracts\CastPropertyInterface;
 use Drewlabs\Immutable\Contracts\CastsInboundProperties;
@@ -17,6 +16,11 @@ use ReflectionException;
 use Drewlabs\Immutable\Contracts\CastsAware;
 use Drewlabs\Immutable\Exceptions\JsonEncodingException;
 
+
+/**
+ * 
+ * @package Drewlabs\Immutable
+ */
 class Cast
 {
     const NAMESPACE = __NAMESPACE__ . '\\Casts';
@@ -125,9 +129,34 @@ class Cast
         }
     }
 
+    /**
+     * Merge type casting defintions into existing ones
+     * 
+     * ```php
+     * <?php
+     * import Drewlabs\BuiltType\Cast;
+     * 
+     * // Creates an instance of the cast aware object
+     * const $object = new CastAwareObject;
+     * 
+     * // Build the cast manager instance from the cast aware object
+     * $cast = new Cast($object);
+     * 
+     * // Merge type casting defintions
+     * $cast = $cast->mergeCastDefinitions([
+     *  'int' => function() {
+     *         // code that cast and interger types
+     *   }
+     * ]);
+     * ```
+     * 
+     * @param array $merge 
+     * @return array 
+     */
     public function mergeCastDefinitions(array $merge)
     {
-        return array_merge($this->map ?? [], $merge);
+        $this->map = array_merge($this->map ?? [], $merge);
+        return $this;
     }
 
     public function __invoke(string $name, $value, ...$params)
@@ -259,7 +288,9 @@ class Cast
         if (is_string($castType) && strpos($castType, ':') !== false) {
             $segments = explode(':', $castType, 2);
             // Use default Class Cast namespace if required
-            $castType = strpos($segments[0],  '\\') === false && !class_exists($segments[0]) && class_exists(self::NAMESPACE . "\\" . ucfirst($segments[0])) ? self::NAMESPACE . "\\" . ucfirst($segments[0]) : $segments[0];
+            $castType = strpos($segments[0],  '\\') === false && !class_exists($segments[0]) && class_exists(self::NAMESPACE . "\\" . ucfirst($segments[0])) ?
+                self::NAMESPACE . "\\" . ucfirst($segments[0]) :
+                $segments[0];
             $arguments = explode(',', $segments[1]);
         }
         if (is_subclass_of($castType, CastPropertyInterface::class)) {

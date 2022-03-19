@@ -13,10 +13,13 @@ declare(strict_types=1);
 
 namespace Drewlabs\Immutable\Tests\Stubs;
 
-use Drewlabs\Immutable\Value;
+use Drewlabs\Immutable\Contracts\ValueInterface;
+use Drewlabs\Immutable\Traits\Value;
 
-class Message extends Value
+class Message implements ValueInterface
 {
+    use Value;
+
     protected function getJsonableAttributes()
     {
         return [

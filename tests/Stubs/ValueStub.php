@@ -15,11 +15,11 @@ namespace Drewlabs\Immutable\Tests\Stubs;
 
 use Drewlabs\Immutable\Contracts\CastsAware;
 use Drewlabs\Immutable\Traits\Castable;
-use Drewlabs\Immutable\Value;
+use Drewlabs\Immutable\Traits\Value;
 
-class ValueStub extends Value implements CastsAware
+class ValueStub implements CastsAware
 {
-    use Castable;
+    use Castable, Value;
 
     private $___casts = [
         'message' => 'value:' . Message::class

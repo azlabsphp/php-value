@@ -13,10 +13,13 @@ declare(strict_types=1);
 
 namespace Drewlabs\Immutable\Tests\Stubs;
 
-use Drewlabs\Immutable\ModelValue;
+use Drewlabs\Immutable\Contracts\ValueInterface;
+use Drewlabs\Immutable\Traits\ModelAwareValue;
 
-class TestModelValue extends ModelValue
+class TestModelValue implements ValueInterface
 {
+
+    use ModelAwareValue;
 
     protected $___properties = [
         'label',

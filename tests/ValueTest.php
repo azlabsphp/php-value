@@ -3,6 +3,7 @@
 namespace Drewlabs\Immutable\Tests;
 
 use Drewlabs\Immutable\Accessible;
+use Drewlabs\Immutable\Contracts\ValueInterface;
 use Drewlabs\Immutable\Exceptions\ImmutableValueException;
 use Drewlabs\Immutable\Tests\Stubs\FileLogger;
 use Drewlabs\Immutable\Tests\Stubs\Message;
@@ -163,7 +164,7 @@ class ValueTest extends TestCase
             'name',
             'lastname'
         ]);
-        $this->assertInstanceOf(Value::class, $value);
+        $this->assertInstanceOf(ValueInterface::class, $value);
         // Call copy method to create a copy of the object
         $value = $value->copy([
             'name' => 'Azandrew',

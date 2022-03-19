@@ -12,7 +12,7 @@
     }],
     "autoload": {
         "psr-4": {
-            "Drewlabs\\Immutable\\": "src/"
+            "Drewlabs\\PhpValue\\": "src/"
         },
         "files": [
             "src/functions.php"
@@ -20,7 +20,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Drewlabs\\Immutable\\Tests\\": "tests/"
+            "Drewlabs\\PhpValue\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",

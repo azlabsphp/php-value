@@ -2,8 +2,6 @@
 
 namespace Drewlabs\Immutable\Contracts;
 
-use Drewlabs\Contracts\Support\Immutable\ValueObjectInterface as Value;
-
 interface CastPropertyInterface
 {
     /**

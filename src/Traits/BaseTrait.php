@@ -20,16 +20,9 @@ use Drewlabs\Immutable\Accessible;
 use Drewlabs\Immutable\Contracts\CastsAware;
 use Drewlabs\Immutable\Exceptions\ImmutableValueException;
 
-trait ValueObject
+trait BaseTrait
 {
     use ArrayAccess;
-
-    /**
-     * List of jsonnable properties for the given object
-     * 
-     * @var array
-     */
-    protected $___properties = [];
 
     /**
      * Attribute container.
@@ -73,7 +66,7 @@ trait ValueObject
      */
     public function __get($name)
     {
-        return $this->_internalGetAttribute($name);
+        return $this->callGetAttribute($name);
     }
 
     /**
@@ -267,7 +260,7 @@ trait ValueObject
      * Merge object attributes.
      * 
      * @param array|\stdClass $attributes 
-     * @return ValueObject
+     * @return BaseTrait
      */
     public function merge($attributes = [])
     {
@@ -336,6 +329,19 @@ trait ValueObject
     }
 
     /**
+     * Overridable method returning the list of serializable properties
+     *
+     * @return array
+     */
+    protected function getJsonableAttributes()
+    {
+        if (property_exists($this, '___properties')) {
+            return $this->___properties ?? [];
+        }
+        return [];
+    }
+
+    /**
      * @return self
      */
     protected function initializeAttributes()
@@ -384,7 +390,7 @@ trait ValueObject
      *
      * @param bool $setGuarded
      *
-     * @return $this
+     * @return self
      */
     protected function setAttributes(array $attributes, $setGuarded = false)
     {
@@ -468,7 +474,7 @@ trait ValueObject
      * @param string $name 
      * @return mixed 
      */
-    private function _internalGetAttribute(string $name)
+    private function callGetAttribute(string $name)
     {
         $fillables = $this->loadBindings() ?? [];
         if (!$this->___associative) {
