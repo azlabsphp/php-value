@@ -77,7 +77,7 @@ class Accessible implements \ArrayAccess
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        $this->validatePropertyName($offset);
+        $this->isStringOrFail($offset);
 
         return property_exists($this, $offset);
     }
@@ -85,7 +85,7 @@ class Accessible implements \ArrayAccess
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        $this->validatePropertyName($offset);
+        $this->isStringOrFail($offset);
 
         return $this->offsetExists($offset) ? $this->{$offset} : null;
     }
@@ -93,14 +93,14 @@ class Accessible implements \ArrayAccess
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
-        $this->validatePropertyName($offset);
+        $this->isStringOrFail($offset);
         $this->{$offset} = $value;
     }
 
     #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
-        $this->validatePropertyName($offset);
+        $this->isStringOrFail($offset);
         unset($this->{$offset});
     }
 
@@ -208,7 +208,7 @@ class Accessible implements \ArrayAccess
         return $this;
     }
 
-    private function validatePropertyName($property)
+    private function isStringOrFail($property)
     {
         if (!\is_string($property)) {
             throw new \InvalidArgumentException('Object accessible property must be of type string, got :' . is_object($property) ? get_class($property) : gettype($property));
