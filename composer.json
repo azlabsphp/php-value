@@ -12,7 +12,7 @@
     }],
     "autoload": {
         "psr-4": {
-            "Drewlabs\\PhpValue\\": "src/"
+            "Drewlabs\\PHPValue\\": "src/"
         },
         "files": [
             "src/functions.php"
@@ -20,7 +20,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Drewlabs\\PhpValue\\Tests\\": "tests/"
+            "Drewlabs\\PHPValue\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",

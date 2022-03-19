@@ -1,6 +1,6 @@
 <?php
 
-namespace Drewlabs\Immutable\Exceptions;
+namespace Drewlabs\PHPValue\Exceptions;
 
 use RuntimeException;
 

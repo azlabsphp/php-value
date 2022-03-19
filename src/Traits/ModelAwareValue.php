@@ -1,15 +1,15 @@
 <?php
 
-namespace Drewlabs\Immutable\Traits;
+namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Contracts\Data\Model\Model;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Str;
+use ReturnTypeWillChange;
 
 trait ModelAwareValue
 {
-    use Proxy;
-    use BaseTrait;
+    use Proxy, Castable, BaseTrait;
 
     /**
      * @var Model
@@ -115,16 +115,34 @@ trait ModelAwareValue
         }
         return $attributes;
     }
+
+    #[ReturnTypeWillChange]
     final public function jsonSerialize()
     {
         return $this->toArray();
     }
 
-    /**
-     * @return Accessible|mixed
-     */
     final protected function getAttributes()
     {
         return $this->___attributes;
+    }
+
+    final protected function getRawAttribute(string $name)
+    {
+        $fillables = $this->loadBindings() ?? [];
+        if (!$this->___associative) {
+            return $this->___attributes[$name];
+        }
+        if (null !== ($value = $this->___attributes[$name] ?? null)) {
+            return $value;
+        }
+        // if (\array_key_exists($name, $fillables)) {
+        //     return $this->callPropertyGetter($name, $value);
+        // }
+        $key = Arr::search($name, $fillables);
+        if ($key && ($value = $this->___attributes[$key])) {
+            return $value;
+        }
+        return $this->___model ? ($this->___model->{$name} ?? null) : null;
     }
 }

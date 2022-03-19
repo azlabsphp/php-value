@@ -5,68 +5,83 @@ namespace Drewlabs\Support\Tests\Unit;
 
 use DateTime;
 use DateTimeImmutable;
-use Drewlabs\Immutable\Cast;
-use Drewlabs\Immutable\Tests\Stubs\FileLogger;
-use Drewlabs\Immutable\Tests\Stubs\Message;
-use Drewlabs\Immutable\Tests\Stubs\TestModel;
-use Drewlabs\Immutable\Tests\Stubs\ValueStub;
+use Drewlabs\PHPValue\Cast;
+use Drewlabs\PHPValue\Tests\Stubs\FileLogger;
+use Drewlabs\PHPValue\Tests\Stubs\Message;
+use Drewlabs\PHPValue\Tests\Stubs\TestModel;
+use Drewlabs\PHPValue\Tests\Stubs\ValueStub;
 use PHPUnit\Framework\TestCase;
 
 class CastTest extends TestCase
 {
 
+    public function createCasts()
+    {
+        return [
+            'amount' => 'decimal:2',
+            'total' => 'int',
+            'paid' => 'bool',
+            'date' => 'immutable_date',
+            'created_at' => 'datetime',
+            'updated_at' => 'immutable_datetime',
+            'items' => 'array',
+            'mail' => 'string',
+            'pi' => 'real',
+            't_updated_at' => 'timestamp'
+        ];
+    }
+
     public function test__invoke__method()
     {
-        $cast = new Cast();
-        $mail_cmd = new class extends \stdClass {
+        $cast = (new Cast())->setCasts($this->createCasts());
+        $mail_cmd = new class extends \stdClass
+        {
             public function __toString()
             {
-                return "sendmail:dns://smtp.liksoft.tg:587 --to azandrewdevelopper@gmail.com --subject='Hello World!'";      
+                return "sendmail:dns://smtp.liksoft.tg:587 --to azandrewdevelopper@gmail.com --subject='Hello World!'";
             }
         };
-        $this->assertIsArray($cast->__invoke('array', '[1,2,3,4]'));
-        $this->assertEquals(true, $cast->__invoke('bool', 1));
-        $this->assertEquals(false, $cast->__invoke('boolean', null));
+        $this->assertIsArray($cast->__invoke('items', '[{"name": "Clean Soap"}, {"name": "Knife"}]'));
+        $this->assertEquals(true, $cast->__invoke('paid', 1));
+        $this->assertEquals(false, $cast->__invoke('paid', 0));
         $this->assertEquals("sendmail:dns://smtp.liksoft.tg:587 --to azandrewdevelopper@gmail.com --subject='Hello World!'", $cast->__invoke('string', $mail_cmd));
-        $this->assertIsArray($cast->__invoke('json', '[1,2,3,4]'));
-        $this->assertEquals(3, $cast->__invoke('int', 3.144142));
-        $this->assertEquals(intval('0b11', 2), $cast->__invoke('int:2', '0b11')); // Test if int values is parse in the specified base
-        $this->assertEquals(3.144142, $cast->__invoke('float', '3.144142'));
-        $this->assertEquals(3.144142, $cast->__invoke('real', '3.144142'));
-        $this->assertEquals((new DateTime)->setTime(0, 0), $cast->__invoke('date', date('Y-m-d H:i:s')));
-        $this->assertInstanceOf(DateTime::class, $cast->__invoke('datetime', date('Y-m-d H:i:s')));
-        $this->assertEquals((new DateTimeImmutable)->setTime(0, 0), $cast->__invoke('immutable_date', date('Y-m-d H:i:s')));
-        $this->assertInstanceOf(DateTimeImmutable::class, $cast->__invoke('immutable_datetime', date('Y-m-d H:i:s')));
-        $this->assertEquals((new DateTimeImmutable)->getTimestamp(), $cast->__invoke('timestamp', date('Y-m-d H:i:s')));
+        $this->assertEquals(3, $cast->__invoke('total', 3.144142));
+        $this->assertEquals('3.14', $cast->__invoke('amount', '3.144142'));
+        $this->assertEquals(3.144142, $cast->__invoke('pi', '3.144142'));
+        $this->assertEquals(DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s')), $cast->__invoke('created_at', date('Y-m-d H:i:s')));
+        $this->assertInstanceOf(DateTime::class, $cast->__invoke('created_at', date('Y-m-d H:i:s')));
+        $this->assertEquals((new DateTimeImmutable)->setTime(0, 0), $cast->__invoke('date', date('Y-m-d H:i:s')));
+        $this->assertInstanceOf(DateTimeImmutable::class, $cast->__invoke('updated_at', date('Y-m-d H:i:s')));
+        $this->assertEquals((new DateTimeImmutable)->getTimestamp(), $cast->__invoke('t_updated_at', date('Y-m-d H:i:s')));
     }
 
     public function test__call__method()
     {
-        $cast = new Cast();
-        $mail_cmd = new class extends \stdClass {
+        $cast = (new Cast())->setCasts($this->createCasts());
+        $mail_cmd = new class extends \stdClass
+        {
             public function __toString()
             {
-                return "sendmail:dns://smtp.liksoft.tg:587 --to azandrewdevelopper@gmail.com --subject='Hello World!'";      
+                return "sendmail:dns://smtp.liksoft.tg:587 --to azandrewdevelopper@gmail.com --subject='Hello World!'";
             }
         };
-        $this->assertIsArray($cast->call('array', '[1,2,3,4]'));
-        $this->assertEquals(true, $cast->call('bool', 1));
-        $this->assertEquals(false, $cast->call('boolean', null));
+        $this->assertIsArray($cast->call('items', '[{"name": "Clean Soap"}, {"name": "Knife"}]'));
+        $this->assertEquals(true, $cast->call('paid', 1));
+        $this->assertEquals(false, $cast->call('paid', 0));
         $this->assertEquals("sendmail:dns://smtp.liksoft.tg:587 --to azandrewdevelopper@gmail.com --subject='Hello World!'", $cast->call('string', $mail_cmd));
-        $this->assertIsArray($cast->call('json', '[1,2,3,4]'));
-        $this->assertEquals(3, $cast->call('int', 3.144142));
-        $this->assertEquals(3.144142, $cast->call('float', '3.144142'));
-        $this->assertEquals(3.144142, $cast->call('real', '3.144142'));
-        $this->assertEquals((new DateTime)->setTime(0, 0), $cast->call('date', date('Y-m-d H:i:s')));
-        $this->assertInstanceOf(DateTime::class, $cast->call('datetime', date('Y-m-d H:i:s')));
-        $this->assertEquals((new DateTimeImmutable)->setTime(0, 0), $cast->call('immutable_date', date('Y-m-d H:i:s')));
-        $this->assertInstanceOf(DateTimeImmutable::class, $cast->call('immutable_datetime', date('Y-m-d H:i:s')));
-        $this->assertEquals((new DateTimeImmutable)->getTimestamp(), $cast->call('timestamp', date('Y-m-d H:i:s')));
+        $this->assertEquals(3, $cast->call('total', 3.144142));
+        $this->assertEquals('3.14', $cast->__invoke('amount', '3.144142'));
+        $this->assertEquals(3.144142, $cast->call('pi', '3.144142'));
+        $this->assertEquals(DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s')), $cast->call('created_at', date('Y-m-d H:i:s')));
+        $this->assertInstanceOf(DateTime::class, $cast->call('created_at', date('Y-m-d H:i:s')));
+        $this->assertEquals((new DateTimeImmutable)->setTime(0, 0), $cast->call('date', date('Y-m-d H:i:s')));
+        $this->assertInstanceOf(DateTimeImmutable::class, $cast->call('updated_at', date('Y-m-d H:i:s')));
+        $this->assertEquals((new DateTimeImmutable)->getTimestamp(), $cast->call('t_updated_at', date('Y-m-d H:i:s')));
     }
 
     public function test_get_cast_type_function_method()
     {
-        $cast = new Cast();
+        $cast = (new Cast)->setCasts($this->createCasts());
         $this->assertInstanceOf(\Closure::class, $cast->getCastType('decimal')[1]);
         $this->assertNull($cast->getCastType(TestModel::class));
         $this->assertInstanceOf(\Closure::class, $cast->getCastType('decimal:8')[1]);
@@ -90,7 +105,7 @@ class CastTest extends TestCase
         $this->assertTrue($cast->isClassCastable('test'));
     }
 
-    public function test_get_cast_class_property_method()
+    public function test_get_cast_castable_properties()
     {
         $cast = new Cast(new ValueStub([
             'message' => [
@@ -104,5 +119,4 @@ class CastTest extends TestCase
         $this->assertTrue($result instanceof Message);
         $this->assertTrue(($result->To === $result->to) && ($result->to === 'az@sedana.com'));
     }
-
 }

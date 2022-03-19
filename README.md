@@ -36,12 +36,12 @@ After you modify your composer.json you simply run:
 
 The library offer two interface for creating an object. 
 
-Your can use OOP implementation you can extends the abstract [Drewlabs\Immutable\Value] class:
+Your can use OOP implementation you can extends the abstract [Drewlabs\PHPValue\Value] class:
 
 - Object oriented implementation
 
 ```php
-use Drewlabs\Immutable\Value;
+use Drewlabs\PHPValue\Value;
 
 class ValueStub extends Value
 {
@@ -58,13 +58,13 @@ $value = new ValueStub([
 ]);
 ```
 
-Or using the [Drewlabs\Immutable\Functions\CreateValue] function.
+Or using the [Drewlabs\PHPValue\Functions\CreateValue] function.
 
 - Functional interface
 
 ```php
 // Imports
-use function Drewlabs\Immutable\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateValue;
 
 $value =  CreateValue([
     // dynamic properties
@@ -73,13 +73,13 @@ $value =  CreateValue([
 ]);
 ```
 
-Using both ways, you create an instance of [\Drewlabs\Immutable\Value] class.
+Using both ways, you create an instance of [\Drewlabs\PHPValue\Value] class.
 
 - Creating a copy of the object
 
 ```php
 // Imports
-use function Drewlabs\Immutable\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateValue;
 $value =  CreateValue([
     // dynamic properties
     'name',
@@ -98,7 +98,7 @@ The value object is Array accessible meaning we can user [] operator to acces ob
 
 ```php
 // Imports
-use function Drewlabs\Immutable\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateValue;
 $value =  CreateValue([
     // dynamic properties
     'name',

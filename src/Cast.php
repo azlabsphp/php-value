@@ -1,25 +1,25 @@
 <?php
 
-namespace Drewlabs\Immutable;
+namespace Drewlabs\PHPValue;
 
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Str;
-use Drewlabs\Immutable\Contracts\CastPropertyInterface;
-use Drewlabs\Immutable\Contracts\CastsInboundProperties;
-use Drewlabs\Immutable\Exceptions\InvalidCastException;
+use Drewlabs\PHPValue\Contracts\CastPropertyInterface;
+use Drewlabs\PHPValue\Contracts\CastsInboundProperties;
+use Drewlabs\PHPValue\Exceptions\InvalidCastException;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;
-use Drewlabs\Immutable\Contracts\CastsAware;
-use Drewlabs\Immutable\Exceptions\JsonEncodingException;
+use Drewlabs\PHPValue\Contracts\CastsAware;
+use Drewlabs\PHPValue\Exceptions\JsonEncodingException;
 
 
 /**
  * 
- * @package Drewlabs\Immutable
+ * @package Drewlabs\PHPValue
  */
 class Cast
 {
@@ -51,82 +51,8 @@ class Cast
 
     public function __construct(CastsAware $castsAware = null)
     {
-        $defaults =  [
-            'string' => function ($value) {
-                return (string)$value;
-            },
-            'array' => function ($value) {
-                return json_decode($value, true);
-            },
-            'json' => function ($value) {
-                return json_decode($value, true);
-            },
-            'object' => function ($value) {
-                return json_decode($value, false);
-            },
-            'bool' => function ($value) {
-                return (bool)$value;
-            },
-            'boolean' => function ($value) {
-                return (bool)$value;
-            },
-            'int' => function ($value, $base = null) {
-                return $base ? intval($value, (int)$base) : (int)$value;
-            },
-            'integer' => function ($value, $base = null) {
-                return $base ? intval($value, (int)$base) : (int)$value;
-            },
-            'datetime' => function ($value) {
-                return $this->castToPHPDate($value);
-            },
-            'date' => function ($value) {
-                return $this->castToPHPDate($value)->setTime(0, 0, 0, 0);
-            },
-            'immutable_datetime' => function ($value) {
-                return $this->castToPHPImmutableDate($value);
-            },
-            'immutable_date' => function ($value) {
-                return $this->castToPHPImmutableDate($value)->setTime(0, 0, 0, 0);
-            },
-            'timestamp' => function ($value) {
-                return $this->castToPHPDate($value)->getTimestamp();
-            },
-            'decimal' => function ($value, $decimals = 0) {
-                return number_format($value, (int)$decimals, '.', '');
-            },
-            'float' => function ($value) {
-                return $this->fromFloat($value);
-            },
-            'double' => function ($value) {
-                return $this->fromFloat($value);
-            },
-            'real' => function ($value) {
-                return $this->fromFloat($value);
-            },
-            'collection' => function ($value) {
-                return function_exists('collect') ?
-                    call_user_func('collect', $value) : (function_exists('\Drewlabs\Support\Proxy\Collection') ? call_user_func('\Drewlabs\Support\Proxy\Collection', $value) : $value);
-            },
-        ];
-        $this->map = $defaults;
+        $this->map = $this->useDefaults();
         $this->setCastAwareInstance($castsAware);
-    }
-
-    /**
-     * Create a Cast instance from user propvided cast aware class
-     * 
-     * @param CastsAware $castAware 
-     * @param array $attributes 
-     * @return self 
-     */
-    private function setCastAwareInstance(?CastsAware $castAware = null)
-    {
-        if ($castAware) {
-            $this->castsAware = $castAware;
-            $this->casts = $castAware->getCasts() ?? [];
-        } else {
-            $this->casts = [];
-        }
     }
 
     /**
@@ -161,20 +87,15 @@ class Cast
 
     public function __invoke(string $name, $value, ...$params)
     {
+        if (null === ($this->casts[$name] ?? null)) {
+            return $value;
+        }
         // If the cast is a closure, invoke the closure with the provided value
         if ($this->isClosureCastable($name)) {
-            return $name($value);
+            return $this->getClosureCastableAttributeValue($name, $value);
         }
-        $castType = $this->getCastType($name);
-        if (null === $value && null !== $castType) {
-            return null;
-        }
-        if (null !== $castType) {
-            $params = strpos($name, ':') === false ?
-                [] : ((strpos($after = Str::after($castType[0] . ":", $name), ',') === false)
-                    ? [$after] :
-                    explode(',', $after));
-            return $castType[1]($value, ...$params);
+        if ($this->isPrimitiveCastable($name)) {
+            return $this->getPrimitiveCastableAttributeValue($name, $value, ...$params);
         }
         // Is cast is a PHP enumeration
         if ($this->isEnumCastable($name)) {
@@ -203,8 +124,8 @@ class Cast
      */
     public function getCastType(string $name)
     {
-        $name = $this->getCastTypeName($name);
-        return isset($this->map[$name]) ? [$name, $this->map[$name]] : null;
+        $castTypeName = $this->getCastTypeName($name);
+        return  $castTypeName && isset($this->map[$castTypeName]) ? [$castTypeName, $this->map[$castTypeName]] : null;
     }
 
     /**
@@ -220,13 +141,14 @@ class Cast
         if (!array_key_exists($key, $this->casts ?? [])) {
             return false;
         }
-        $castType = $this->casts[$key] ?? null;
+        $castType = $this->casts[$key];
         if (null !== $this->getCastType($key)) {
             return false;
         }
-        if (function_exists('enum_exists') && enum_exists($castType)) {
+        if (is_string($castType) && function_exists('enum_exists') && enum_exists($castType)) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -242,6 +164,10 @@ class Cast
             return;
         }
         $castType = $this->casts[$key] ?? null;
+        // If the $castType of the property is null we simply return the passed value
+        if (null === $castType) {
+            return $value;
+        }
         if ($value instanceof $castType) {
             return $value;
         }
@@ -257,11 +183,15 @@ class Cast
      */
     public function isClassCastable(?string $key = null)
     {
-
         if (!array_key_exists($key, $this->casts ?? [])) {
             return false;
         }
-        $castType = $this->parseCasterClass($this->casts[$key] ?? null);
+        $name = $this->casts[$key] ?? null;
+        // To be class castable, the cast definition must be of string type
+        if (!is_string($name)) {
+            return false;
+        }
+        $castType = $this->parseCasterClass($name);
         if (null !== $this->getCastType($castType)) {
             return false;
         }
@@ -334,6 +264,50 @@ class Cast
         return !is_string($this->casts[$key] ?? null) && is_callable($this->casts[$key] ?? null);
     }
 
+    public function getClosureCastableAttributeValue($key, $value)
+    {
+        $castType = $this->casts[$key] ?? null;
+        if (null === $castType) {
+            return null;
+        }
+        return $castType($value);
+    }
+
+    public function isPrimitiveCastable($key)
+    {
+        $castName = $this->casts[$key] ?? null;
+        return null === $this->getCastType($castName) ? false : true;
+    }
+
+
+    /**
+     * Cast primitive attribute value
+     * 
+     * @param mixed $key 
+     * @param mixed $value 
+     * @return mixed 
+     */
+    public function getPrimitiveCastableAttributeValue($key, $value, ...$params)
+    {
+        // If Provided value is NULL simply return null as result
+        if (null === $value) {
+            return null;
+        }
+        $name = $this->casts[$key] ?? null;
+        $castType = $this->getCastType($name);
+        // If the return value of getCastType method is NULL return null
+        if (null === $castType) {
+            return null;
+        }
+        // We assume that the argument to the closure is specify after `:` and are seperated
+        // by `,` operator
+        $params = strpos($name, ':') === false ?
+            [] : ((strpos($after = Str::after($castType[0] . ":", $name), ',') === false)
+                ? [$after] :
+                explode(',', $after));
+        return $castType[1]($value, ...$params);
+    }
+
     public function hasCast($key, $types = null)
     {
         if (array_key_exists($key, $this->casts ?? [])) {
@@ -373,6 +347,7 @@ class Cast
     public function setCasts(array $casts)
     {
         $this->casts = $casts ?? $this->casts ?? [];
+        return $this;
     }
 
 
@@ -399,11 +374,9 @@ class Cast
     public function computeClassCastablePropertyValue($key, $value)
     {
         $caster = $this->resolveCasterClass($key);
-
         $valueNormalizer = function ($key, $value) {
             return Arr::isallassoc($value) ? $value : [$key => $value];
         };
-
         if (null === $value) {
             $result =  array_map(
                 function () {
@@ -578,6 +551,84 @@ class Cast
             : explode(':', $class, 2)[0];
     }
 
+    /**
+     * Create a Cast instance from user propvided cast aware class
+     * 
+     * @param CastsAware $castAware 
+     * @param array $attributes 
+     * @return self 
+     */
+    private function setCastAwareInstance(?CastsAware $castAware = null)
+    {
+        if ($castAware) {
+            $this->castsAware = $castAware;
+            $this->casts = $castAware->getCasts() ?? [];
+        } else {
+            $this->casts = [];
+        }
+    }
+
+    private function useDefaults()
+    {
+        return [
+            'string' => function ($value) {
+                return (string)$value;
+            },
+            'array' => function ($value) {
+                return json_decode($value, true);
+            },
+            'json' => function ($value) {
+                return json_decode($value, true);
+            },
+            'object' => function ($value) {
+                return json_decode($value, false);
+            },
+            'bool' => function ($value) {
+                return (bool)$value;
+            },
+            'boolean' => function ($value) {
+                return (bool)$value;
+            },
+            'int' => function ($value, $base = null) {
+                return $base ? intval($value, (int)$base) : (int)$value;
+            },
+            'integer' => function ($value, $base = null) {
+                return $base ? intval($value, (int)$base) : (int)$value;
+            },
+            'datetime' => function ($value) {
+                return $this->castToPHPDate($value);
+            },
+            'date' => function ($value) {
+                return $this->castToPHPDate($value)->setTime(0, 0, 0, 0);
+            },
+            'immutable_datetime' => function ($value) {
+                return $this->castToPHPImmutableDate($value);
+            },
+            'immutable_date' => function ($value) {
+                return $this->castToPHPImmutableDate($value)->setTime(0, 0, 0, 0);
+            },
+            'timestamp' => function ($value) {
+                return $this->castToPHPDate($value)->getTimestamp();
+            },
+            'decimal' => function ($value, $decimals = 0) {
+                return number_format($value, (int)$decimals, '.', '');
+            },
+            'float' => function ($value) {
+                return $this->fromFloat($value);
+            },
+            'double' => function ($value) {
+                return $this->fromFloat($value);
+            },
+            'real' => function ($value) {
+                return $this->fromFloat($value);
+            },
+            'collection' => function ($value) {
+                return function_exists('collect') ?
+                    call_user_func('collect', $value) : (function_exists('\Drewlabs\Support\Proxy\Collection') ? call_user_func('\Drewlabs\Support\Proxy\Collection', $value) : $value);
+            },
+        ];
+    }
+
     private function getCastTypeName($name)
     {
         if ($this->isParameterizedDateTimeCast($name)) {
@@ -593,6 +644,6 @@ class Cast
         if ($this->isIntegerCast($name)) {
             return 'int';
         }
-        return trim(strtolower($name));
+        return $name ? trim(strtolower($name)) : null;
     }
 }

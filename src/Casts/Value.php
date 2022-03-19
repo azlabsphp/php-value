@@ -1,12 +1,14 @@
 <?php
 
-namespace Drewlabs\Immutable\Casts;
+namespace Drewlabs\PHPValue\Casts;
 
-use Drewlabs\Immutable\Contracts\CastPropertyInterface;
-use Drewlabs\Immutable\Contracts\CastsAware;
-use Drewlabs\Immutable\Traits\ArgumentsAware;
+use Drewlabs\PHPValue\Contracts\CastPropertyInterface;
+use Drewlabs\PHPValue\Contracts\CastsAware;
+use Drewlabs\PHPValue\Traits\ArgumentsAware;
 
-/** @package Drewlabs\Immutable */
+use function Drewlabs\PHPValue\Functions\CreateValue;
+
+/** @package Drewlabs\PHPValue */
 class Value implements CastPropertyInterface
 {
     use ArgumentsAware;
@@ -18,9 +20,17 @@ class Value implements CastPropertyInterface
 
     public function get(string $name, $value, ?CastsAware $model = null)
     {
-        $model_ = !empty($this->arguments) && class_exists($this->arguments[0]) ?
-            $this->arguments[0] :
-            null;
+        if (empty($this->arguments)) {
+            return CreateValue(array_keys($value))->copy($value);
+        }
+        $model_ = trim($this->arguments[0] ?? '');
+        if (!class_exists($model_)) {
+            return CreateValue(
+                empty($this->arguments) ?
+                    array_keys($value) :
+                    array_values($this->arguments)
+            )->copy($value);
+        }
         return $model_ ?
             new $model_(
                 $value ??

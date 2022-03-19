@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Drewlabs\Support\Tests\Unit;
 
-use Drewlabs\Immutable\Tests\Stubs\TestModel;
-use Drewlabs\Immutable\Tests\Stubs\TestModelValue;
+use Drewlabs\PHPValue\Tests\Stubs\TestModel;
+use Drewlabs\PHPValue\Tests\Stubs\TestModelValue;
 use PHPUnit\Framework\TestCase;
 
 class ModelValueTest extends TestCase

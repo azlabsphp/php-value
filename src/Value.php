@@ -11,11 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable;
+namespace Drewlabs\PHPValue;
 
 use Drewlabs\Contracts\Clonable;
 use Drewlabs\Contracts\Support\Immutable\ValueObjectInterface;
-use Drewlabs\Immutable\Traits\Value as ValueTrait;
+use Drewlabs\PHPValue\Traits\Value as ValueTrait;
 
 abstract class Value implements ValueObjectInterface, Clonable, \IteratorAggregate
 {

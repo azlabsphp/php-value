@@ -11,14 +11,17 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable\Traits;
+namespace Drewlabs\PHPValue\Traits;
+
+use Drewlabs\Core\Helpers\Arr;
+use ReturnTypeWillChange;
 
 trait Value
 {
-    use BaseTrait;
+    use BaseTrait, Castable;
 
     /**
-     * Creates an instance of Drewlabs\Immutable\ValueObject::class.
+     * Creates an instance of Drewlabs\PHPValue\ValueObject::class.
      *
      * @param array|object $attributes
      */
@@ -45,8 +48,19 @@ trait Value
     #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
-        foreach ($this->getAttributes() as $key => $value) {
-            yield $key => $value;
+        [$fillables, $hidden] = [$this->loadBindings(), $this->getHidden()];
+        if ($this->___associative) {
+            foreach ($fillables as $key => $value) {
+                if (!\in_array($key, $hidden, true)) {
+                    yield $value => $this->callPropertyGetter($key, $this->getRawAttribute($key));
+                }
+            }
+        } else {
+            foreach ($fillables as $key) {
+                if (!\in_array($key, $hidden, true)) {
+                    yield $key => $this->callPropertyGetter($key, $this->getRawAttribute($key));
+                }
+            }
         }
     }
 
@@ -60,11 +74,43 @@ trait Value
         return '___guarded';
     }
 
-    /**
-     * @return Accessible|mixed
-     */
     final protected function getAttributes()
     {
         return $this->___attributes;
+    }
+
+    final protected function getRawAttribute(string $name)
+    {
+        $fillables = $this->loadBindings() ?? [];
+        if (!$this->___associative) {
+            return $this->___attributes[$name];
+        }
+        if (null !== ($value = $this->___attributes[$name] ?? null)) {
+            return $value;
+        }
+        // if (\array_key_exists($name, $fillables)) {
+        //     return $this->callPropertyGetter($name, $value);
+        // }
+        $key = Arr::search($name, $fillables);
+        if ($key && ($value = $this->___attributes[$key])) {
+            return $value;
+        }
+        return null;
+    }
+
+    #[ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    /**
+     * Convert the object to an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return iterator_to_array($this->getIterator());
     }
 }

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable\Tests\Stubs;
+namespace Drewlabs\PHPValue\Tests\Stubs;
 
 use Drewlabs\Contracts\Data\Model\Model;
 
@@ -54,7 +54,7 @@ class TestModel implements Model
             'comments' => [
                 [
                     'title' => 'HW issues',
-                    'description' => 'Hello World issues',
+                    'content' => 'Hello World issues',
                 ],
             ],
         ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drewlabs\Immutable\Contracts;
+namespace Drewlabs\PHPValue\Contracts;
 
 interface CastPropertyInterface
 {

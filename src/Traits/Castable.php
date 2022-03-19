@@ -1,11 +1,11 @@
 <?php
 
-namespace Drewlabs\Immutable\Traits;
+namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
-use Drewlabs\Immutable\Cast;
+use Drewlabs\PHPValue\Cast;
 
 /**
  * @description Provides composed class with properties and methods
@@ -28,17 +28,20 @@ trait Castable
     public function getCastableProperty(string $key, $value, \Closure $default)
     {
         $cast =  new Cast($this);
-        return $cast->__invoke($key, $value) ?? $default();
+        $value = $cast->__invoke($key, $value);
+        return  null !== $value ? $value : $default();
     }
 
     public function setCastableProperty(string $key, $value, \Closure $default)
     {
         $cast =  new Cast($this);
+        if ($cast->isClosureCastable($key)) {
+            return $default();
+        }
         // Evaluate if property is enum castable
         if ($cast->isEnumCastable($key)) {
             return $this->setRawAttribute($key, $cast->computeEnumCastablePropertyValue($key, $value));
         }
-
         if ($cast->isClassCastable($key)) {
             return $this->mergeRawAttributes($cast->computeClassCastablePropertyValue($key, $value) ?? []);
         }

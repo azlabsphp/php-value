@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable\Tests;
+namespace Drewlabs\PHPValue\Tests;
 
-use Drewlabs\Immutable\Accessible;
+use Drewlabs\PHPValue\Accessible;
 use PHPUnit\Framework\TestCase;
 
 class AccessibleTest extends TestCase

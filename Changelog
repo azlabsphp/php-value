@@ -5,3 +5,10 @@
 - Add implementation of the value class
 - Add implementation of the ModelValue class
 - Add implementation of Accessible class
+
+## [v0.1.2] 2022-03-19
+
+- Add Value trait and ModelAwareValueTrait to promote composition over inheritance
+- Add ValueInterface as drop-in replacement of ValueObjectInterface from Contracts Library
+- Add CastsAware interface and Castable Trait to support property casting from or to a given type
+- Add a CastProperty interface for Class base casting

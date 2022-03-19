@@ -11,11 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable;
+namespace Drewlabs\PHPValue;
 
 use Drewlabs\Contracts\Clonable;
 use Drewlabs\Contracts\Support\Immutable\ValueObjectInterface;
-use Drewlabs\Immutable\Traits\ModelAwareValue;
+use Drewlabs\PHPValue\Traits\ModelAwareValue;
 
 /**
  * Enhance the default {@see ValueObject} class with model bindings.

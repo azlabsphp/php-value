@@ -1,6 +1,6 @@
 <?php
 
-namespace Drewlabs\Immutable\Traits;
+namespace Drewlabs\PHPValue\Traits;
 
 trait ArgumentsAware
 {

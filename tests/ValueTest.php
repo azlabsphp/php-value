@@ -1,17 +1,18 @@
 <?php
 
-namespace Drewlabs\Immutable\Tests;
+namespace Drewlabs\PHPValue\Tests;
 
-use Drewlabs\Immutable\Accessible;
-use Drewlabs\Immutable\Contracts\ValueInterface;
-use Drewlabs\Immutable\Exceptions\ImmutableValueException;
-use Drewlabs\Immutable\Tests\Stubs\FileLogger;
-use Drewlabs\Immutable\Tests\Stubs\Message;
-use Drewlabs\Immutable\Tests\Stubs\ValueStub;
-use Drewlabs\Immutable\Value;
+use Drewlabs\PHPValue\Accessible;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
+use Drewlabs\PHPValue\Tests\Stubs\FileLogger;
+use Drewlabs\PHPValue\Tests\Stubs\Message;
+use Drewlabs\PHPValue\Tests\Stubs\User;
+use Drewlabs\PHPValue\Tests\Stubs\UserDetails;
+use Drewlabs\PHPValue\Tests\Stubs\ValueStub;
 use PHPUnit\Framework\TestCase;
 
-use function Drewlabs\Immutable\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateValue;
 
 class ValueTest extends TestCase
 {
@@ -31,6 +32,7 @@ class ValueTest extends TestCase
         $message_z->Logger->updateMutable();
         $this->assertTrue('xxx-xxx-xxx' === $message->from);
         $this->assertNotSame($message_z->from, $message->from);
+        $this->assertEquals('zzz-zzz-zzz', $message_z->From);
     }
 
     public function testValueObjectImmutableSetterMethod()
@@ -173,5 +175,27 @@ class ValueTest extends TestCase
         ]);
         $this->assertNull($value->age);
         $this->assertEquals($value->name, 'Azandrew');
+    }
+
+    public function test_cast_implementation_for_class()
+    {
+        $user = new User([
+            'username' => 'USER-939',
+            'password' => 'secret',
+            'isVerified' => 0,
+            'details' => [
+                'firstname' => 'AZANDREW',
+                'lastname' => 'SIDOINE',
+                'emails' => 'azandrewdevelopper@gmail.com'
+            ],
+            'roles' => [
+                'create-accounts'
+            ]
+        ]);
+        $this->assertFalse($user->isVerified);
+        $this->assertInstanceOf(UserDetails::class, $user->details);
+        $this->assertIsArray($user->details->emails);
+        $this->assertEquals($user->details->emails[0], 'azandrewdevelopper@gmail.com');
+        $this->assertInstanceOf(User::class, $user);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Drewlabs\Immutable\Contracts;
+namespace Drewlabs\PHPValue\Contracts;
 
 use Drewlabs\Contracts\Clonable;
 
-/** @package Drewlabs\Immutable\Contracts */
-interface ValueInterface extends \JsonSerializable, \ArrayAccess, Clonable, \IteratorAggregate
+/** @package Drewlabs\PHPValue\Contracts */
+interface ValueInterface extends CastsAware, \JsonSerializable, \ArrayAccess, Clonable, \IteratorAggregate
 {
     /**
      * @description Create a PHP Array from properties of the current object.

@@ -11,10 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable\Tests\Stubs;
+namespace Drewlabs\PHPValue\Tests\Stubs;
 
-use Drewlabs\Immutable\Contracts\ValueInterface;
-use Drewlabs\Immutable\Traits\ModelAwareValue;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Traits\ModelAwareValue;
 
 class TestModelValue implements ValueInterface
 {
@@ -27,9 +27,13 @@ class TestModelValue implements ValueInterface
         'title',
     ];
 
-    public function getLabelAttribute()
+    public function getCasts()
     {
-        return strtoupper($this->getRawAttribute('label'));
+        return [
+            'label' => function ($value) {
+                return null !== $value ? strtoupper($value) : $value;
+            }
+        ];
     }
 
     protected function setCommentsAttribute(?array $comments)
@@ -39,7 +43,7 @@ class TestModelValue implements ValueInterface
             array_map(
                 static function ($comment) {
                     return [
-                        'content' => is_array($comment) ? $comment['description'] : $comment,
+                        'content' => is_array($comment) ? $comment['content'] : $comment,
                     ];
                 },
                 $comments ?? []

@@ -1,10 +1,10 @@
 <?php
 
-namespace Drewlabs\Immutable\Functions;
+namespace Drewlabs\PHPValue\Functions;
 
-use Drewlabs\Immutable\Contracts\ValueInterface;
-use Drewlabs\Immutable\Traits\Value as ValueTrait;
-use Drewlabs\Immutable\Value;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Traits\Value as ValueTrait;
+use Drewlabs\PHPValue\Value;
 
 if (!function_exists('CreateValue')) {
 

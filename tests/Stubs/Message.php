@@ -11,10 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable\Tests\Stubs;
+namespace Drewlabs\PHPValue\Tests\Stubs;
 
-use Drewlabs\Immutable\Contracts\ValueInterface;
-use Drewlabs\Immutable\Traits\Value;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Traits\Value;
 
 class Message implements ValueInterface
 {

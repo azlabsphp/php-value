@@ -11,11 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable\Tests\Stubs;
+namespace Drewlabs\PHPValue\Tests\Stubs;
 
-use Drewlabs\Immutable\Contracts\CastsAware;
-use Drewlabs\Immutable\Traits\Castable;
-use Drewlabs\Immutable\Traits\Value;
+use Drewlabs\PHPValue\Contracts\CastsAware;
+use Drewlabs\PHPValue\Traits\Castable;
+use Drewlabs\PHPValue\Traits\Value;
 
 class ValueStub implements CastsAware
 {

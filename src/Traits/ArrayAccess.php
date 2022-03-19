@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable\Traits;
+namespace Drewlabs\PHPValue\Traits;
 
-use Drewlabs\Immutable\Exceptions\ImmutableValueException;
+use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 
 trait ArrayAccess
 {
@@ -25,16 +25,6 @@ trait ArrayAccess
     public function __unset($name)
     {
         throw new ImmutableValueException(__CLASS__);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __clone()
-    {
-        if ($this->___attributes) {
-            $this->___attributes = clone $this->___attributes;
-        }
     }
 
     /**

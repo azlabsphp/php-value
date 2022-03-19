@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Immutable;
+namespace Drewlabs\PHPValue;
 
 use Generator;
 use InvalidArgumentException;
@@ -46,7 +46,7 @@ use InvalidArgumentException;
  * $array = $object->toArray();
  * ```
  * 
- * @package Drewlabs\Immutable
+ * @package Drewlabs\PHPValue
  */
 class Accessible implements \ArrayAccess
 {
@@ -60,7 +60,6 @@ class Accessible implements \ArrayAccess
                 $this[$key] = clone $value;
             }
         }
-
         return $this;
     }
 
