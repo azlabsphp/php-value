@@ -27,12 +27,8 @@ trait Value
      */
     public function __construct($attributes = [])
     {
-        $this->initializeAttributes();
-        if (\is_array($attributes)) {
-            $this->setAttributes($attributes);
-        } elseif (\is_object($attributes) || ($attributes instanceof \stdClass)) {
-            $this->fromStdClass($attributes);
-        }
+        $this->initialize();
+        $this->setPropertiesValue($attributes);
     }
 
     /**
@@ -45,25 +41,6 @@ trait Value
         return $this->getAttributes()->each($callback);
     }
 
-    #[\ReturnTypeWillChange]
-    public function getIterator(): \Traversable
-    {
-        [$fillables, $hidden] = [$this->loadBindings(), $this->getHidden()];
-        if ($this->___associative) {
-            foreach ($fillables as $key => $value) {
-                if (!\in_array($key, $hidden, true)) {
-                    yield $value => $this->callPropertyGetter($key, $this->getRawAttribute($key));
-                }
-            }
-        } else {
-            foreach ($fillables as $key) {
-                if (!\in_array($key, $hidden, true)) {
-                    yield $key => $this->callPropertyGetter($key, $this->getRawAttribute($key));
-                }
-            }
-        }
-    }
-
     public static function hiddenProperty()
     {
         return '___hidden';
@@ -74,34 +51,23 @@ trait Value
         return '___guarded';
     }
 
-    final protected function getAttributes()
-    {
-        return $this->___attributes;
-    }
-
     final protected function getRawAttribute(string $name)
     {
-        $fillables = $this->loadBindings() ?? [];
+        [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
         if (!$this->___associative) {
-            return $this->___attributes[$name];
+            return $attributes[$name];
         }
-        if (null !== ($value = $this->___attributes[$name] ?? null)) {
+        if (null !== ($value = $attributes[$name] ?? null)) {
             return $value;
         }
-        // if (\array_key_exists($name, $fillables)) {
+        // if (\array_key_exists($name, $properties)) {
         //     return $this->callPropertyGetter($name, $value);
         // }
-        $key = Arr::search($name, $fillables);
-        if ($key && ($value = $this->___attributes[$key])) {
+        $key = Arr::search($name, $properties);
+        if ($key && ($value = $attributes[$key])) {
             return $value;
         }
         return null;
-    }
-
-    #[ReturnTypeWillChange]
-    public function jsonSerialize()
-    {
-        return $this->toArray();
     }
 
     /**

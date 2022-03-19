@@ -105,7 +105,7 @@ class ValueTest extends TestCase
         $object = new \stdClass();
         $object->From = 'xxx-xxx-xxx';
         $object->To = 'yyy-yyy-yyy';
-        $object->Logger = new FileLogger();
+        // $object->Logger = new FileLogger();
         $message = (new Message())->fromStdClass($object);
         $this->assertSame($message->From, 'xxx-xxx-xxx', 'Expect from property value to equals xxx-xxx-xxx');
     }

@@ -30,13 +30,8 @@ if (!function_exists('CreateValue')) {
             public function useProperties(array $properties)
             {
                 $this->___properties = $properties;
-                $this->initializeAttributes();
+                $this->initialize();
                 return $this;
-            }
-
-            public function getProperties()
-            {
-                return $this->___properties;
             }
         });
         return $object->useProperties($properties);

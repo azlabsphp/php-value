@@ -5,13 +5,14 @@ namespace Drewlabs\PHPValue\Traits;
 use Drewlabs\Contracts\Data\Model\Model;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Str;
-use ReturnTypeWillChange;
 
 trait ModelAwareValue
 {
     use Proxy, Castable, BaseTrait;
 
     /**
+     * Model instance attached to the current object
+     * 
      * @var Model
      */
     private $___model;
@@ -23,36 +24,19 @@ trait ModelAwareValue
      */
     public function __construct($attributes = [])
     {
-        $this->initializeAttributes();
+        $this->initialize();
         if ($attributes instanceof Model) {
             $this->createFromModelInstance($attributes);
         } else {
-            $this->setProperties($attributes);
+            $this->setPropertiesValue($attributes);
         }
     }
 
     private function createFromModelInstance(Model $attributes)
     {
-        // TODO : SET MODEL INSTANCE FOR CLASS USER TO MANIPULATE DURING SERIALISATIOM
         $this->setModel($attributes);
-        $this->setHidden(
-            array_merge(
-                $attributes->getHidden() ?? [],
-                $this->getHidden() ?? []
-            )
-        );
-        // TODO : CREATE ATTRIBUTE FROM MODEL SERIALIZATION
+        $this->mergeHidden($attributes->getHidden());
         $this->setAttributes($attributes->toArray());
-    }
-
-    private function setProperties($attributes)
-    {
-        $this->initializeAttributes();
-        if (\is_array($attributes)) {
-            $this->setAttributes($attributes);
-        } elseif (\is_object($attributes) || ($attributes instanceof \stdClass)) {
-            $this->fromStdClass($attributes);
-        }
     }
 
     public function __call($name, $arguments)
@@ -69,7 +53,7 @@ trait ModelAwareValue
      */
     public function getModel()
     {
-        return $this->___model;
+        return $this->___model ?? null;
     }
 
     /**
@@ -88,11 +72,8 @@ trait ModelAwareValue
 
     public function toArray()
     {
-        $attributes = $this->attributesToArray();
-        $hidden = array_merge($this->getHidden());
-        $relations = method_exists($this->___model, 'getRelations') ?
-            call_user_func([$this->___model, 'getRelations']) :
-            [];
+        [$model, $attributes, $hidden] = [$this->getModel(), $this->attributesToArray(), $this->getHidden()];
+        $relations = method_exists($model, 'getRelations') ? call_user_func([$model, 'getRelations']) : [];
         // TODO: GET MODEL RELATIONS
         foreach ($relations as $key => $value) {
             if (in_array($key, $hidden)) {
@@ -116,33 +97,19 @@ trait ModelAwareValue
         return $attributes;
     }
 
-    #[ReturnTypeWillChange]
-    final public function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
-    final protected function getAttributes()
-    {
-        return $this->___attributes;
-    }
-
     final protected function getRawAttribute(string $name)
     {
-        $fillables = $this->loadBindings() ?? [];
+        [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
         if (!$this->___associative) {
-            return $this->___attributes[$name];
+            return $attributes[$name];
         }
-        if (null !== ($value = $this->___attributes[$name] ?? null)) {
+        if (null !== ($value = $attributes[$name] ?? null)) {
             return $value;
         }
-        // if (\array_key_exists($name, $fillables)) {
-        //     return $this->callPropertyGetter($name, $value);
-        // }
-        $key = Arr::search($name, $fillables);
-        if ($key && ($value = $this->___attributes[$key])) {
+        $key = Arr::search($name, $properties);
+        if ($key && ($value = $attributes[$key])) {
             return $value;
         }
-        return $this->___model ? ($this->___model->{$name} ?? null) : null;
+        return null !== ($model = $this->getModel()) ? ($model->{$name} ?? null) : null;
     }
 }
