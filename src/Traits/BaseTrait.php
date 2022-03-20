@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Arr;
+use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\CastsAware;
@@ -26,7 +27,14 @@ trait BaseTrait
     /**
      * @var bool
      */
-    private $___associative = false;
+    private $__ASSOCIATIVE__ = false;
+
+    /**
+     * 
+     * 
+     * @var \Closure&object
+     */
+    private $__GET__PROPERTY__VALUE__;
 
     /**
      * Makes class attributes accessible through -> syntax.
@@ -37,7 +45,7 @@ trait BaseTrait
      */
     public function __get($name)
     {
-        return $this->callPropertyGetter($name, $this->getRawAttribute($name));
+        return ($this->__GET__PROPERTY__VALUE__)($name, $this->getRawAttribute($name));
     }
 
     /**
@@ -100,7 +108,7 @@ trait BaseTrait
     public function getAttribute(string $key, $default = null)
     {
         // TODO : Call value getter and pass it to the propertyGetter method
-        return $this->callPropertyGetter(
+        return ($this->__GET__PROPERTY__VALUE__)(
             $key,
             $this->getRawAttribute($key),
             is_callable($default) ? $default : function () use ($key, $default) {
@@ -219,7 +227,10 @@ trait BaseTrait
     protected function initialize()
     {
         $this->___attributes = new Accessible;
-        $this->___associative = Arr::isallassoc($this->getJsonableAttributes());
+        $this->__ASSOCIATIVE__ = Arr::isallassoc($this->getJsonableAttributes());
+        $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function(...$args) {
+            return $this->callPropertyGetter(...$args);
+        });
         return $this;
     }
 
@@ -274,7 +285,7 @@ trait BaseTrait
     final protected function getProperties()
     {
         $properties = $this->getJsonableAttributes() ?? [];
-        return !$this->___associative ? array_combine($properties, $properties) : $properties;
+        return !$this->__ASSOCIATIVE__ ? array_combine($properties, $properties) : $properties;
     }
 
     private function hasPropertyGetter($name)

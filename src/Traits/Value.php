@@ -54,7 +54,7 @@ trait Value
     final protected function getRawAttribute(string $name)
     {
         [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
-        if (!$this->___associative) {
+        if (!$this->__ASSOCIATIVE__) {
             return $attributes[$name];
         }
         if (null !== ($value = $attributes[$name] ?? null)) {

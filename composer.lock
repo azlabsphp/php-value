@@ -68,16 +68,16 @@
         },
         {
             "name": "drewlabs/core-helpers",
-            "version": "v2.2.11",
+            "version": "v2.2.12",
             "source": {
                 "type": "git",
                 "url": "git@github.com:liksoft/drewlabs-php-core-helpers.git",
-                "reference": "f1060a70056a0ba9486dd2fc962313dd8240a723"
+                "reference": "ad174edd03292175c4a2613a943387bab8c214da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liksoft/drewlabs-php-core-helpers/zipball/f1060a70056a0ba9486dd2fc962313dd8240a723",
-                "reference": "f1060a70056a0ba9486dd2fc962313dd8240a723",
+                "url": "https://api.github.com/repos/liksoft/drewlabs-php-core-helpers/zipball/ad174edd03292175c4a2613a943387bab8c214da",
+                "reference": "ad174edd03292175c4a2613a943387bab8c214da",
                 "shasum": ""
             },
             "require": {
@@ -130,9 +130,9 @@
             ],
             "description": "Set of global function for handling utility task ranging from array, string and datetimes manipulations",
             "support": {
-                "source": "https://github.com/liksoft/drewlabs-php-core-helpers/tree/v2.2.11"
+                "source": "https://github.com/liksoft/drewlabs-php-core-helpers/tree/v2.2.12"
             },
-            "time": "2022-03-20T17:44:04+00:00"
+            "time": "2022-03-20T19:55:00+00:00"
         },
         {
             "name": "psr/http-factory",
