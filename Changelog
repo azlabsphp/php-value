@@ -12,3 +12,7 @@
 - Add ValueInterface as drop-in replacement of ValueObjectInterface from Contracts Library
 - Add CastsAware interface and Castable Trait to support property casting from or to a given type
 - Add a CastProperty interface for Class base casting
+
+## [v0.1.4] 2022-03-20
+
+- add property for memoizing BaseTrait::callPropertyGetter method as it can be result in heavy computation task.
