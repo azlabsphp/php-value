@@ -2,9 +2,9 @@
 
 namespace Drewlabs\PHPValue\Traits;
 
-use Drewlabs\Contracts\Data\Model\Model;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Str;
+use InvalidArgumentException;
 
 trait ModelAwareValue
 {
@@ -13,36 +13,39 @@ trait ModelAwareValue
     /**
      * Model instance attached to the current object
      * 
-     * @var Model
+     * @var mixed
      */
     private $___model;
 
     /**
-     * @param \stdObject|Model|array $attributes
+     * @param \Drewlabs\Contracts\Data\Model\Model|array|mixed $attributes
      *
      * @return void
      */
     public function __construct($attributes = [])
     {
         $this->initialize();
-        if ($attributes instanceof Model) {
-            $this->createFromModelInstance($attributes);
-        } else {
+        if (is_array($attributes)) {
             $this->setPropertiesValue($attributes);
+        } else {
+            $this->createFromModelInstance($attributes);
         }
     }
 
-    private function createFromModelInstance(Model $attributes)
+    private function createFromModelInstance(object $attributes)
     {
-        $this->setModel($attributes);
-        $this->mergeHidden($attributes->getHidden());
-        $this->setAttributes($attributes->toArray());
+        try {
+            $this->setModel($attributes);
+            $this->mergeHidden($attributes->getHidden());
+            $this->setAttributes($attributes->toArray());
+        } catch (\Throwable $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
     }
 
     public function __call($name, $arguments)
     {
-        $model = $this->getModel();
-        if ($model) {
+        if ($model = $this->getModel()) {
             return $this->proxy($model, $name, $arguments);
         }
         throw new \BadMethodCallException("Method $name does not exists on " . __CLASS__);

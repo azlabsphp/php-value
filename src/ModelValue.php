@@ -13,14 +13,13 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue;
 
-use Drewlabs\Contracts\Clonable;
-use Drewlabs\Contracts\Support\Immutable\ValueObjectInterface;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Traits\ModelAwareValue;
 
 /**
  * Enhance the default {@see ValueObject} class with model bindings.
  */
-abstract class ModelValue implements ValueObjectInterface, Clonable, \IteratorAggregate
+abstract class ModelValue implements ValueInterface, \IteratorAggregate
 {
     use ModelAwareValue;
 }

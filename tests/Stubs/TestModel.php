@@ -13,9 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-use Drewlabs\Contracts\Data\Model\Model;
-
-class TestModel implements Model
+class TestModel
 {
     public function getPrimaryKey()
     {

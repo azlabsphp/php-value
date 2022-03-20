@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Traits;
 
-use Drewlabs\Contracts\Support\ArrayableInterface;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
@@ -120,14 +119,17 @@ trait BaseTrait
     /**
      * Merge object attributes.
      * 
-     * @param array|\stdClass $attributes 
+     * @param array|mixed $attributes 
      * @return BaseTrait
      */
     public function merge($attributes = [])
     {
         return $this->setAttributes(
-            $attributes instanceof ArrayableInterface ?
-                $attributes->toArray() : ($attributes ? (array)$attributes : [])
+            is_object($attributes) ?
+                (method_exists($attributes, 'toArray') ?
+                    $attributes->toArray() :
+                    get_object_vars($attributes)) : (is_array($attributes) ?
+                    $attributes : [])
         );
     }
 
@@ -135,14 +137,17 @@ trait BaseTrait
      * Copy object properties changing existing property values with
      * user provided ones.
      * 
-     * @param array|\stdClass $attributes 
+     * @param array|mixed $attributes 
      * @return self 
      */
     public function copy($attributes = [])
     {
         return $this->clone()->setAttributes(
-            $attributes = $attributes instanceof ArrayableInterface ?
-                $attributes->toArray() : ($attributes ? (array)$attributes : [])
+            is_object($attributes) ?
+            (method_exists($attributes, 'toArray') ?
+                $attributes->toArray() :
+                get_object_vars($attributes)) : (is_array($attributes) ?
+                $attributes : [])
         );
     }
 
