@@ -41,22 +41,9 @@ trait Value
         return $this->getAttributes()->each($callback);
     }
 
-    public static function hiddenProperty()
-    {
-        return '___hidden';
-    }
-
-    public static function guardedProperty()
-    {
-        return '___guarded';
-    }
-
     final protected function getRawAttribute(string $name)
     {
         [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
-        if (!$this->__ASSOCIATIVE__) {
-            return $attributes[$name];
-        }
         if (null !== ($value = $attributes[$name] ?? null)) {
             return $value;
         }

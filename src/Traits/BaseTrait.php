@@ -25,11 +25,6 @@ trait BaseTrait
     use ArrayAccess, Clonable, IteratorAware, AttributesAware;
 
     /**
-     * @var bool
-     */
-    private $__ASSOCIATIVE__ = false;
-
-    /**
      * 
      * 
      * @var \Closure&object
@@ -58,7 +53,7 @@ trait BaseTrait
      */
     public function __set($name, $value)
     {
-        if (in_array($name, ['___hidden'])) {
+        if (in_array($name, ['__HIDDEN__', '__PROPERTIES__', '__CASTS__'])) {
             return $this->$name = $value;
         }
         throw new ImmutableValueException(__CLASS__);
@@ -69,7 +64,7 @@ trait BaseTrait
      */
     public function __toString()
     {
-        return $this->___attributes->__toString();
+        return $this->__ATTRIBUTES__->__toString();
     }
 
     /**
@@ -113,7 +108,7 @@ trait BaseTrait
             $this->getRawAttribute($key),
             is_callable($default) ? $default : function () use ($key, $default) {
                 $result = drewlabs_core_array_get(
-                    $this->___attributes ? $this->___attributes->toArray() : [],
+                    $this->__ATTRIBUTES__ ? $this->__ATTRIBUTES__->toArray() : [],
                     $key,
                     function () use ($key) {
                         return $this->__get($key);
@@ -152,10 +147,10 @@ trait BaseTrait
     {
         return $this->clone()->setAttributes(
             is_object($attributes) ?
-            (method_exists($attributes, 'toArray') ?
-                $attributes->toArray() :
-                get_object_vars($attributes)) : (is_array($attributes) ?
-                $attributes : [])
+                (method_exists($attributes, 'toArray') ?
+                    $attributes->toArray() :
+                    get_object_vars($attributes)) : (is_array($attributes) ?
+                    $attributes : [])
         );
     }
 
@@ -178,7 +173,7 @@ trait BaseTrait
         $method = 'set' . Str::camelize($name) . 'Attribute';
         $result = $this->{$method}($value);
         if (null !== $result) {
-            $this->___attributes[$name] = $result;
+            $this->__ATTRIBUTES__[$name] = $result;
         }
         return $this;
     }
@@ -209,26 +204,13 @@ trait BaseTrait
     }
 
     /**
-     * Overridable method returning the list of serializable properties
-     *
-     * @return array
-     */
-    protected function getJsonableAttributes()
-    {
-        if (property_exists($this, '___properties')) {
-            return $this->___properties ?? [];
-        }
-        return [];
-    }
-
-    /**
      * @return self
      */
     protected function initialize()
     {
-        $this->___attributes = new Accessible;
-        $this->__ASSOCIATIVE__ = Arr::isallassoc($this->getJsonableAttributes());
-        $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function(...$args) {
+        $this->__ATTRIBUTES__ = new Accessible;
+        $this->buildPropsDefinitions();
+        $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function (...$args) {
             return $this->callPropertyGetter(...$args);
         });
         return $this;
@@ -284,8 +266,7 @@ trait BaseTrait
      */
     final protected function getProperties()
     {
-        $properties = $this->getJsonableAttributes() ?? [];
-        return !$this->__ASSOCIATIVE__ ? array_combine($properties, $properties) : $properties;
+        return $this->__PROPERTIES__ ?? [];
     }
 
     private function hasPropertyGetter($name)
@@ -306,6 +287,29 @@ trait BaseTrait
         } elseif (\is_object($attributes) || ($attributes instanceof \stdClass)) {
             $this->fromStdClass($attributes);
         }
+    }
+
+    private function buildPropsDefinitions()
+    {
+        $properties = null;
+        $associative = true;
+        if (property_exists($this, '__PROPERTIES__')) {
+            $properties = $this->__PROPERTIES__ ?? [];
+        } else {
+            // In future release getJsonableAttributes() support will be remove
+            // Fall back to deprecated getJsonableAttributes()
+            // function call if  __PROPERTIES__ property is not defined
+            $properties = $this->getJsonableAttributes() ?? [];
+        }
+        foreach ($properties as $key => $_) {
+            if (!is_string($key)) {
+                $associative = false;
+                break;
+            }
+        }
+        // Make properties definitions associative to uniformize
+        // handlers
+        $this->__PROPERTIES__ = $associative ? $properties : array_combine($properties, $properties);
     }
     // #endregion Protected & Private methods defintions
 }

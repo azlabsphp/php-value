@@ -45,7 +45,7 @@ use Drewlabs\PHPValue\Value;
 
 class ValueStub extends Value
 {
-    protected $___properties = [
+    protected $__PROPERTIES__ = [
         'name',
         'address',
     ];

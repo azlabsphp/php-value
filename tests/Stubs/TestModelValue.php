@@ -21,7 +21,7 @@ class TestModelValue implements ValueInterface
 
     use ModelAwareValue;
 
-    protected $___properties = [
+    protected $__PROPERTIES__ = [
         'label',
         'comments',
         'title',

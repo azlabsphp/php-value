@@ -15,7 +15,7 @@ trait ModelAwareValue
      * 
      * @var mixed
      */
-    private $___model;
+    private $__MODEL__;
 
     /**
      * @param \Drewlabs\Contracts\Data\Model\Model|array|mixed $attributes
@@ -56,7 +56,7 @@ trait ModelAwareValue
      */
     public function getModel()
     {
-        return $this->___model ?? null;
+        return $this->__MODEL__ ?? null;
     }
 
     /**
@@ -67,7 +67,7 @@ trait ModelAwareValue
     public function setModel($model)
     {
         if ($model) {
-            $this->___model = $model;
+            $this->__MODEL__ = $model;
         }
 
         return $this;
@@ -103,9 +103,6 @@ trait ModelAwareValue
     final protected function getRawAttribute(string $name)
     {
         [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
-        if (!$this->__ASSOCIATIVE__) {
-            return $attributes[$name];
-        }
         if (null !== ($value = $attributes[$name] ?? null)) {
             return $value;
         }

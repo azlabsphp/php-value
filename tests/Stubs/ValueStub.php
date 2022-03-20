@@ -21,11 +21,11 @@ class ValueStub implements CastsAware
 {
     use Castable, Value;
 
-    private $___casts = [
+    private $__CASTS__ = [
         'message' => 'value:' . Message::class
     ];
 
-    protected $___properties = [
+    protected $__PROPERTIES__ = [
         'name',
         'address',
         'message'

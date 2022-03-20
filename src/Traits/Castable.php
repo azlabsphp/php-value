@@ -16,12 +16,12 @@ trait Castable
 
     public function getCasts()
     {
-        return property_exists($this, '___casts') ? $this->___casts : [];
+        return $this->__CASTS__ ?? [];
     }
 
     public function setCasts(array $value)
     {
-        $this->___casts = $value ?? $this->___casts ?? [];
+        $this->__CASTS__ = $value ?? $this->__CASTS__ ?? [];
         return $this;
     }
 

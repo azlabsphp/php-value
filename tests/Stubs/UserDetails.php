@@ -16,7 +16,7 @@ class UserDetails implements ValueInterface
 {
     use Value;
 
-    protected $___properties = [
+    protected $__PROPERTIES__ = [
         'firstname',
         'lastname',
         'emails'

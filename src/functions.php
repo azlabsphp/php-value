@@ -25,11 +25,11 @@ if (!function_exists('CreateValue')) {
              * 
              * @var string
              */
-            private $___properties; 
+            private $__PROPERTIES__; 
 
             public function useProperties(array $properties)
             {
-                $this->___properties = $properties;
+                $this->__PROPERTIES__ = $properties;
                 $this->initialize();
                 return $this;
             }

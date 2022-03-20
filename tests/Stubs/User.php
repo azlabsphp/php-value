@@ -18,17 +18,17 @@ class User implements ValueInterface
 {
     use Value;
 
-    protected $___casts = [
+    protected $__CASTS__ = [
         'isVerified' => 'bool',
         'details' => 'value: ' . UserDetails::class,
         'roles' => 'array'
     ];
 
-    protected $___hidden = [
+    protected $__HIDDEN__ = [
         'password'
     ];
 
-    protected $___properties = [
+    protected $__PROPERTIES__ = [
         'username',
         'password',
         'isVerified',

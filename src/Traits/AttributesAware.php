@@ -14,14 +14,14 @@ trait AttributesAware
      *
      * @var object|\ArrayAccess|\JsonSerializable|array
      */
-    protected $___attributes;
+    protected $__ATTRIBUTES__;
 
     /**
      * @return array
      */
     final public function getRawAttributes()
     {
-        return $this->___attributes;
+        return $this->__ATTRIBUTES__;
     }
 
     /**
@@ -31,13 +31,13 @@ trait AttributesAware
      */
     private function setRawAttributes($attributes)
     {
-        $this->___attributes = $attributes ?? clone $this->___attributes ?? new Accessible;
+        $this->__ATTRIBUTES__ = $attributes ?? clone $this->__ATTRIBUTES__ ?? new Accessible;
         return $this;
     }
 
     private function mergeRawAttributes(array $attributes = [])
     {
-        $this->___attributes->merge($attributes);
+        $this->__ATTRIBUTES__->merge($attributes);
         return $this;
     }
 
@@ -48,7 +48,7 @@ trait AttributesAware
      */
     private function setRawAttribute(string $name, $value)
     {
-        $this->___attributes[$name] = $value;
+        $this->__ATTRIBUTES__[$name] = $value;
 
         return $this;
     }

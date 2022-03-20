@@ -6,13 +6,13 @@ trait HiddenAware
 {
     public function setHidden(array $value)
     {
-        $this->___hidden = $value;
+        $this->__HIDDEN__ = $value;
         return $this;
     }
 
     public function getHidden()
     {
-        return $this->___hidden ?? [];
+        return $this->__HIDDEN__ ?? [];
     }
 
     /**
@@ -22,7 +22,7 @@ trait HiddenAware
      */
     public function mergeHidden(?array $value = [])
     {
-        $this->___hidden = array_merge($this->getHidden() ?? [], $value ?? []);
+        $this->__HIDDEN__ = array_merge($this->getHidden() ?? [], $value ?? []);
 
         return $this;
     }
