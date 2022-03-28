@@ -12,7 +12,7 @@ trait ModelAwareValue
 
     /**
      * Model instance attached to the current object
-     * 
+     *
      * @var mixed
      */
     private $__MODEL__;
@@ -76,14 +76,14 @@ trait ModelAwareValue
     public function toArray()
     {
         [$model, $attributes, $hidden] = [$this->getModel(), $this->attributesToArray(), $this->getHidden()];
-        $relations = method_exists($model, 'getRelations') ? call_user_func([$model, 'getRelations']) : [];
+        $relations = method_exists($model, 'getRelations') ? $model->getRelations() : [];
         // TODO: GET MODEL RELATIONS
         foreach ($relations as $key => $value) {
             if (in_array($key, $hidden)) {
                 continue;
             }
             // TODO: Provide a better implementation to avoid performance heck or
-            // remove implementation that strip hidden sub attributes as it can impact 
+            // remove implementation that strip hidden sub attributes as it can impact
             // application performance for large datasets.
             $props = [];
             foreach ($hidden as $k => $v) {
@@ -93,7 +93,15 @@ trait ModelAwareValue
                     continue;
                 }
             }
-            $attributes[$key] = Arr::except($value->attributesToArray(), $props);
+            $array = $value->toArray();
+            if (is_array($array[0] ?? null)) {
+                $array = array_map(function ($value) use ($props) {
+                    return Arr::except($value, $props);
+                }, $array);
+            } else {
+                $array = Arr::except($array, $props);
+            }
+            $attributes[$key] = $array;
             // #endregion TODO
             // $attributes[$key] = $value;
         }
