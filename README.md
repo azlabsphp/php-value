@@ -1,4 +1,4 @@
-# Immutable
+# PHP value
 
 Library propose a PHP value object that provide interfaces for serialization and deserialization from PHP [array] or [\stdClass].
 
