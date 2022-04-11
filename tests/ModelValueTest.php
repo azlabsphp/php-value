@@ -13,8 +13,10 @@ declare(strict_types=1);
 
 namespace Drewlabs\Support\Tests\Unit;
 
+use BadMethodCallException;
 use Drewlabs\PHPValue\Tests\Stubs\TestModel;
 use Drewlabs\PHPValue\Tests\Stubs\TestModelValue;
+use Drewlabs\PHPValue\Tests\Stubs\TestResolvableValueModel;
 use PHPUnit\Framework\TestCase;
 
 class ModelValueTest extends TestCase
@@ -46,5 +48,19 @@ class ModelValueTest extends TestCase
         $this->assertEquals($value->getKey(), 1);
         $this->assertEquals($value->getPrimaryKey(), 'id');
 
+    }
+
+    public function test_resolve_model_fallback_call_throws_exception()
+    {
+        $this->expectException(BadMethodCallException::class);
+        $value = new TestModelValue();
+        $this->assertTrue($value->getKey() === 1);
+    }
+
+    public function test_resolve_model_fallback_call()
+    {
+        $value = new TestResolvableValueModel();
+        var_dump($value->getKey());
+        $this->assertTrue($value->getKey() === 1);
     }
 }

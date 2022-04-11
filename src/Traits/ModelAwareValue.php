@@ -18,7 +18,7 @@ trait ModelAwareValue
     private $__MODEL__;
 
     /**
-     * @param \Drewlabs\Contracts\Data\Model\Model|array|mixed $attributes
+     * @param mixed $attributes
      *
      * @return void
      */
@@ -56,7 +56,19 @@ trait ModelAwareValue
      */
     public function getModel()
     {
-        return $this->__MODEL__ ?? null;
+        if (null !== ($model = $this->__MODEL__)) {
+            return $model;
+        }
+        try {
+            // Try calling resolveModel() implementation on the instance
+            // It will throw an exception if the model does not implements
+            // ResolveAware interface or does not defines resolveModel()
+            // implementation
+            return method_exists($this, 'resolveModel') ? $this->resolveModel() : null;
+        } catch (\Throwable $e) {
+            // We simply return a null if the model can not be resolved
+            return null;
+        }
     }
 
     /**
