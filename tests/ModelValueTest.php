@@ -66,7 +66,6 @@ class ModelValueTest extends TestCase
     public function test_resolve_model_fallback_call()
     {
         $value = new TestResolvableValueModel();
-        var_dump($value->getKey());
         $this->assertTrue($value->getKey() === 1);
     }
 }
