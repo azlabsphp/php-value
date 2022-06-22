@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-class TestModel
+class TestModelRelation1
 {
     public function getPrimaryKey()
     {
@@ -27,45 +27,42 @@ class TestModel
 
     public function getTable()
     {
-        return 'examples';
+        return 'persons';
     }
 
     public function attributesToArray()
     {
         return [
-            'label' => 'Hello World!',
+            'name' => 'TEST PERSON',
+            'score' => .72
         ];
     }
 
     public function getAttributes()
     {
         return [
-            'label' => 'Hello World!',
+            'name' => 'TEST PERSON',
+            'score' => .72
         ];
     }
 
     public function toArray()
     {
         return [
-            'title' => 'Welcome to IT World',
-            'label' => 'Hello World!',
-            'comments' => [
-                [
-                    'title' => 'HW issues',
-                    'content' => 'Hello World issues',
-                ],
-            ],
+            'name' => 'TEST PERSON',
+            'score' => .72,
+            'profile' => new TestModelRelation2
         ];
     }
 
     /**
      * 
-     * @return TestModelRelation1[] 
+     * @return TestModelRelation2[] 
      */
     public function getRelations()
     {
         return [
-            'person' => new TestModelRelation1
+            'profile' => new TestModelRelation2
         ];
     }
 
@@ -78,8 +75,10 @@ class TestModel
     {
     }
 
+
     public function __get($name)
     {
         return array_merge($this->getRelations(), $this->attributesToArray())[$name] ?? null;
     }
+
 }

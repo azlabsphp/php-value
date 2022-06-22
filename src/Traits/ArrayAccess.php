@@ -30,6 +30,7 @@ trait ArrayAccess
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->__ATTRIBUTES__->offsetExists($offset);
@@ -38,6 +39,7 @@ trait ArrayAccess
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (\is_int($offset)) {
@@ -53,6 +55,7 @@ trait ArrayAccess
      *                                  a new object from the properties of the current object while changing the
      *                                  needed properties
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new ImmutableValueException(__CLASS__);
@@ -65,6 +68,7 @@ trait ArrayAccess
      *                                  a new object from the properties of the current object while changing the
      *                                  needed properties to null
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new ImmutableValueException(__CLASS__);

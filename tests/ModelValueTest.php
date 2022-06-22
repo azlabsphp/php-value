@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\Support\Tests\Unit;
 
+use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Tests\Stubs\TestModel;
 use Drewlabs\PHPValue\Tests\Stubs\TestModelValue;
 use PHPUnit\Framework\TestCase;
@@ -45,6 +46,11 @@ class ModelValueTest extends TestCase
         $value = new TestModelValue(new TestModel());
         $this->assertEquals($value->getKey(), 1);
         $this->assertEquals($value->getPrimaryKey(), 'id');
+    }
 
+    public function test_model_value_to_array()
+    {
+        $object = new TestModelValue(new TestModel);
+        $this->assertInstanceOf(ValueInterface::class, $object->person);
     }
 }

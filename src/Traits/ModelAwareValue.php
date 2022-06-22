@@ -3,7 +3,7 @@
 namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Arr;
-use Drewlabs\Core\Helpers\Str;
+use Generator;
 use InvalidArgumentException;
 
 trait ModelAwareValue
@@ -32,12 +32,14 @@ trait ModelAwareValue
         }
     }
 
-    private function createFromModelInstance(object $attributes)
+    private function createFromModelInstance(?object $attributes = null)
     {
         try {
-            $this->setModel($attributes);
-            $this->mergeHidden($attributes->getHidden());
-            $this->setAttributes($attributes->toArray());
+            if ($attributes) {
+                $this->setModel($attributes);
+                $this->mergeHidden($attributes->getHidden());
+                $this->setAttributes($attributes->toArray());
+            }
         } catch (\Throwable $e) {
             throw new InvalidArgumentException($e->getMessage());
         }
@@ -75,34 +77,55 @@ trait ModelAwareValue
 
     public function toArray()
     {
-        [$model, $attributes, $hidden] = [$this->getModel(), $this->attributesToArray(), $this->getHidden()];
-        $relations = method_exists($model, 'getRelations') ? call_user_func([$model, 'getRelations']) : [];
-        // TODO: GET MODEL RELATIONS
-        foreach ($relations as $key => $value) {
-            if (in_array($key, $hidden)) {
-                continue;
-            }
-            // TODO: Provide a better implementation to avoid performance heck or
-            // remove implementation that strip hidden sub attributes as it can impact 
-            // application performance for large datasets.
-            $props = [];
-            foreach ($hidden as $k => $v) {
-                if (Str::startsWith($v, $key)) {
-                    $props[] = Str::after("$key.", $v);
-                    unset($hidden[$k]);
-                    continue;
-                }
-            }
-            $attributes[$key] = Arr::except($value->attributesToArray(), $props);
-            // #endregion TODO
-            // $attributes[$key] = $value;
-        }
-        return $attributes;
+        [$attributes, $hidden] = [
+            $this->attributesToArray(
+                array_keys(
+                    $relations = method_exists(
+                        ($model = $this->getModel()),
+                        'getRelations'
+                    ) ? call_user_func([$model, 'getRelations']) : []
+                )
+            ),
+            $this->getHidden()
+        ];
+        return array_merge($attributes, Arr::create($this->relationsIterator($relations, $hidden)));
     }
 
-    final protected function getRawAttribute(string $name)
+    /**
+     * 
+     * @param array $relations 
+     * @param array $hidden 
+     * @return Generator<string|int, mixed, mixed, void> 
+     */
+    private function relationsIterator(array $relations = [], $hidden = [])
     {
-        [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
+        foreach ($relations as $property => $value) {
+            if (in_array($property, $hidden)) {
+                continue;
+            }
+            yield $property => $this->callPropertyGetter($property, $value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function attributesToArray(array $expects = [])
+    {
+        [$properties, $hidden, $attributes] = [$this->getProperties(), $this->getHidden(), $this->getRawAttributes()];
+        return iterator_to_array((function () use ($hidden, $properties, $expects, $attributes) {
+            foreach ($properties as $key => $value) {
+                if (\in_array($key, $hidden, true) || in_array($key, $expects)) {
+                    continue;
+                }
+                yield $value => $this->callPropertyGetter($key, $this->getRawAttribute($key, $attributes));
+            }
+        })());
+    }
+
+    final protected function getRawAttribute(string $name, $attributes = [])
+    {
+        [$properties, $attributes] = [$this->getProperties() ?? [], !empty($attributes) ? $attributes : $this->getRawAttributes()];
         if (null !== ($value = $attributes[$name] ?? null)) {
             return $value;
         }

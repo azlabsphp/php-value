@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Arr;
-use ReturnTypeWillChange;
 
 trait Value
 {
@@ -47,9 +46,6 @@ trait Value
         if (null !== ($value = $attributes[$name] ?? null)) {
             return $value;
         }
-        // if (\array_key_exists($name, $properties)) {
-        //     return $this->callPropertyGetter($name, $value);
-        // }
         $key = Arr::search($name, $properties);
         if ($key && ($value = $attributes[$key])) {
             return $value;

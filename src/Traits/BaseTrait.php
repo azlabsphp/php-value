@@ -226,7 +226,7 @@ trait BaseTrait
     {
         $properties = $this->getProperties();
         foreach ($properties as $key => $value) {
-            if (null !== ($value_ = ($attributes[$value] ?? null))) {
+            if (null !== ($value_ = ($attributes[strval($value)] ?? null))) {
                 $this->setAttribute($key, $value_);
             }
         }

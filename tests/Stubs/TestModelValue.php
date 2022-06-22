@@ -32,7 +32,8 @@ class TestModelValue implements ValueInterface
         return [
             'label' => function ($value) {
                 return null !== $value ? strtoupper($value) : $value;
-            }
+            },
+            'person' => 'value:' . TestModelRelation1Value::class
         ];
     }
 

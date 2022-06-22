@@ -2,6 +2,7 @@
 
 namespace Drewlabs\PHPValue\Tests;
 
+use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
@@ -79,7 +80,7 @@ class ValueTest extends TestCase
             'To' => 'yyy-yyy-yyy',
             'Logger' => new FileLogger(),
         ]);
-        $this->assertTrue(drewlabs_core_strings_contains($message->jsonSerialize()['From'], 'xxx'), 'Expect the from property to contains xxx');
+        $this->assertTrue(Str::contains($message->jsonSerialize()['From'], 'xxx'), 'Expect the from property to contains xxx');
     }
 
     public function testNonAssocValueObject()
@@ -88,7 +89,7 @@ class ValueTest extends TestCase
             'name' => 'Azandrew Sidoine',
             'address' => 'KEGUE, LOME - TOGO',
         ]);
-        $this->assertTrue(drewlabs_core_strings_contains($value->name, 'Azandrew'), 'Expect the value name property to be a string that contains Azandrew');
+        $this->assertTrue(Str::contains($value->name, 'Azandrew'), 'Expect the value name property to be a string that contains Azandrew');
     }
 
     public function testPropertiesGetterMethod()
