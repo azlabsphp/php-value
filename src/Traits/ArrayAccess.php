@@ -26,19 +26,13 @@ trait ArrayAccess
     {
         throw new ImmutableValueException(__CLASS__);
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->__ATTRIBUTES__->offsetExists($offset);
     }
-
-    /**
-     * {@inheritDoc}
-     */
+    
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {

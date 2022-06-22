@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Drewlabs\Support\Tests\Unit;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
+use BadMethodCallException;
 use Drewlabs\PHPValue\Tests\Stubs\TestModel;
 use Drewlabs\PHPValue\Tests\Stubs\TestModelValue;
+use Drewlabs\PHPValue\Tests\Stubs\TestResolvableValueModel;
 use PHPUnit\Framework\TestCase;
 
 class ModelValueTest extends TestCase
@@ -52,5 +54,19 @@ class ModelValueTest extends TestCase
     {
         $object = new TestModelValue(new TestModel);
         $this->assertInstanceOf(ValueInterface::class, $object->person);
+    }
+
+    public function test_resolve_model_fallback_call_throws_exception()
+    {
+        $this->expectException(BadMethodCallException::class);
+        $value = new TestModelValue();
+        $this->assertTrue($value->getKey() === 1);
+    }
+
+    public function test_resolve_model_fallback_call()
+    {
+        $value = new TestResolvableValueModel();
+        var_dump($value->getKey());
+        $this->assertTrue($value->getKey() === 1);
     }
 }

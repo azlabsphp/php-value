@@ -299,7 +299,8 @@ trait BaseTrait
             // In future release getJsonableAttributes() support will be remove
             // Fall back to deprecated getJsonableAttributes()
             // function call if  __PROPERTIES__ property is not defined
-            $properties = $this->getJsonableAttributes() ?? [];
+            $properties = method_exists($this, 'getJsonableAttributes') ?
+                $this->getJsonableAttributes() : [];
         }
         foreach ($properties as $key => $_) {
             if (!is_string($key)) {

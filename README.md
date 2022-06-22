@@ -1,4 +1,4 @@
-# Immutable
+# PHP value
 
 Library propose a PHP value object that provide interfaces for serialization and deserialization from PHP [array] or [\stdClass].
 
@@ -15,7 +15,7 @@ Recommended way to install the library is by using composer package manager. As 
 {
     // ...
     "require": {
-        "drewlabs/php-value": "^0.1.10"
+        "drewlabs/php-value": "^0.1"
     },
     // Adding repository
     
