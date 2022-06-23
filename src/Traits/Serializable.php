@@ -17,11 +17,6 @@ use Drewlabs\Core\Helpers\Arr;
 
 trait Serializable
 {
-    /**
-     * Convert object back to dictionnary used to create it
-     * 
-     * @return array|object 
-     */
     public function serialize()
     {
         // If except columns are provided, we merge the except columns with the hidden columns
@@ -39,11 +34,6 @@ trait Serializable
         })());
     }
 
-    /**
-     * Returns a JSON encoded string from the current object
-     * 
-     * @return string 
-     */
     public function toJson()
     {
         return json_encode($this->serialize());

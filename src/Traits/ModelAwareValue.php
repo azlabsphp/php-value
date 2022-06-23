@@ -93,6 +93,11 @@ trait ModelAwareValue
         return array_merge($attributes, Arr::create($this->relationsIterator($relations, $hidden)));
     }
 
+    public function serialize()
+    {
+        return $this->getModel();
+    }
+
     final protected function getRawAttribute(string $name, $attributes = [])
     {
         if ($value = $this->getFromArrayAttribute($name, $attributes)) {
