@@ -19,17 +19,30 @@ use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\CastsAware;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
 
 trait BaseTrait
 {
-    use ArrayAccess, Clonable, IteratorAware, AttributesAware;
+    use ArrayAccess, Clonable, IteratorAware, AttributesAware, Serializable;
 
     /**
-     * 
-     * 
+     *
+     *
      * @var \Closure&object
      */
     private $__GET__PROPERTY__VALUE__;
+
+
+    /**
+     * Creates an instance of the value interface class
+     * 
+     * @param array|object|null $attributes 
+     * @return self|ValueInterface 
+     */
+    public static function new($attributes = [])
+    {
+        return new self($attributes);
+    }
 
     /**
      * Makes class attributes accessible through -> syntax.
@@ -64,11 +77,11 @@ trait BaseTrait
      */
     public function __toString()
     {
-        return $this->__ATTRIBUTES__->__toString();
+        return $this->getRawAttributes()->__toString();
     }
 
     /**
-     * 
+     *
      * @description Creates a copy of the current object changing the changing old attributes
      * values with newly proivided ones
      */
@@ -102,27 +115,25 @@ trait BaseTrait
      */
     public function getAttribute(string $key, $default = null)
     {
-        // TODO : Call value getter and pass it to the propertyGetter method
         return ($this->__GET__PROPERTY__VALUE__)(
             $key,
             $this->getRawAttribute($key),
             is_callable($default) ? $default : function () use ($key, $default) {
-                $result = drewlabs_core_array_get(
-                    $this->__ATTRIBUTES__ ? $this->__ATTRIBUTES__->toArray() : [],
+                return Arr::get(
+                    (($value = $this->getRawAttributes())) ? $value->toArray() : [],
                     $key,
                     function () use ($key) {
                         return $this->__get($key);
                     }
-                );
-                return $result ?? $default;
+                ) ?? $default;
             }
         );
     }
 
     /**
      * Merge object attributes.
-     * 
-     * @param array|mixed $attributes 
+     *
+     * @param array|mixed $attributes
      * @return BaseTrait
      */
     public function merge($attributes = [])
@@ -139,9 +150,9 @@ trait BaseTrait
     /**
      * Copy object properties changing existing property values with
      * user provided ones.
-     * 
-     * @param array|mixed $attributes 
-     * @return self 
+     *
+     * @param array|mixed $attributes
+     * @return self
      */
     public function copy($attributes = [])
     {
@@ -173,7 +184,7 @@ trait BaseTrait
         $method = 'set' . Str::camelize($name) . 'Attribute';
         $result = $this->{$method}($value);
         if (null !== $result) {
-            $this->__ATTRIBUTES__[$name] = $result;
+            $this->setRawAttribute($name, $result);
         }
         return $this;
     }
@@ -208,7 +219,7 @@ trait BaseTrait
      */
     protected function initialize()
     {
-        $this->__ATTRIBUTES__ = new Accessible;
+        $this->setRawAttributes(new Accessible);
         $this->buildPropsDefinitions();
         $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function (...$args) {
             return $this->callPropertyGetter(...$args);

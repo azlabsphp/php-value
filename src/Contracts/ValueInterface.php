@@ -3,7 +3,12 @@
 namespace Drewlabs\PHPValue\Contracts;
 
 /** @package Drewlabs\PHPValue\Contracts */
-interface ValueInterface extends CastsAware, \JsonSerializable, \ArrayAccess, \IteratorAggregate
+interface ValueInterface extends
+    CastsAware,
+    \JsonSerializable,
+    \ArrayAccess,
+    \IteratorAggregate,
+    Serializable
 {
     /**
      * @description Create a PHP Array from properties of the current object.

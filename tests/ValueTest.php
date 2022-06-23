@@ -20,7 +20,7 @@ class ValueTest extends TestCase
 
     public function testValueObjectCopyWithMethod()
     {
-        $message = new Message(
+        $message = Message::new(
             [
                 'From' => 'xxx-xxx-xxx',
                 'To' => 'yyy-yyy-yyy',
@@ -38,7 +38,7 @@ class ValueTest extends TestCase
 
     public function testValueObjectImmutableSetterMethod()
     {
-        $message = new Message([
+        $message = Message::new([
             'From' => 'xxx-xxx-xxx',
             'To' => 'yyy-yyy-yyy',
             'Logger' => new FileLogger(),
@@ -51,7 +51,7 @@ class ValueTest extends TestCase
 
     public function testValueObjectImmutableUnsetMethodThrowsException()
     {
-        $message = new Message([
+        $message = Message::new([
             'From' => 'xxx-xxx-xxx',
             'To' => 'yyy-yyy-yyy',
             'Logger' => new FileLogger(),
@@ -62,7 +62,7 @@ class ValueTest extends TestCase
 
     public function testValueObjectImmutableOffsetSetMethodThrowsException()
     {
-        $message = new Message([
+        $message = Message::new([
             'From' => 'xxx-xxx-xxx',
             'To' => 'yyy-yyy-yyy',
             'Logger' => new FileLogger(),
@@ -73,19 +73,19 @@ class ValueTest extends TestCase
         $message->offsetSet('From', 'YYY-YYY-YY');
     }
 
-    public function testJsonSerializeMethod()
+    public function testSerializeMethod()
     {
-        $message = new Message([
+        $message = Message::new([
             'From' => 'xxx-xxx-xxx',
             'To' => 'yyy-yyy-yyy',
             'Logger' => new FileLogger(),
         ]);
-        $this->assertTrue(Str::contains($message->jsonSerialize()['From'], 'xxx'), 'Expect the from property to contains xxx');
+        $this->assertTrue(Str::contains($message->serialize()['From'], 'xxx'), 'Expect the from property to contains xxx');
     }
 
     public function testNonAssocValueObject()
     {
-        $value = new ValueStub([
+        $value = ValueStub::new([
             'name' => 'Azandrew Sidoine',
             'address' => 'KEGUE, LOME - TOGO',
         ]);
@@ -94,7 +94,7 @@ class ValueTest extends TestCase
 
     public function testPropertiesGetterMethod()
     {
-        $value = new ValueStub([
+        $value = ValueStub::new([
             'name' => 'Azandrew Sidoine',
             'address' => 'KEGUE, LOME - TOGO',
         ]);
@@ -107,7 +107,7 @@ class ValueTest extends TestCase
         $object->From = 'xxx-xxx-xxx';
         $object->To = 'yyy-yyy-yyy';
         // $object->Logger = new FileLogger();
-        $message = (new Message())->fromStdClass($object);
+        $message = (Message::new())->fromStdClass($object);
         $this->assertSame($message->From, 'xxx-xxx-xxx', 'Expect from property value to equals xxx-xxx-xxx');
     }
 
@@ -117,7 +117,7 @@ class ValueTest extends TestCase
         $object->From = 'xxx-xxx-xxx';
         $object->To = 'yyy-yyy-yyy';
         $object->Logger = new FileLogger();
-        $message = (new Message())->fromStdClass($object);
+        $message = (Message::new())->fromStdClass($object);
         $this->assertIsArray($message->attributesToArray(), 'Expect attributesToArray() method to return an array');
         $this->assertSame($message['from'], 'xxx-xxx-xxx');
     }
@@ -136,7 +136,7 @@ class ValueTest extends TestCase
         $geolocation->long = '4.8947352';
         $address->geolocation = $geolocation;
         $object->Address = $address;
-        $message = (new Message())->fromStdClass($object);
+        $message = (Message::new())->fromStdClass($object);
         $this->assertIsString((string) $message, 'Expect object to be stringeable');
     }
 
@@ -153,7 +153,7 @@ class ValueTest extends TestCase
         $geolocation->long = '4.8947352';
         $address->geolocation = $geolocation;
         $object->Address = $address;
-        $message = (new Message())->fromStdClass($object);
+        $message = (Message::new())->fromStdClass($object);
         $this->assertSame('test@example.com', $message->getAttribute('address.email'), 'Expect email to equals test@example.com');
     }
 

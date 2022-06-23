@@ -19,7 +19,7 @@ trait ArrayAccess
 {
     public function __isset($name)
     {
-        return isset($this->__ATTRIBUTES__[$name]);
+        return isset($this->getRawAttributes()[$name]);
     }
 
     public function __unset($name)
@@ -30,7 +30,7 @@ trait ArrayAccess
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return $this->__ATTRIBUTES__->offsetExists($offset);
+        return $this->getRawAttributes()->offsetExists($offset);
     }
     
     #[\ReturnTypeWillChange]

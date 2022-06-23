@@ -27,17 +27,7 @@ trait Value
     public function __construct($attributes = [])
     {
         $this->initialize();
-        $this->setPropertiesValue($attributes);
-    }
-
-    /**
-     * Provides an object oriented iterator over the this object keys and values.
-     *
-     * @return \Traversable
-     */
-    public function each(\Closure $callback)
-    {
-        return $this->getAttributes()->each($callback);
+        $this->setPropertiesValue($attributes ?? []);
     }
 
     final protected function getRawAttribute(string $name)
@@ -60,6 +50,6 @@ trait Value
      */
     public function toArray()
     {
-        return iterator_to_array($this->getIterator());
+        return Arr::create($this->getIterator());
     }
 }

@@ -32,19 +32,6 @@ trait ModelAwareValue
         }
     }
 
-    private function createFromModelInstance(?object $attributes = null)
-    {
-        try {
-            if ($attributes) {
-                $this->setModel($attributes);
-                $this->mergeHidden($attributes->getHidden());
-                $this->setAttributes($attributes->toArray());
-            }
-        } catch (\Throwable $e) {
-            throw new InvalidArgumentException($e->getMessage());
-        }
-    }
-
     public function __call($name, $arguments)
     {
         if ($model = $this->getModel()) {
@@ -89,6 +76,7 @@ trait ModelAwareValue
 
     public function toArray()
     {
+        // First we serialize properties of the value object
         [$attributes, $hidden] = [
             $this->attributesToArray(
                 array_keys(
@@ -100,14 +88,45 @@ trait ModelAwareValue
             ),
             $this->getHidden()
         ];
+        // Then we merge the value own properties and the serialized relation properties
+        // declared on the binded model as output
         return array_merge($attributes, Arr::create($this->relationsIterator($relations, $hidden)));
     }
 
+    final protected function getRawAttribute(string $name, $attributes = [])
+    {
+        if ($value = $this->getFromArrayAttribute($name, $attributes)) {
+            return $value;
+        }
+        return null !== ($model = $this->getModel()) ? ($model->{$name} ?? null) : null;
+    }
+
+
     /**
-     * 
-     * @param array $relations 
-     * @param array $hidden 
-     * @return Generator<string|int, mixed, mixed, void> 
+     * Set current object from an object model
+     *
+     * @param null|object $attributes
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    private function createFromModelInstance(?object $attributes = null)
+    {
+        try {
+            if ($attributes) {
+                $this->setModel($attributes);
+                $this->mergeHidden($attributes->getHidden());
+                $this->setAttributes($attributes->toArray());
+            }
+        } catch (\Throwable $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+    }
+
+    /**
+     *
+     * @param array $relations
+     * @param array $hidden
+     * @return Generator<string|int, mixed, mixed, void>
      */
     private function relationsIterator(array $relations = [], $hidden = [])
     {
@@ -115,36 +134,9 @@ trait ModelAwareValue
             if (in_array($property, $hidden)) {
                 continue;
             }
+            // Each relation declared on the model is passed through cast or serialization
+            // pipe for it to be parsed to the the output
             yield $property => $this->callPropertyGetter($property, $value);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function attributesToArray(array $expects = [])
-    {
-        [$properties, $hidden, $attributes] = [$this->getProperties(), $this->getHidden(), $this->getRawAttributes()];
-        return iterator_to_array((function () use ($hidden, $properties, $expects, $attributes) {
-            foreach ($properties as $key => $value) {
-                if (\in_array($key, $hidden, true) || in_array($key, $expects)) {
-                    continue;
-                }
-                yield $value => $this->callPropertyGetter($key, $this->getRawAttribute($key, $attributes));
-            }
-        })());
-    }
-
-    final protected function getRawAttribute(string $name, $attributes = [])
-    {
-        [$properties, $attributes] = [$this->getProperties() ?? [], !empty($attributes) ? $attributes : $this->getRawAttributes()];
-        if (null !== ($value = $attributes[$name] ?? null)) {
-            return $value;
-        }
-        $key = Arr::search($name, $properties);
-        if ($key && ($value = $attributes[$key])) {
-            return $value;
-        }
-        return null !== ($model = $this->getModel()) ? ($model->{$name} ?? null) : null;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Drewlabs\PHPValue\Traits;
 
+use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\PHPValue\Accessible;
 
 trait AttributesAware
@@ -17,7 +18,7 @@ trait AttributesAware
     protected $__ATTRIBUTES__;
 
     /**
-     * @return array
+     * @return Accessible
      */
     final public function getRawAttributes()
     {
@@ -53,16 +54,43 @@ trait AttributesAware
         return $this;
     }
 
+
     /**
-     * {@inheritDoc}
+     * Get attribute value from the local __ATTRIBUTES__ array
+     *
+     * @param string $name
+     * @param array $attributes
+     * @param array $properties
+     * @return mixed
      */
-    public function attributesToArray()
+    private function getFromArrayAttribute(string $name, $attributes = [], $properties = [])
     {
-        return iterator_to_array((function () {
-            foreach ($this->getRawAttributes() as $key => $value) {
-                if (!\in_array($key, $this->getHidden(), true)) {
-                    yield $key => $value;
+        $attributes = !empty($attributes) ? $attributes : $this->getRawAttributes();
+        if (null !== ($value = $attributes[$name] ?? null)) {
+            return $value;
+        }
+
+        $properties = !empty($properties) ? $properties : $this->getProperties() ?? [];
+        $key = Arr::search($name, $properties);
+        if ($key && ($value = $attributes[$key])) {
+            return $value;
+        }
+        return null;
+    }
+
+    public function attributesToArray(array $expects = [])
+    {
+        // If except columns are provided, we merge the except columns with the hidden columns
+        // if order to filter them from the ouput dictionary
+        [$properties, $expects, $attributes] = [$this->getProperties(), array_unique(array_merge($this->getHidden(), $expects)), $this->getRawAttributes()];
+        return Arr::create((function () use ($properties, $expects, $attributes) {
+            foreach ($properties as $key => $value) {
+                if (!empty(\array_intersect($expects, [$key, $value]))) {
+                    continue;
                 }
+                // Each property value is passed though the serialization pipe for it to be casted if
+                // a cast or an serialization function is declared for it
+                yield $key => $this->callPropertyGetter($key, $this->getFromArrayAttribute($key, $attributes, $properties));
             }
         })());
     }

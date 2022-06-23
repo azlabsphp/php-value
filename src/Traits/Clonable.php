@@ -11,11 +11,11 @@ trait Clonable
 
     public function __clone()
     {
-        if ($this->__ATTRIBUTES__) {
-            $this->__ATTRIBUTES__ = clone $this->__ATTRIBUTES__;
+        if ($value = $this->getRawAttributes()) {
+            $this->setRawAttributes(clone $value);
         }
-        if ($this->__GET__PROPERTY__VALUE__) {
-            $this->__GET__PROPERTY__VALUE__ = clone $this->__GET__PROPERTY__VALUE__;
+        if ($property = $this->__GET__PROPERTY__VALUE__) {
+            $this->__GET__PROPERTY__VALUE__ = clone $property;
         }
     }
 }

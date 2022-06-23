@@ -7,11 +7,16 @@ trait IteratorAware
     #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
-        [$properties, $hidden] = [$this->getProperties(), $this->getHidden()];
+        // If except columns are provided, we merge the except columns with the hidden columns
+        // if order to filter them from the ouput dictionary
+        [$properties, $expects, $attributes] = [$this->getProperties(), $this->getHidden(), $this->getRawAttributes()];
         foreach ($properties as $key => $value) {
-            if (!\in_array($key, $hidden, true)) {
-                yield $value => $this->callPropertyGetter($key, $this->getRawAttribute($key));
+            if (!empty(\array_intersect($expects, [$key, $value]))) {
+                continue;
             }
+            // Each property value is passed though the serialization pipe for it to be casted if
+            // a cast or an serialization function is declared for it
+            yield $key => $this->callPropertyGetter($key, $this->getFromArrayAttribute($key, $attributes, $properties));
         }
     }
 
@@ -22,6 +27,6 @@ trait IteratorAware
      */
     public function each(\Closure $callback)
     {
-        return $this->getAttributes()->each($callback);
+        return $this->getRawAttributes()->each($callback);
     }
 }
