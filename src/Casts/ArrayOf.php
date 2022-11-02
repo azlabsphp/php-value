@@ -13,32 +13,29 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Casts;
 
-use Drewlabs\PHPValue\Accessible as AccessibleClass;
+use Drewlabs\PHPValue\Casts\Traits\ProducesIterator;
 use Drewlabs\PHPValue\Contracts\CastPropertyInterface;
 use Drewlabs\PHPValue\Contracts\CastsAware;
-
 use Drewlabs\PHPValue\Traits\ArgumentsAware;
 
-class Accessible implements CastPropertyInterface
+class ArrayOf implements CastPropertyInterface
 {
     use ArgumentsAware;
+    use ProducesIterator;
 
     public function set(string $name, $value, ?CastsAware $model = null)
     {
-        return [$name => $value instanceof AccessibleClass ? $value->toArray() : $value];
+        if (\is_string($value) || null === $value || \is_bool($value) || is_numeric($value)) {
+            $value = array_filter([$value], static function ($item) {
+                return null !== $item;
+            });
+        }
+
+        return [$name => $value];
     }
 
     public function get(string $name, $value, ?CastsAware $model = null)
     {
-        $accessible = new AccessibleClass();
-        $value = null === $value ? $model->getRawAttributes()[$name] ?? null : $value;
-        if (\is_object($value)) {
-            return $accessible->merge(get_object_vars($value));
-        }
-        if (\is_array($value)) {
-            return $accessible->merge($value);
-        }
-
-        return $accessible;
+        return iterator_to_array($this->createIterable($name, $value, $model));
     }
 }

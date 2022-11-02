@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Contracts;
 
-interface ResolveModelAware
+interface CollectionInterface
 {
     /**
-     * Defines implementation for creating model instance attached
-     * to the value object.
+     * Returns an instance of the PHP iterable.
      *
-     * @return mixed
+     * @return \Traversable|array
      */
-    public function resolveModel();
+    public function getIterator();
 }

@@ -1,6 +1,6 @@
 {
     "name": "drewlabs/php-value",
-    "description": "PHP Object builder and serialization library",
+    "description": "PHP object builder and serialization library",
     "type": "library",
     "require-dev": {
         "phpunit/phpunit": "^9.5"

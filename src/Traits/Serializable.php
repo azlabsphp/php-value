@@ -22,9 +22,10 @@ trait Serializable
         // If except columns are provided, we merge the except columns with the hidden columns
         // if order to filter them from the ouput dictionary
         [$properties, $expects, $attributes] = [$this->getProperties(), $this->getHidden(), $this->getRawAttributes()];
-        return Arr::create((function() use ($properties, $expects, $attributes) {
+
+        return Arr::create((function () use ($properties, $expects, $attributes) {
             foreach ($properties as $key => $value) {
-                if (!empty(\array_intersect($expects, [$key, $value]))) {
+                if (!empty(array_intersect($expects, [$key, $value]))) {
                     continue;
                 }
                 // Each property value is passed though the serialization pipe for it to be casted if

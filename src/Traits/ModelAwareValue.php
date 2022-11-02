@@ -1,17 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Drewlabs package.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Arr;
-use Generator;
-use InvalidArgumentException;
 
 trait ModelAwareValue
 {
-    use Proxy, Castable, BaseTrait;
+    use BaseTrait;
+    use Castable;
+    use Proxy;
 
     /**
-     * Model instance attached to the current object
+     * Model instance attached to the current object.
      *
      * @var mixed
      */
@@ -25,7 +36,7 @@ trait ModelAwareValue
     public function __construct($attributes = [])
     {
         $this->initialize();
-        if (is_array($attributes)) {
+        if (\is_array($attributes)) {
             $this->setPropertiesValue($attributes);
         } else {
             $this->createFromModelInstance($attributes);
@@ -37,7 +48,7 @@ trait ModelAwareValue
         if ($model = $this->getModel()) {
             return $this->proxy($model, $name, $arguments);
         }
-        throw new \BadMethodCallException("Method $name does not exists on " . __CLASS__);
+        throw new \BadMethodCallException("Method $name does not exists on ".__CLASS__);
     }
 
     /**
@@ -83,10 +94,10 @@ trait ModelAwareValue
                     $relations = method_exists(
                         ($model = $this->getModel()),
                         'getRelations'
-                    ) ? call_user_func([$model, 'getRelations']) : []
+                    ) ? \call_user_func([$model, 'getRelations']) : []
                 )
             ),
-            $this->getHidden()
+            $this->getHidden(),
         ];
         // Then we merge the value own properties and the serialized relation properties
         // declared on the binded model as output
@@ -103,16 +114,16 @@ trait ModelAwareValue
         if ($value = $this->getFromArrayAttribute($name, $attributes)) {
             return $value;
         }
+
         return null !== ($model = $this->getModel()) ? ($model->{$name} ?? null) : null;
     }
 
-
     /**
-     * Set current object from an object model
+     * Set current object from an object model.
      *
-     * @param null|object $attributes
+     * @throws \InvalidArgumentException
+     *
      * @return void
-     * @throws InvalidArgumentException
      */
     private function createFromModelInstance(?object $attributes = null)
     {
@@ -123,20 +134,19 @@ trait ModelAwareValue
                 $this->setAttributes($attributes->toArray());
             }
         } catch (\Throwable $e) {
-            throw new InvalidArgumentException($e->getMessage());
+            throw new \InvalidArgumentException($e->getMessage());
         }
     }
 
     /**
-     *
-     * @param array $relations
      * @param array $hidden
-     * @return Generator<string|int, mixed, mixed, void>
+     *
+     * @return \Generator<string|int, mixed, mixed, void>
      */
     private function relationsIterator(array $relations = [], $hidden = [])
     {
         foreach ($relations as $property => $value) {
-            if (in_array($property, $hidden)) {
+            if (\in_array($property, $hidden, true)) {
                 continue;
             }
             // Each relation declared on the model is passed through cast or serialization

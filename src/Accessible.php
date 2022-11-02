@@ -13,40 +13,35 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue;
 
-use Generator;
-use InvalidArgumentException;
-
 /**
- * PHP stdClass extension usable as array accessible object
- * 
+ * PHP stdClass extension usable as array accessible object.
+ *
  * ```php
  * $object = new Accessible;
- * 
+ *
  * // Checking if a property is set on the object
  * $isset = isset($object)
- * 
+ *
  * // Accessing property of the object
  * $value = $object['property'];
- * 
+ *
  * // Setting property
  * $object['property'] = $value;
- * 
+ *
  * // Checking if object has property
  * $object->hasProperty('property');
- * 
+ *
  * // Check if object is empty
  * $isEmpty = $object->isEmpty();
- * 
+ *
  * // Looping through object keys
  * $object->each(function($key, $value) {
  *        // Perform action on key and value
  * });
- * 
+ *
  * // Converting object to array
  * $array = $object->toArray();
  * ```
- * 
- * @package Drewlabs\PHPValue
  */
 class Accessible implements \ArrayAccess
 {
@@ -60,6 +55,7 @@ class Accessible implements \ArrayAccess
                 $this[$key] = clone $value;
             }
         }
+
         return $this;
     }
 
@@ -105,11 +101,10 @@ class Accessible implements \ArrayAccess
     }
 
     /**
-     * Object oriented implementation of the property exists 
+     * Object oriented implementation of the property exists
      * function on this object.
-     * 
-     * @param mixed $prop 
-     * @return bool 
+     *
+     * @param mixed $prop
      */
     public function propertyExists($prop): bool
     {
@@ -144,7 +139,7 @@ class Accessible implements \ArrayAccess
      * }
      * ```
      *
-     * @return Generator<int, mixed, mixed, void>
+     * @return \Generator<int, mixed, mixed, void>
      */
     public function each(\Closure $callback)
     {
@@ -164,17 +159,13 @@ class Accessible implements \ArrayAccess
      * }
      * ```
      *
-     * @return Generator<int, mixed, mixed, void>
+     * @return \Generator<int, mixed, mixed, void>
      */
     public function forEach(\Closure $callback)
     {
         return $this->each($callback);
     }
 
-    /**
-     * 
-     * @return array 
-     */
     public function toArray(): array
     {
         return iterator_to_array(
@@ -195,23 +186,25 @@ class Accessible implements \ArrayAccess
     }
 
     /**
-     * 
-     * @param array<string,mixed> $attributes 
-     * @return self 
-     * @throws InvalidArgumentException 
+     * @param array<string,mixed> $attributes
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return self
      */
     public function merge(array $attributes = [])
     {
         foreach ($attributes as $key => $value) {
             $this->offsetSet($key, $value);
         }
+
         return $this;
     }
 
     private function isStringOrFail($property)
     {
         if (!\is_string($property)) {
-            throw new \InvalidArgumentException('Object accessible property must be of type string, got :' . is_object($property) ? get_class($property) : gettype($property));
+            throw new \InvalidArgumentException('Object accessible property must be of type string, got :'.\is_object($property) ? \get_class($property) : \gettype($property));
         }
     }
 }

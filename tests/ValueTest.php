@@ -1,23 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Drewlabs package.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue\Tests;
 
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
+use function Drewlabs\PHPValue\Functions\CreateValue;
 use Drewlabs\PHPValue\Tests\Stubs\FileLogger;
 use Drewlabs\PHPValue\Tests\Stubs\Message;
 use Drewlabs\PHPValue\Tests\Stubs\User;
 use Drewlabs\PHPValue\Tests\Stubs\UserDetails;
 use Drewlabs\PHPValue\Tests\Stubs\ValueStub;
-use PHPUnit\Framework\TestCase;
 
-use function Drewlabs\PHPValue\Functions\CreateValue;
+use PHPUnit\Framework\TestCase;
 
 class ValueTest extends TestCase
 {
-
     public function testValueObjectCopyWithMethod()
     {
         $message = Message::new(
@@ -33,7 +43,7 @@ class ValueTest extends TestCase
         $message_z->Logger->updateMutable();
         $this->assertTrue('xxx-xxx-xxx' === $message->from);
         $this->assertNotSame($message_z->from, $message->from);
-        $this->assertEquals('zzz-zzz-zzz', $message_z->From);
+        $this->assertSame('zzz-zzz-zzz', $message_z->From);
     }
 
     public function testValueObjectImmutableSetterMethod()
@@ -163,19 +173,19 @@ class ValueTest extends TestCase
          * @property name
          * @property $lastname
          */
-        $value =  CreateValue([
+        $value = CreateValue([
             'name',
-            'lastname'
+            'lastname',
         ]);
         $this->assertInstanceOf(ValueInterface::class, $value);
         // Call copy method to create a copy of the object
         $value = $value->copy([
             'name' => 'Azandrew',
             'lastname' => 'Sidoine',
-            'age' => 29
+            'age' => 29,
         ]);
         $this->assertNull($value->age);
-        $this->assertEquals($value->name, 'Azandrew');
+        $this->assertSame($value->name, 'Azandrew');
     }
 
     public function test_cast_implementation_for_class()
@@ -187,16 +197,16 @@ class ValueTest extends TestCase
             'details' => [
                 'firstname' => 'AZANDREW',
                 'lastname' => 'SIDOINE',
-                'emails' => 'azandrewdevelopper@gmail.com'
+                'emails' => 'azandrewdevelopper@gmail.com',
             ],
             'roles' => [
-                'create-accounts'
-            ]
+                'create-accounts',
+            ],
         ]);
         $this->assertFalse($user->isVerified);
         $this->assertInstanceOf(UserDetails::class, $user->details);
         $this->assertIsArray($user->details->emails);
-        $this->assertEquals($user->details->emails[0], 'azandrewdevelopper@gmail.com');
+        $this->assertSame($user->details->emails[0], 'azandrewdevelopper@gmail.com');
         $this->assertInstanceOf(User::class, $user);
     }
 }

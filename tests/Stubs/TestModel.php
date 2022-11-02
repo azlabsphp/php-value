@@ -15,6 +15,11 @@ namespace Drewlabs\PHPValue\Tests\Stubs;
 
 class TestModel
 {
+    public function __get($name)
+    {
+        return array_merge($this->getRelations(), $this->attributesToArray())[$name] ?? null;
+    }
+
     public function getPrimaryKey()
     {
         return 'id';
@@ -59,13 +64,12 @@ class TestModel
     }
 
     /**
-     * 
-     * @return TestModelRelation1[] 
+     * @return TestModelRelation1[]
      */
     public function getRelations()
     {
         return [
-            'person' => new TestModelRelation1
+            'person' => new TestModelRelation1(),
         ];
     }
 
@@ -76,10 +80,5 @@ class TestModel
 
     public function setHidden(array $values)
     {
-    }
-
-    public function __get($name)
-    {
-        return array_merge($this->getRelations(), $this->attributesToArray())[$name] ?? null;
     }
 }

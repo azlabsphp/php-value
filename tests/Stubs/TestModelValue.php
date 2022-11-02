@@ -18,7 +18,6 @@ use Drewlabs\PHPValue\Traits\ModelAwareValue;
 
 class TestModelValue implements ValueInterface
 {
-
     use ModelAwareValue;
 
     protected $__PROPERTIES__ = [
@@ -30,10 +29,10 @@ class TestModelValue implements ValueInterface
     public function getCasts()
     {
         return [
-            'label' => function ($value) {
+            'label' => static function ($value) {
                 return null !== $value ? strtoupper($value) : $value;
             },
-            'person' => 'value:' . TestModelRelation1Value::class
+            'person' => 'value:'.TestModelRelation1Value::class,
         ];
     }
 
@@ -44,7 +43,7 @@ class TestModelValue implements ValueInterface
             array_map(
                 static function ($comment) {
                     return [
-                        'content' => is_array($comment) ? $comment['content'] : $comment,
+                        'content' => \is_array($comment) ? $comment['content'] : $comment,
                     ];
                 },
                 $comments ?? []

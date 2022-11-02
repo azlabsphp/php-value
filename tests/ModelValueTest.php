@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Drewlabs\Support\Tests\Unit;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use BadMethodCallException;
 use Drewlabs\PHPValue\Tests\Stubs\TestModel;
 use Drewlabs\PHPValue\Tests\Stubs\TestModelValue;
 use Drewlabs\PHPValue\Tests\Stubs\TestResolvableValueModel;
@@ -32,7 +31,7 @@ class ModelValueTest extends TestCase
     {
         $model = new TestModelValue(new TestModel());
         $model = $model->copy([
-            'comments' => ['Github issues issues']
+            'comments' => ['Github issues issues'],
         ]);
         $this->assertSame($model->comments[0]['content'], 'Github issues issues');
     }
@@ -46,26 +45,26 @@ class ModelValueTest extends TestCase
     public function test_call_model_methods()
     {
         $value = new TestModelValue(new TestModel());
-        $this->assertEquals($value->getKey(), 1);
-        $this->assertEquals($value->getPrimaryKey(), 'id');
+        $this->assertSame($value->getKey(), 1);
+        $this->assertSame($value->getPrimaryKey(), 'id');
     }
 
     public function test_model_value_to_array()
     {
-        $object = new TestModelValue(new TestModel);
+        $object = new TestModelValue(new TestModel());
         $this->assertInstanceOf(ValueInterface::class, $object->person);
     }
 
     public function test_resolve_model_fallback_call_throws_exception()
     {
-        $this->expectException(BadMethodCallException::class);
+        $this->expectException(\BadMethodCallException::class);
         $value = new TestModelValue();
-        $this->assertTrue($value->getKey() === 1);
+        $this->assertTrue(1 === $value->getKey());
     }
 
     public function test_resolve_model_fallback_call()
     {
         $value = new TestResolvableValueModel();
-        $this->assertTrue($value->getKey() === 1);
+        $this->assertTrue(1 === $value->getKey());
     }
 }

@@ -17,7 +17,8 @@ use Drewlabs\Core\Helpers\Arr;
 
 trait Value
 {
-    use BaseTrait, Castable;
+    use BaseTrait;
+    use Castable;
 
     /**
      * Creates an instance of Drewlabs\PHPValue\ValueObject::class.
@@ -30,6 +31,16 @@ trait Value
         $this->setPropertiesValue($attributes ?? []);
     }
 
+    /**
+     * Convert the object to an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return Arr::create($this->getIterator());
+    }
+
     final protected function getRawAttribute(string $name)
     {
         [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
@@ -40,16 +51,7 @@ trait Value
         if ($key && ($value = $attributes[$key])) {
             return $value;
         }
-        return null;
-    }
 
-    /**
-     * Convert the object to an array.
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return Arr::create($this->getIterator());
+        return null;
     }
 }

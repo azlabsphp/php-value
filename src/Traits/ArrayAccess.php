@@ -26,19 +26,20 @@ trait ArrayAccess
     {
         throw new ImmutableValueException(__CLASS__);
     }
-    
+
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->getRawAttributes()->offsetExists($offset);
     }
-    
+
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (\is_int($offset)) {
             return;
         }
+
         return $this->__get($offset);
     }
 
@@ -46,8 +47,8 @@ trait ArrayAccess
      * {@inheritDoc}
      *
      * @throws ImmutableValueException Use the {copyWith} method to create
-     *                                  a new object from the properties of the current object while changing the
-     *                                  needed properties
+     *                                 a new object from the properties of the current object while changing the
+     *                                 needed properties
      */
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
@@ -59,8 +60,8 @@ trait ArrayAccess
      * {@inheritDoc}
      *
      * @throws ImmutableValueException Use the {copyWith} method to create
-     *                                  a new object from the properties of the current object while changing the
-     *                                  needed properties to null
+     *                                 a new object from the properties of the current object while changing the
+     *                                 needed properties to null
      */
     #[\ReturnTypeWillChange]
     public function offsetUnset($offset)

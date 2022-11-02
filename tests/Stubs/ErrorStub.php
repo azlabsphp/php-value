@@ -13,17 +13,25 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-use Drewlabs\PHPValue\Contracts\ResolveModelAware;
-use Drewlabs\PHPValue\Contracts\ValueInterface;
-
-use Drewlabs\PHPValue\Traits\ModelAwareValue;
-
-class TestResolvableValueModel implements ValueInterface, ResolveModelAware
+class ErrorStub
 {
-    use ModelAwareValue;
+    /**
+     * @var string
+     */
+    private $message;
 
-    public function resolveModel()
+    public function __construct($message)
     {
-        return new TestModel();
+        $this->message = $message;
+    }
+
+    /**
+     * Returns the error message.
+     *
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 }

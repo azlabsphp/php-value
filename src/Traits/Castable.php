@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Drewlabs package.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Arr;
@@ -13,7 +24,6 @@ use Drewlabs\PHPValue\Cast;
  */
 trait Castable
 {
-
     public function getCasts()
     {
         return $this->__CASTS__ ?? [];
@@ -22,19 +32,21 @@ trait Castable
     public function setCasts(array $value)
     {
         $this->__CASTS__ = $value ?? $this->__CASTS__ ?? [];
+
         return $this;
     }
 
     public function getCastableProperty(string $key, $value, \Closure $default)
     {
-        $cast =  new Cast($this);
+        $cast = new Cast($this);
         $value = $cast->__invoke($key, $value);
-        return  null !== $value ? $value : $default();
+
+        return null !== $value ? $value : $default();
     }
 
     public function setCastableProperty(string $key, $value, \Closure $default)
     {
-        $cast =  new Cast($this);
+        $cast = new Cast($this);
         if ($cast->isClosureCastable($key)) {
             return $default();
         }
@@ -52,16 +64,16 @@ trait Castable
         if (Str::contains($key, '->')) {
             return $this->setRawAttribute($key, $this->computeJsonAttributeAtPath($key, $value));
         }
+
         return $default();
     }
-
-
 
     /**
      * Set a given JSON attribute on the model.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return $this
      */
     public function computeJsonAttributeAtPath($key, $value)
@@ -75,20 +87,22 @@ trait Castable
                 $value
             )
         );
+
         return $value;
     }
 
     /**
      * Get an array attribute with the given key and value set.
      *
-     * @param  string  $path
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $path
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return $this
      */
     private function updateValueAtPath($path, $key, $value)
     {
-        return Functional::tap($this->getArrayAttributeByKey($key), function (&$array) use ($path, $value) {
+        return Functional::tap($this->getArrayAttributeByKey($key), static function (&$array) use ($path, $value) {
             Arr::set($array, str_replace('->', '.', $path), $value);
         });
     }
@@ -96,7 +110,8 @@ trait Castable
     /**
      * Get an array attribute or return an empty array if it is not set.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return array
      */
     private function getArrayAttributeByKey($key)

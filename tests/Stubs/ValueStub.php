@@ -19,15 +19,20 @@ use Drewlabs\PHPValue\Traits\Value;
 
 class ValueStub implements CastsAware
 {
-    use Castable, Value;
-
-    private $__CASTS__ = [
-        'message' => 'value:' . Message::class
-    ];
+    use Castable;
+    use Value;
 
     protected $__PROPERTIES__ = [
         'name',
         'address',
-        'message'
+        'message',
+        'likes',
+        'errors',
+    ];
+
+    private $__CASTS__ = [
+        'message' => 'value:'.Message::class,
+        'likes' => 'arrayOf:'.LikeStub::class,
+        'errors' => 'streamOf:'.ErrorStub::class,
     ];
 }

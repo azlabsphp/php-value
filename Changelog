@@ -21,3 +21,7 @@
 
 - Add ResolveModelAware interface for model value to be able to resolve model from class name
 - Fix missing getJsonableAttributes and __PROPERTIES__ from value classes
+
+## [v0.1.10] 2022-11-02
+
+- Added streamOf, arrayOf and collectionOf type caster implementations to support casting list of value to a specific type

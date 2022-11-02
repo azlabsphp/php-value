@@ -22,6 +22,6 @@ class TestModelRelation1Value implements ValueInterface
 
     protected $__PROPERTIES__ = [
         'name',
-        'score'
+        'score',
     ];
 }

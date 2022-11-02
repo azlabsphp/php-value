@@ -1,10 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Drewlabs package.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue\Exceptions;
 
-use RuntimeException;
-
-class InvalidCastException extends RuntimeException
+class InvalidCastException extends \RuntimeException
 {
     /**
      * The name of the affected Eloquent model.
@@ -30,14 +39,15 @@ class InvalidCastException extends RuntimeException
     /**
      * Create a new exception instance.
      *
-     * @param  object  $model
-     * @param  string  $property
-     * @param  string  $castType
+     * @param object $model
+     * @param string $property
+     * @param string $castType
+     *
      * @return static
      */
     public function __construct($model, $property, $castType)
     {
-        $class = get_class($model);
+        $class = \get_class($model);
         parent::__construct("Call to undefined cast [{$castType}] on property [{$property}] in model [{$class}].");
         $this->model = $class;
         $this->property = $property;

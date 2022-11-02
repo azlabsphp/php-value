@@ -1,34 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Drewlabs package.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue\Contracts;
 
 interface CastPropertyInterface
 {
     /**
-     * Set the arguments to use when casting property
-     * 
-     * @param array $arguments 
-     * @return self 
+     * Set the arguments to use when casting property.
+     *
+     * @return self
      */
     public function setArguments(array $arguments);
 
     /**
-     * Transform property to it underlying {@see Value}
+     * Transform property to it underlying {@see Value}.
      *
-     * @param string $name 
-     * @param mixed $value 
-     * @param CastsAware|null $model 
-     * @return mixed 
+     * @param mixed $value
+     *
+     * @return mixed
      */
     public function set(string $name, $value, ?CastsAware $model = null);
 
     /**
-     * Transform property from it underlying {@see Value}
-     * 
-     * @param string $name 
-     * @param mixed $value 
-     * @param CastsAware|null $model 
-     * @return mixed 
+     * Transform property from it underlying {@see Value}.
+     *
+     * @param mixed $value
+     *
+     * @return mixed
      */
     public function get(string $name, $value, ?CastsAware $model = null);
 }

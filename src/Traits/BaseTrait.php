@@ -18,36 +18,26 @@ use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\CastsAware;
-use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 
 trait BaseTrait
 {
-    use ArrayAccess, Clonable, IteratorAware, AttributesAware, Serializable;
+    use ArrayAccess;
+    use AttributesAware;
+    use Clonable;
+    use IteratorAware;
+    use Serializable;
 
     /**
-     *
-     *
      * @var \Closure&object
      */
     private $__GET__PROPERTY__VALUE__;
 
-
-    /**
-     * Creates an instance of the value interface class
-     * 
-     * @param array|object|null $attributes 
-     * @return self|ValueInterface 
-     */
-    public static function new($attributes = [])
-    {
-        return new self($attributes);
-    }
-
     /**
      * Makes class attributes accessible through -> syntax.
      *
-     * @param  $name
+     * @param $name
      *
      * @return mixed
      */
@@ -66,7 +56,7 @@ trait BaseTrait
      */
     public function __set($name, $value)
     {
-        if (in_array($name, ['__HIDDEN__', '__PROPERTIES__', '__CASTS__'])) {
+        if (\in_array($name, ['__HIDDEN__', '__PROPERTIES__', '__CASTS__'], true)) {
             return $this->$name = $value;
         }
         throw new ImmutableValueException(__CLASS__);
@@ -81,7 +71,18 @@ trait BaseTrait
     }
 
     /**
+     * Creates an instance of the value interface class.
      *
+     * @param array|object|null $attributes
+     *
+     * @return self|ValueInterface
+     */
+    public static function new($attributes = [])
+    {
+        return new self($attributes);
+    }
+
+    /**
      * @description Creates a copy of the current object changing the changing old attributes
      * values with newly proivided ones
      */
@@ -102,9 +103,10 @@ trait BaseTrait
                 $this->setAttribute($key, $value_);
             }
         }
+
         return $this;
     }
-    //region Array access method definitions
+    // region Array access method definitions
 
     /**
      * Query for the provided $key in the object attribute.
@@ -118,7 +120,7 @@ trait BaseTrait
         return ($this->__GET__PROPERTY__VALUE__)(
             $key,
             $this->getRawAttribute($key),
-            is_callable($default) ? $default : function () use ($key, $default) {
+            \is_callable($default) ? $default : function () use ($key, $default) {
                 return Arr::get(
                     (($value = $this->getRawAttributes())) ? $value->toArray() : [],
                     $key,
@@ -134,15 +136,16 @@ trait BaseTrait
      * Merge object attributes.
      *
      * @param array|mixed $attributes
+     *
      * @return BaseTrait
      */
     public function merge($attributes = [])
     {
         return $this->setAttributes(
-            is_object($attributes) ?
+            \is_object($attributes) ?
                 (method_exists($attributes, 'toArray') ?
                     $attributes->toArray() :
-                    get_object_vars($attributes)) : (is_array($attributes) ?
+                    get_object_vars($attributes)) : (\is_array($attributes) ?
                     $attributes : [])
         );
     }
@@ -152,19 +155,19 @@ trait BaseTrait
      * user provided ones.
      *
      * @param array|mixed $attributes
+     *
      * @return self
      */
     public function copy($attributes = [])
     {
         return $this->clone()->setAttributes(
-            is_object($attributes) ?
+            \is_object($attributes) ?
                 (method_exists($attributes, 'toArray') ?
                     $attributes->toArray() :
-                    get_object_vars($attributes)) : (is_array($attributes) ?
+                    get_object_vars($attributes)) : (\is_array($attributes) ?
                     $attributes : [])
         );
     }
-
 
     #[\ReturnTypeWillChange]
     public function jsonSerialize()
@@ -181,21 +184,23 @@ trait BaseTrait
      */
     protected function callPropertySetter($name, $value)
     {
-        $method = 'set' . Str::camelize($name) . 'Attribute';
+        $method = 'set'.Str::camelize($name).'Attribute';
         $result = $this->{$method}($value);
         if (null !== $result) {
             $this->setRawAttribute($name, $result);
         }
+
         return $this;
     }
 
-    protected function callPropertyGetter($name, $value, \Closure $default = null)
+    protected function callPropertyGetter($name, $value, ?\Closure $default = null)
     {
         if ($this->hasPropertyGetter($name)) {
-            $method = 'get' . Str::camelize($name) . 'Attribute';
+            $method = 'get'.Str::camelize($name).'Attribute';
+
             return $this->{$method}($value);
         }
-        $default = function () use ($value, $default) {
+        $default = static function () use ($value, $default) {
             if (null === ($value = $value)) {
                 return $default ? $default() : $value;
             }
@@ -211,6 +216,7 @@ trait BaseTrait
         ) {
             return $this->getCastableProperty($name, $value, $default);
         }
+
         return $default();
     }
 
@@ -219,17 +225,17 @@ trait BaseTrait
      */
     protected function initialize()
     {
-        $this->setRawAttributes(new Accessible);
+        $this->setRawAttributes(new Accessible());
         $this->buildPropsDefinitions();
         $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function (...$args) {
             return $this->callPropertyGetter(...$args);
         });
+
         return $this;
     }
 
     /**
      * Attributes setter internal method.
-     *
      *
      * @return self
      */
@@ -237,15 +243,16 @@ trait BaseTrait
     {
         $properties = $this->getProperties();
         foreach ($properties as $key => $value) {
-            if (null !== ($value_ = ($attributes[strval($value)] ?? null))) {
+            if (null !== ($value_ = ($attributes[(string) $value] ?? null))) {
                 $this->setAttribute($key, $value_);
             }
         }
+
         return $this;
     }
 
     /**
-     * @internal Internal attribute setter method.
+     * @internal internal attribute setter method
      *
      * @param mixed $value
      *
@@ -282,14 +289,13 @@ trait BaseTrait
 
     private function hasPropertyGetter($name)
     {
-        return method_exists($this, 'get' . Str::camelize($name) . 'Attribute');
+        return method_exists($this, 'get'.Str::camelize($name).'Attribute');
     }
 
     private function hasPropertySetter($name)
     {
-        return method_exists($this, 'set' . Str::camelize($name) . 'Attribute');
+        return method_exists($this, 'set'.Str::camelize($name).'Attribute');
     }
-
 
     private function setPropertiesValue($attributes)
     {
@@ -314,7 +320,7 @@ trait BaseTrait
                 $this->getJsonableAttributes() : [];
         }
         foreach ($properties as $key => $_) {
-            if (!is_string($key)) {
+            if (!\is_string($key)) {
                 $associative = false;
                 break;
             }

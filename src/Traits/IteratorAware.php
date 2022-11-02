@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Drewlabs package.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue\Traits;
 
 trait IteratorAware
@@ -11,7 +22,7 @@ trait IteratorAware
         // if order to filter them from the ouput dictionary
         [$properties, $expects, $attributes] = [$this->getProperties(), $this->getHidden(), $this->getRawAttributes()];
         foreach ($properties as $key => $value) {
-            if (!empty(\array_intersect($expects, [$key, $value]))) {
+            if (!empty(array_intersect($expects, [$key, $value]))) {
                 continue;
             }
             // Each property value is passed though the serialization pipe for it to be casted if
