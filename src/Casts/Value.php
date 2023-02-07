@@ -30,22 +30,22 @@ class Value implements CastPropertyInterface
 
     public function get(string $name, $value, ?CastsAware $model = null)
     {
+        // First we query for the value using the it property name if the value
+        // point to null reference
+        $value = $value ?? ($model ? $model->getRawAttributes()[$name] : null) ?? null;
+
+        // Case the value point to a null reference, we simply return the value 
+        // without any further action
+        if (null === $value) {
+            return $value;
+        }
+        // Case the arguments is empty, we simply create a dynamic value instance
         if (empty($this->arguments)) {
             return CreateValue(array_keys($value))->copy($value);
         }
-        $instance = trim($this->arguments[0] ?? '');
-        if (!class_exists($instance)) {
-            return CreateValue(empty($this->arguments) ? array_keys($value) : array_values($this->arguments))
-                ->copy($value);
-        }
-
-        return $instance ?
-            new $instance(
-                $value ??
-                    ($model ? $model->getRawAttributes()[$name] : null)
-                    ?? null,
-                ...\array_slice($this->arguments ?? [], 1)
-            ) :
-            $value;
+        $props = empty($this->arguments) ? array_keys($value) : array_values(\array_slice($this->arguments ?? [], 1));
+        // Case the first item in the argument array is a class we create a new instance of it, else we create a default value object
+        // from the attributes
+        return !class_exists($instance = trim($this->arguments[0] ?? '')) ?  CreateValue([$instance, ...$props])->copy($value) : new $instance($value, ...$props);
     }
 }

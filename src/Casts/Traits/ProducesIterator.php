@@ -33,35 +33,26 @@ trait ProducesIterator
     protected function createIterable(string $name, $value, ?CastsAware $model = null)
     {
         $value = $value ?? ($model ? $model->getRawAttributes()[$name] : null) ?? null;
-        if (
-            \is_object($value) &&
+        $iterable = \is_object($value) &&
             (method_exists($value, 'getIterator') || $value instanceof CollectionInterface) &&
-            is_iterable($result = $value->getIterator())
-        ) {
-            $iterable = $result;
-        } else {
-            $iterable = $value;
-        }
+            is_iterable($result = $value->getIterator()) ? $result : $value;
         if (!is_iterable($iterable)) {
             throw new \InvalidArgumentException(sprintf("%s must has getIterator(): \Traversable  method or implements %s interface", \get_class($value)));
         }
-        $instance = trim($this->arguments[0] ?? '');
-
-        $properties = empty($this->arguments) ? array_keys($value) : array_values($this->arguments);
-
         if (empty($this->arguments)) {
             return CreateValue(array_keys($value))->copy($value);
         }
-
-        $creatorFunction = !class_exists($instance) ? static function ($item) use ($properties) {
-            return CreateValue($properties)->copy($item);
-        }
-        : static function ($item) use ($instance) {
-            return new $instance($item);
+        /**
+         * @var array $props
+         */
+        $props = empty($this->arguments) ? array_keys($value) : array_values(\array_slice($this->arguments ?? [], 1));
+        $fn = !class_exists($instance = trim($this->arguments[0] ?? '')) ? static function ($item) use ($props, $instance) {
+            return CreateValue([$instance, ...$props])->copy($item);
+        } : static function ($item) use ($instance, $props) {
+            return new $instance($item, ...$props);
         };
-
         foreach ($iterable as $current) {
-            yield $creatorFunction($current);
+            yield $fn($current);
         }
     }
 }

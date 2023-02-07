@@ -151,4 +151,25 @@ class CastTest extends TestCase
         $result = $cast->getClassCastableProperty('errors', null);
         $this->assertSame('Not Found HTTP Error', iterator_to_array($result)[1]->getMessage());
     }
+
+    public function test_cast_value_return_null_if_source_is_null_or_missing()
+    {
+        $stub = new ValueStub([
+            'errors' => [
+                'Server Error',
+                'Not Found HTTP Error',
+            ],
+            'message' => null
+        ]);
+        $stub2 = new ValueStub([
+            'errors' => [
+                'Server Error',
+                'Not Found HTTP Error',
+            ],
+        ]);
+        $cast = new Cast($stub);
+        $this->assertTrue(null === $cast->getClassCastableProperty('message', null));
+        $this->assertTrue(null === $stub->message);
+        $this->assertTrue(null === $stub2->message);
+    }
 }
