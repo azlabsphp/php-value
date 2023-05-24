@@ -6,32 +6,6 @@ Note: Implementation of the value object tries to enforce immutability of object
 
 Value object implementation tries to leverage the dynamic aspect of the PHP Programming language to provide flexible object structure, while enforcing the property define/declaration at initialization.
 
-## Installation
-
-Recommended way to install the library is by using composer package manager. As it's a github package an is under development you should add package and repository reference:
-
-```json
-// composer.json
-{
-    // ...
-    "require": {
-        "drewlabs/php-value": "^0.1"
-    },
-    // Adding repository
-    
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:liksoft/drewlabs-php-value.git"
-        }
-    ]
-}
-```
-
-After you modify your composer.json you simply run:
-
-> composer update
-
 ## Usage
 
 The library offer two interface for creating an object. 
