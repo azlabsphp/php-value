@@ -13,11 +13,53 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-class TestModelRelation2
+use Drewlabs\PHPValue\Contracts\ObjectInterface;
+
+class TestModelRelation2 implements ObjectInterface
 {
+    /**
+     * Class properties
+     * 
+     * @var string[]
+     */
+    private $__PROPERTIES__ = ['person_id', 'url'];
+
+    /**
+     * Class attributes
+     * 
+     * @var (int|string)[]
+     */
+    private $__DICT__ = [
+        'person_id' => 1,
+        'url' => 'https://picsum.photos/id/1/200/300',
+    ];
+
+    /**
+     * Class relations
+     * 
+     * @var array
+     */
+    private $__RELATIONS__ = [];
+
+
+    public function getPropertyValue(string $name)
+    {
+        return $this->__get($name);
+    }
+
+    public function propertyExists(string $name): bool
+    {
+        return in_array($name, $this->__PROPERTIES__);
+    }
+
+    public function setPropertyValue(string $name, $value)
+    {
+        return $this->__DICT__[$name] = $value;
+    }
+
     public function __get($name)
     {
-        return array_merge([], $this->attributesToArray())[$name] ?? null;
+        return $this->toArray()[$name] ?? null;
     }
 
     public function getPrimaryKey()
@@ -37,26 +79,22 @@ class TestModelRelation2
 
     public function attributesToArray()
     {
-        return [
-            'person_id' => 1,
-            'url' => 'https://picsum.photos/id/1/200/300',
-        ];
+        return $this->__DICT__;
     }
 
     public function getAttributes()
     {
-        return [
-            'person_id' => 1,
-            'url' => 'https://picsum.photos/id/1/200/300',
-        ];
+        return $this->__DICT__;
     }
 
     public function toArray()
     {
-        return [
-            'person_id' => 1,
-            'url' => 'https://picsum.photos/id/1/200/300',
-        ];
+        return array_merge($this->attributesToArray(), $this->getRelations());
+    }
+
+    public function getRelations()
+    {
+        return $this->__RELATIONS__;
     }
 
     public function getHidden()

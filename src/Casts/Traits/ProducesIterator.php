@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Casts\Traits;
 
 use Drewlabs\PHPValue\Contracts\CastsAware;
-use Drewlabs\PHPValue\Contracts\CollectionInterface;
 use function Drewlabs\PHPValue\Functions\CreateValue;
 
 use Drewlabs\PHPValue\Traits\BaseTrait;
+use IteratorAggregate;
 
 trait ProducesIterator
 {
@@ -32,10 +32,8 @@ trait ProducesIterator
      */
     protected function createIterable(string $name, $value, ?CastsAware $model = null)
     {
-        $value = $value ?? ($model ? $model->getRawAttributes()[$name] : null) ?? null;
-        $iterable = \is_object($value) &&
-            (method_exists($value, 'getIterator') || $value instanceof CollectionInterface) &&
-            is_iterable($result = $value->getIterator()) ? $result : $value;
+        $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;
+        $iterable = \is_object($value) && (method_exists($value, 'getIterator') || $value instanceof IteratorAggregate) && is_iterable($result = $value->getIterator()) ? $result : $value;
         if (!is_iterable($iterable)) {
             throw new \InvalidArgumentException(sprintf("%s must has getIterator(): \Traversable  method or implements %s interface", \get_class($value)));
         }

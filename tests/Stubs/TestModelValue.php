@@ -14,16 +14,16 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use Drewlabs\PHPValue\Traits\ModelAwareValue;
+use Drewlabs\PHPValue\Traits\ModelAware;
 
 class TestModelValue implements ValueInterface
 {
-    use ModelAwareValue;
+    use ModelAware;
 
     protected $__PROPERTIES__ = [
-        'label',
-        'comments',
-        'title',
+        'label' => 'label',
+        'Comments' => 'comments',
+        'title' => 'title',
     ];
 
     public function getCasts()

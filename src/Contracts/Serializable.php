@@ -13,15 +13,10 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Contracts;
 
-interface Serializable
-{
-    /**
-     * Convert object back to dictionnary used to create it.
-     *
-     * @return array|object
-     */
-    public function serialize();
+use JsonSerializable;
 
+interface Serializable extends JsonSerializable
+{
     /**
      * Returns a JSON encoded string from the current object.
      *

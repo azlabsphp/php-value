@@ -31,7 +31,7 @@ class Accessible implements CastPropertyInterface
     public function get(string $name, $value, ?CastsAware $model = null)
     {
         $accessible = new AccessibleClass();
-        $value = null === $value ? $model->getRawAttributes()[$name] ?? null : $value;
+        $value = null === $value ? $model->getRawAttribute($name) ?? null : $value;
         if (\is_object($value)) {
             return $accessible->merge(get_object_vars($value));
         }

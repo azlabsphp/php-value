@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 
 class ValueTest extends TestCase
 {
-    public function testValueObjectCopyWithMethod()
+    public function test_Value_Object_Copy_Method()
     {
         $message = Message::new(
             [
@@ -37,7 +37,7 @@ class ValueTest extends TestCase
                 'Logger' => new FileLogger(),
             ]
         );
-        $message_z = $message->copyWith([
+        $message_z = $message->copy([
             'From' => 'zzz-zzz-zzz',
         ]);
         $message_z->Logger->updateMutable();
@@ -90,7 +90,7 @@ class ValueTest extends TestCase
             'To' => 'yyy-yyy-yyy',
             'Logger' => new FileLogger(),
         ]);
-        $this->assertTrue(Str::contains($message->serialize()['From'], 'xxx'), 'Expect the from property to contains xxx');
+        $this->assertTrue(Str::contains($message->jsonSerialize()['from'], 'xxx'), 'Expect the from property to contains xxx');
     }
 
     public function testNonAssocValueObject()
@@ -117,7 +117,7 @@ class ValueTest extends TestCase
         $object->From = 'xxx-xxx-xxx';
         $object->To = 'yyy-yyy-yyy';
         // $object->Logger = new FileLogger();
-        $message = (Message::new())->fromStdClass($object);
+        $message = (Message::new())->fromObject($object);
         $this->assertSame($message->From, 'xxx-xxx-xxx', 'Expect from property value to equals xxx-xxx-xxx');
     }
 
@@ -127,7 +127,7 @@ class ValueTest extends TestCase
         $object->From = 'xxx-xxx-xxx';
         $object->To = 'yyy-yyy-yyy';
         $object->Logger = new FileLogger();
-        $message = (Message::new())->fromStdClass($object);
+        $message = (Message::new())->fromObject($object);
         $this->assertIsArray($message->attributesToArray(), 'Expect attributesToArray() method to return an array');
         $this->assertSame($message['from'], 'xxx-xxx-xxx');
     }
@@ -146,11 +146,11 @@ class ValueTest extends TestCase
         $geolocation->long = '4.8947352';
         $address->geolocation = $geolocation;
         $object->Address = $address;
-        $message = (Message::new())->fromStdClass($object);
+        $message = (Message::new())->fromObject($object);
         $this->assertIsString((string) $message, 'Expect object to be stringeable');
     }
 
-    public function testValueObjectGetIteratorMethod()
+    public function test_Value_Object_Get_Iterator_Method()
     {
         $object = new \stdClass();
         $object->From = 'xxx-xxx-xxx';
@@ -163,8 +163,8 @@ class ValueTest extends TestCase
         $geolocation->long = '4.8947352';
         $address->geolocation = $geolocation;
         $object->Address = $address;
-        $message = (Message::new())->fromStdClass($object);
-        $this->assertSame('test@example.com', $message->getAttribute('address.email'), 'Expect email to equals test@example.com');
+        $message = (Message::new())->fromObject($object);
+        $this->assertSame('test@example.com', $message->getAttribute('Address.email'), 'Expect email to equals test@example.com');
     }
 
     public function test_create_value_function()
@@ -208,5 +208,18 @@ class ValueTest extends TestCase
         $this->assertIsArray($user->details->emails);
         $this->assertSame($user->details->emails[0], 'azandrewdevelopper@gmail.com');
         $this->assertInstanceOf(User::class, $user);
+    }
+
+    public function test_value_object_add_properties_method()
+    {
+        $message = Message::new([
+            'From' => 'xxx-xxx-xxx',
+            'To' => 'yyy-yyy-yyy',
+        ]);
+        $message = $message->addProperties(['address', 'ratings']);
+        $message = $message->copy(['ratings' => 4.4]);
+        print_r([$message->getNotOwnedProperties(), $message->toArray()]);
+        $this->assertEquals(4.4, $message->ratings);
+
     }
 }

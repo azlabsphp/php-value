@@ -21,7 +21,6 @@ class AccessibleTest extends TestCase
     public function testIsEmptyMethod()
     {
         $this->assertTrue((new Accessible())->isEmpty(), 'Expect new PhpStdClass to be empty');
-        $this->assertTrue(drewlabs_core_is_empty(new Accessible()), 'Expect call to drewlabs_core_is_empty on new PhpStdClass to be empty');
     }
 
     public function testIssetMethod()

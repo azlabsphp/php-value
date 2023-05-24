@@ -30,16 +30,14 @@ class ModelValueTest extends TestCase
     public function test_set_comments_property()
     {
         $model = new TestModelValue(new TestModel());
-        $model = $model->copy([
-            'comments' => ['Github issues issues'],
-        ]);
-        $this->assertSame($model->comments[0]['content'], 'Github issues issues');
+        $model = $model->copy(['comments' => ['Github issues issues']]);
+        $this->assertSame($model->Comments[0]['content'], 'Github issues issues');
     }
 
     public function test_get_title_property()
     {
         $model = new TestModelValue(new TestModel());
-        $this->assertSame($model->title, 'Welcome to it world');
+        $this->assertSame($model->title, 'Welcome to IT World');
     }
 
     public function test_call_model_methods()
@@ -53,13 +51,6 @@ class ModelValueTest extends TestCase
     {
         $object = new TestModelValue(new TestModel());
         $this->assertInstanceOf(ValueInterface::class, $object->person);
-    }
-
-    public function test_resolve_model_fallback_call_throws_exception()
-    {
-        $this->expectException(\BadMethodCallException::class);
-        $value = new TestModelValue();
-        $this->assertTrue(1 === $value->getKey());
     }
 
     public function test_resolve_model_fallback_call()

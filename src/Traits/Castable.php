@@ -55,7 +55,9 @@ trait Castable
             return $this->setRawAttribute($key, $cast->computeEnumCastablePropertyValue($key, $value));
         }
         if ($cast->isClassCastable($key)) {
-            return $this->mergeRawAttributes($cast->computeClassCastablePropertyValue($key, $value) ?? []);
+            foreach ($cast->computeClassCastablePropertyValue($key, $value) ?? [] as $name => $value) {
+                $this->setRawAttribute($name, $value);
+            }
         }
 
         if (null !== $value && $cast->isJsonCastable($key)) {
@@ -120,9 +122,6 @@ trait Castable
             return [];
         }
 
-        return json_decode(
-            $this->getRawAttribute($key),
-            true
-        );
+        return json_decode($this->getRawAttribute($key), true);
     }
 }

@@ -16,11 +16,11 @@ namespace Drewlabs\PHPValue\Tests\Stubs;
 use Drewlabs\PHPValue\Contracts\ResolveModelAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 
-use Drewlabs\PHPValue\Traits\ModelAwareValue;
+use Drewlabs\PHPValue\Traits\ModelAware;
 
 class TestResolvableValueModel implements ValueInterface, ResolveModelAware
 {
-    use ModelAwareValue;
+    use ModelAware;
 
     public function resolveModel()
     {

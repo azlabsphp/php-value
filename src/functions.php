@@ -38,9 +38,7 @@ if (!\function_exists('CreateValue')) {
 
             public function useProperties(array $properties)
             {
-                $this->__PROPERTIES__ = $properties;
-                $this->initialize();
-
+                $this->buildPropsDefinitions($properties);
                 return $this;
             }
         });

@@ -13,11 +13,45 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-class TestModelRelation1
+use Drewlabs\PHPValue\Contracts\ObjectInterface;
+
+class TestModelRelation1 implements ObjectInterface
 {
+    /**
+     * Class properties
+     * 
+     * @var string[]
+     */
+    private $__PROPERTIES__ = ['name', 'score'];
+
+    /**
+     * Class attributes
+     * 
+     * @var (float|string)[]
+     */
+    private $__DICT__ = [
+        'name' => 'TEST PERSON',
+        'score' => .72,
+    ];
+
+    public function getPropertyValue(string $name)
+    {
+        return $this->__get($name);
+    }
+
+    public function propertyExists(string $name): bool
+    {
+        return in_array($name, $this->__PROPERTIES__);
+    }
+
+    public function setPropertyValue(string $name, $value)
+    {
+        return $this->__DICT__[$name] = $value;
+    }
+
     public function __get($name)
     {
-        return array_merge($this->getRelations(), $this->attributesToArray())[$name] ?? null;
+        return $this->toArray()[$name] ?? null;
     }
 
     public function getPrimaryKey()
@@ -37,27 +71,17 @@ class TestModelRelation1
 
     public function attributesToArray()
     {
-        return [
-            'name' => 'TEST PERSON',
-            'score' => .72,
-        ];
+        return $this->__DICT__ ?? [];
     }
 
     public function getAttributes()
     {
-        return [
-            'name' => 'TEST PERSON',
-            'score' => .72,
-        ];
+        return $this->__DICT__;
     }
 
     public function toArray()
     {
-        return [
-            'name' => 'TEST PERSON',
-            'score' => .72,
-            'profile' => new TestModelRelation2(),
-        ];
+        return array_merge($this->attributesToArray(), $this->getRelations());
     }
 
     /**

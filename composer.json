@@ -6,10 +6,12 @@
         "phpunit/phpunit": "^9.5"
     },
     "license": "MIT",
-    "authors": [{
-        "name": "azandrew-sidoine",
-        "email": "asmyns.platonnas29@gmail.com"
-    }],
+    "authors": [
+        {
+            "name": "azandrew-sidoine",
+            "email": "asmyns.platonnas29@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Drewlabs\\PHPValue\\": "src/"
@@ -23,16 +25,14 @@
             "Drewlabs\\PHPValue\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": "^7.3|^7.4|^8.0|^8.1",
-        "drewlabs/core-helpers": "^2.0",
+        "php": "^7.2|^7.3|^7.4|^8.0|^8.1",
+        "drewlabs/core-helpers": "^0.2",
+        "php-ds/php-ds": "^1.4",
         "symfony/polyfill-php81": "^1.24"
     },
-    "repositories": [{
-        "type": "vcs",
-        "url": "git@github.com:liksoft/drewlabs-php-core-helpers.git"
-    }],
     "keywords": [
         "built type",
         "cast",

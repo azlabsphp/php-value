@@ -13,8 +13,18 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Contracts;
 
-interface ValueInterface extends CastsAware, \JsonSerializable, \ArrayAccess, \IteratorAggregate, Serializable
+interface ValueInterface extends CastsAware, \ArrayAccess, \IteratorAggregate, Serializable
 {
+    /**
+     * Returns the parsed value of the provided `$name` attribute
+     * @template TResult
+     * 
+     * @param string $name 
+     * @param mixed $default 
+     * @return TResult 
+     */
+    public function getAttribute(string $name, $default = null);
+
     /**
      * @description Create a PHP Array from properties of the current object.
      * It works like PHP global function {@see get_object_vars}

@@ -14,12 +14,12 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use Drewlabs\PHPValue\Traits\ModelAwareValue;
+use Drewlabs\PHPValue\Traits\ModelAware;
 
 /**
  * Enhance the default {@see ValueObject} class with model bindings.
  */
 abstract class ModelValue implements ValueInterface, \IteratorAggregate
 {
-    use ModelAwareValue;
+    use ModelAware;
 }

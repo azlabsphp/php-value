@@ -13,26 +13,39 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Traits;
 
-use Drewlabs\Core\Helpers\Arr;
-use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
-use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\CastsAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 
+/**
+ * @property string[] __PROPERTIES__
+ * 
+ * @implements \Drewlabs\PHPValue\Contracts\ValueInterface
+ */
 trait BaseTrait
 {
     use ArrayAccess;
-    use AttributesAware;
-    use Clonable;
-    use IteratorAware;
-    use Serializable;
 
     /**
      * @var \Closure&object
      */
     private $__GET__PROPERTY__VALUE__;
+
+    /**
+     * Map of object property -> input property
+     * 
+     * @var array<string,string>
+     */
+    private $__PROP__MAP__ = [];
+
+    /**
+     * List of properties added to the current object that are not in the current
+     * object base definition
+     * 
+     * @var array<string>
+     */
+    private $__MISC__PROPERTIES__ = [];
 
     /**
      * Makes class attributes accessible through -> syntax.
@@ -62,111 +75,41 @@ trait BaseTrait
         throw new ImmutableValueException(__CLASS__);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function __toString()
-    {
-        return $this->getRawAttributes()->__toString();
-    }
 
     /**
-     * Creates an instance of the value interface class.
-     *
-     * @param array|object|null $attributes
-     *
-     * @return self|ValueInterface
+     * Creates new class instance
+     * 
+     * @param mixed ...$args 
+     * 
+     * @return self 
      */
-    public static function new($attributes = [])
+    public static function new(...$args)
     {
-        return new self($attributes);
-    }
-
-    /**
-     * @description Creates a copy of the current object changing the changing old attributes
-     * values with newly proivided ones
-     */
-    public function copyWith(array $attributes)
-    {
-        // Clone the current object to make default copy of it
-        return $this->clone()->setAttributes($attributes);
-    }
-
-    /**
-     * @description Create an instance of class from a standard PHP class
-     */
-    public function fromStdClass($object_)
-    {
-        $properties = $this->getProperties();
-        foreach ($properties as $key => $value) {
-            if (null !== ($value_ = ($object_->{$value} ?? null))) {
-                $this->setAttribute($key, $value_);
-            }
-        }
-
-        return $this;
-    }
-    // region Array access method definitions
-
-    /**
-     * Query for the provided $key in the object attribute.
-     *
-     * @param \Closure|mixed|null $default
-     *
-     * @return mixed
-     */
-    public function getAttribute(string $key, $default = null)
-    {
-        return ($this->__GET__PROPERTY__VALUE__)(
-            $key,
-            $this->getRawAttribute($key),
-            \is_callable($default) ? $default : function () use ($key, $default) {
-                return Arr::get(
-                    (($value = $this->getRawAttributes())) ? $value->toArray() : [],
-                    $key,
-                    function () use ($key) {
-                        return $this->__get($key);
-                    }
-                ) ?? $default;
-            }
-        );
+        return new self(...$args);
     }
 
     /**
      * Merge object attributes.
      *
-     * @param array|mixed $attributes
+     * @param array $attributes
      *
      * @return BaseTrait
      */
-    public function merge($attributes = [])
+    public function merge(array $attributes = [])
     {
-        return $this->setAttributes(
-            \is_object($attributes) ?
-                (method_exists($attributes, 'toArray') ?
-                    $attributes->toArray() :
-                    get_object_vars($attributes)) : (\is_array($attributes) ?
-                    $attributes : [])
-        );
+        return $this->setAttributes($attributes);
     }
 
     /**
-     * Copy object properties changing existing property values with
-     * user provided ones.
+     * Copy object properties changing existing attributes from values from `$attributes` parameter
      *
-     * @param array|mixed $attributes
+     * @param array $attributes
      *
      * @return self
      */
-    public function copy($attributes = [])
+    public function copy(array $attributes = [])
     {
-        return $this->clone()->setAttributes(
-            \is_object($attributes) ?
-                (method_exists($attributes, 'toArray') ?
-                    $attributes->toArray() :
-                    get_object_vars($attributes)) : (\is_array($attributes) ?
-                    $attributes : [])
-        );
+        return $this->clone()->setAttributes($attributes);
     }
 
     #[\ReturnTypeWillChange]
@@ -175,6 +118,65 @@ trait BaseTrait
         return $this->toArray();
     }
 
+    public function attributesToArray(array $expects = [])
+    {
+        // If except columns are provided, we merge the except columns with the hidden columns
+        // if order to filter them from the ouput dictionary
+        [$objProps, $expects] = [$this->getProperties(), array_unique(array_merge($this->getHidden(), $expects))];
+        $fn = function () use ($objProps, $expects) {
+            foreach ($objProps as $name) {
+                if (!empty(array_intersect($expects, [$name, $this->getRawProperty($name)]))) {
+                    continue;
+                }
+                // Each property value is passed though the serialization pipe for it to be casted if
+                // a cast or an serialization function is declared for it
+                yield $name => $this->callPropertyGetter($name, $this->getRawAttribute($name));
+            }
+        };
+        return iterator_to_array($fn());
+    }
+
+    public function getAttribute(string $key, $default = null)
+    {
+        return ($this->__GET__PROPERTY__VALUE__)(
+            $key,
+            $this->getRawAttribute($key),
+            \is_callable($default) ? $default : function () use ($default) {
+                return $default;
+            }
+        );
+    }
+
+    //#region Properties updates
+    public function getOwnedProperties()
+    {
+        return $this->__PROPERTIES__ ?? [];
+    }
+
+    /**
+     * Add a list of properties to the base objected properties
+     * 
+     * @param array $properties
+     * 
+     * @return self 
+     */
+    public function addProperties(array $properties = [])
+    {
+        $this->__MISC__PROPERTIES__ = array_unique(array_merge($this->getNotOwnedProperties(), array_diff($properties, $this->__PROPERTIES__ ?? [])));
+        return $this;
+    }
+
+    /**
+     * Returns a list of not owned properties for the current value
+     * 
+     * @return array 
+     */
+    public function getNotOwnedProperties()
+    {
+        return $this->__MISC__PROPERTIES__ ?? [];
+    }
+    //#endregion Properties updates
+
     // #region Protected & Private methods defintions
     /**
      * @param string $name
@@ -182,56 +184,29 @@ trait BaseTrait
      *
      * @return mixed
      */
-    protected function callPropertySetter($name, $value)
+    private function callPropertySetter($name, $value)
     {
-        $method = 'set'.Str::camelize($name).'Attribute';
-        $result = $this->{$method}($value);
+        $result = $this->{$this->propertySetterName($name)}($value);
         if (null !== $result) {
             $this->setRawAttribute($name, $result);
         }
-
         return $this;
     }
 
-    protected function callPropertyGetter($name, $value, ?\Closure $default = null)
+    private function callPropertyGetter($name, $value, ?\Closure $default = null)
     {
         if ($this->hasPropertyGetter($name)) {
-            $method = 'get'.Str::camelize($name).'Attribute';
-
-            return $this->{$method}($value);
+            return $this->{$this->propertyGetterName($name)}($value);
         }
         $default = static function () use ($value, $default) {
-            if (null === ($value = $value)) {
-                return $default ? $default() : $value;
-            }
-            // Returns null if no matching found
-            return $value;
+            return null === $value ? ($default ? $default() : $value) : $value;
         };
         // If the current object is instance of {@see CastsAware} and interface
         // exist {@see CastAware} we call the getCastableProperty method
-        if (
-            (interface_exists(CastsAware::class)) &&
-            ($this instanceof CastsAware) &&
-            (null !== ($this->getCasts()[$name] ?? null))
-        ) {
+        if ((interface_exists(CastsAware::class)) && ($this instanceof CastsAware) && (null !== ($this->getCasts()[$name] ?? null))) {
             return $this->getCastableProperty($name, $value, $default);
         }
-
         return $default();
-    }
-
-    /**
-     * @return self
-     */
-    protected function initialize()
-    {
-        $this->setRawAttributes(new Accessible());
-        $this->buildPropsDefinitions();
-        $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function (...$args) {
-            return $this->callPropertyGetter(...$args);
-        });
-
-        return $this;
     }
 
     /**
@@ -239,15 +214,13 @@ trait BaseTrait
      *
      * @return self
      */
-    protected function setAttributes(array $attributes)
+    private function setAttributes(array $attributes)
     {
-        $properties = $this->getProperties();
-        foreach ($properties as $key => $value) {
-            if (null !== ($value_ = ($attributes[(string) $value] ?? null))) {
-                $this->setAttribute($key, $value_);
+        foreach ($this->getProperties() as $name) {
+            if (null !== ($result = ($attributes[$name] ?? $attributes[$this->getRawProperty($name)] ?? null))) {
+                $this->setAttribute($name, $result);
             }
         }
-
         return $this;
     }
 
@@ -258,8 +231,9 @@ trait BaseTrait
      *
      * @return self|mixed
      */
-    protected function setAttribute(string $name, $value)
+    private function setAttribute(string $name, $value)
     {
+        // TODO: Query for the raw property value
         if ($this->hasPropertySetter($name)) {
             return $this->callPropertySetter($name, $value);
         }
@@ -282,52 +256,67 @@ trait BaseTrait
      *
      * @return array
      */
-    final protected function getProperties()
+    private function getProperties()
     {
-        return $this->__PROPERTIES__ ?? [];
+        return array_unique(array_merge($this->__PROPERTIES__ ?? [], $this->__MISC__PROPERTIES__ ?? []));
     }
 
     private function hasPropertyGetter($name)
     {
-        return method_exists($this, 'get'.Str::camelize($name).'Attribute');
+        return method_exists($this, $this->propertyGetterName($name));
     }
 
     private function hasPropertySetter($name)
     {
-        return method_exists($this, 'set'.Str::camelize($name).'Attribute');
+        return method_exists($this, $this->propertySetterName($name));
     }
 
-    private function setPropertiesValue($attributes)
+    private function buildPropsDefinitions(array $properties)
     {
-        if (\is_array($attributes)) {
-            $this->setAttributes($attributes);
-        } elseif (\is_object($attributes) || ($attributes instanceof \stdClass)) {
-            $this->fromStdClass($attributes);
-        }
-    }
-
-    private function buildPropsDefinitions()
-    {
-        $properties = null;
-        $associative = true;
-        if (property_exists($this, '__PROPERTIES__')) {
-            $properties = $this->__PROPERTIES__ ?? [];
-        } else {
-            // In future release getJsonableAttributes() support will be remove
-            // Fall back to deprecated getJsonableAttributes()
-            // function call if  __PROPERTIES__ property is not defined
-            $properties = method_exists($this, 'getJsonableAttributes') ?
-                $this->getJsonableAttributes() : [];
-        }
-        foreach ($properties as $key => $_) {
-            if (!\is_string($key)) {
-                $associative = false;
-                break;
-            }
+        // In case the properties attribute is not a dictionnary, we loop through each keys and 
+        // create a key=>value representation of the properties
+        $objProps = [];
+        foreach ($properties as $key => $value) {
+            $key = is_numeric($key) ? $value : $key;
+            $objProps[$key] = $value;
         }
         // Make properties definitions associative to uniformize
         // handlers
-        $this->__PROPERTIES__ = $associative ? $properties : array_combine($properties, $properties);
+        $this->__PROP__MAP__ = $objProps;
+        $this->__PROPERTIES__ = array_keys($objProps);
+    }
+
+    /**
+     * Return the raw property name corresponding to the `$name` property
+     * 
+     * @param string $name 
+     * @return string 
+     */
+    private function  getRawProperty(string $name)
+    {
+        return $this->__PROP__MAP__[$name] ?? $name;
+    }
+
+    /**
+     * Construct `$name` property setter name
+     * 
+     * @param string $name 
+     * @return string 
+     */
+    private function propertySetterName(string $name)
+    {
+        return 'set' . Str::camelize($name) . 'Attribute';
+    }
+
+    /**
+     * Construct `$name` property getter name
+     * 
+     * @param string $name 
+     * @return string 
+     */
+    private function propertyGetterName(string $name)
+    {
+        return 'get' . Str::camelize($name) . 'Attribute';
     }
     // #endregion Protected & Private methods defintions
 }

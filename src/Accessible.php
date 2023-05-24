@@ -13,6 +13,12 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue;
 
+use Countable;
+use Drewlabs\PHPValue\Contracts\ObjectInterface;
+use Ds\Map;
+use IteratorAggregate;
+use Traversable;
+
 /**
  * PHP stdClass extension usable as array accessible object.
  *
@@ -43,61 +49,103 @@ namespace Drewlabs\PHPValue;
  * $array = $object->toArray();
  * ```
  */
-class Accessible implements \ArrayAccess
+class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Countable
 {
     /**
-     * {@inheritDoc}
+     * Minimum capacity
+     * @var int
      */
-    public function __clone()
-    {
-        foreach ($this as $key => $value) {
-            if (\is_object($value)) {
-                $this[$key] = clone $value;
-            }
-        }
+    const MIN_CAPACITY = 8;
 
-        return $this;
+    /**
+     * @var int internal capacity
+     */
+    private $capacity = self::MIN_CAPACITY;
+
+    /**
+     * Internal map data structure
+     * 
+     * @var array<Pair>
+     */
+    private $__PAIRS__ = [];
+
+    public function getPropertyValue(string $name)
+    {
+        if (false !== strpos($name, '.')) {
+            $keys = explode('.', $name);
+            $last = count($keys);
+            $index = 1;
+            $output = $this->offsetGet(trim($keys[0]));
+            while ($index < $last) {
+                if (!(($is_object = is_object($output)) || is_array($output))) {
+                    return null;
+                }
+                $prop = trim($keys[$index]);
+                $output = !$is_object ? $output[$prop] : $output->{$prop};
+                $index++;
+            }
+            return $output;
+        }
+        return $this->offsetGet($name);
+    }
+
+    public function setPropertyValue(string $name, $value)
+    {
+        $this->offsetSet($name, $value);
     }
 
     public function __isset(string $name)
     {
-        return property_exists($this, $name) && (null !== $this[$name]);
+        return null !== $this->lookupKey($name);
     }
 
     // TODO : review the object formatting
     public function __toString()
     {
-        return json_encode($this, \JSON_PRETTY_PRINT);
+        return json_encode(iterator_to_array($this->getIterator()), \JSON_PRETTY_PRINT);
     }
 
     #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
-        $this->isStringOrFail($offset);
-
-        return property_exists($this, $offset);
+        return $this->lookupKey($offset) !== null;
     }
 
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        $this->isStringOrFail($offset);
+        if (($pair = $this->lookupKey($offset))) {
+            return $pair->value;
+        }
 
-        return $this->offsetExists($offset) ? $this->{$offset} : null;
+        return null;
     }
 
     #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
-        $this->isStringOrFail($offset);
-        $this->{$offset} = $value;
+        $pair = $this->lookupKey($offset);
+
+        if ($pair) {
+            $pair->value = $value;
+        } else {
+            $this->checkCapacity();
+            $this->__PAIRS__[] = new Pair($offset, $value);
+        }
     }
 
     #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
-        $this->isStringOrFail($offset);
-        unset($this->{$offset});
+        foreach ($this->__PAIRS__ as $position => $pair) {
+            if ($pair->key === $offset) {
+                $pair  = $this->__PAIRS__[$position];
+                array_splice($this->__PAIRS__, $position, 1, null);
+                $this->checkCapacity();
+                return;
+            }
+        }
+
     }
 
     /**
@@ -108,22 +156,12 @@ class Accessible implements \ArrayAccess
      */
     public function propertyExists($prop): bool
     {
-        return property_exists($this, $prop);
+        return $this->offsetExists($prop);
     }
 
     public function isEmpty()
     {
-        if (empty(get_object_vars($this))) {
-            return true;
-        }
-        // Iterate over object properties and return false if one property is set
-        foreach ($this as $v) {
-            if (isset($v)) {
-                return false;
-            }
-        }
-        // Return true if all properties of the object are not set
-        return true;
+        return count($this) === 0;
     }
 
     /**
@@ -143,7 +181,7 @@ class Accessible implements \ArrayAccess
      */
     public function each(\Closure $callback)
     {
-        foreach ($this as $key => $value) {
+        foreach ($this->getIterator() as $key => $value) {
             yield $callback(...[$key, $value]);
         }
     }
@@ -168,21 +206,7 @@ class Accessible implements \ArrayAccess
 
     public function toArray(): array
     {
-        return iterator_to_array(
-            (function () {
-                foreach ($this as $key => $value) {
-                    if (\is_object($value) && method_exists($value, 'toArray')) {
-                        yield $key => $value->toArray();
-                        continue;
-                    }
-                    if (\is_object($value)) {
-                        yield $key => (array) $value;
-                        continue;
-                    }
-                    yield $key => $value;
-                }
-            })()
-        );
+        return iterator_to_array($this->getIterator());
     }
 
     /**
@@ -197,14 +221,136 @@ class Accessible implements \ArrayAccess
         foreach ($attributes as $key => $value) {
             $this->offsetSet($key, $value);
         }
-
         return $this;
     }
 
-    private function isStringOrFail($property)
+    #[\ReturnTypeWillChange]
+    public function getIterator(): Traversable
     {
-        if (!\is_string($property)) {
-            throw new \InvalidArgumentException('Object accessible property must be of type string, got :'.\is_object($property) ? \get_class($property) : \gettype($property));
+        foreach ($this->__PAIRS__ as $pair) {
+            yield $pair->key => $pair->value;
         }
+    }
+
+    public function __clone()
+    {
+        $pairs = [];
+        foreach ($this->__PAIRS__ as $key => $value) {
+            $pairs[$key] = is_object($value) ? clone $value : $value;
+        }
+        $this->__PAIRS__ = $pairs;
+    }
+
+    //#region \Ds Namespace
+    /**
+     * Returns the current capacity.
+     */
+    public function capacity(): int
+    {
+        return $this->capacity;
+    }
+
+    /**
+     * Returns the total element in the map
+     * 
+     * @return int<0, \max> 
+     */
+    public function count(): int
+    {
+        return count($this->__PAIRS__);
+    }
+
+    /**
+     * Attempts to look up a key in the table.
+     *
+     * @param $key
+     *
+     * @return Pair|null
+     *
+     * @psalm-return Pair<TKey, TValue>|null
+     */
+    private function lookupKey($key)
+    {
+        foreach ($this->__PAIRS__ as $pair) {
+            if ($pair->key === $key) {
+                return $pair;
+            }
+        }
+    }
+
+    /**
+     * @return float the structures growth factor.
+     */
+    private function getGrowthFactor(): float
+    {
+        return 2;
+    }
+
+    /**
+     * @return float to multiply by when decreasing capacity.
+     */
+    private function getDecayFactor(): float
+    {
+        return 0.5;
+    }
+
+    /**
+     * @return float the ratio between size and capacity when capacity should be
+     *               decreased.
+     */
+    private function getTruncateThreshold(): float
+    {
+        return 0.25;
+    }
+
+    /**
+     * Checks and adjusts capacity if required.
+     */
+    private function checkCapacity()
+    {
+        if ($this->shouldIncreaseCapacity()) {
+            $this->increaseCapacity();
+        } else {
+            if ($this->shouldDecreaseCapacity()) {
+                $this->decreaseCapacity();
+            }
+        }
+    }
+
+    /**
+     * @return bool whether capacity should be increased.
+     */
+    private function shouldIncreaseCapacity(): bool
+    {
+        return $this->count() >= $this->capacity();
+    }
+
+    private function nextCapacity(): int
+    {
+        return (int) ($this->capacity() * $this->getGrowthFactor());
+    }
+
+    /**
+     * Called when capacity should be increased to accommodate new values.
+     */
+    private function increaseCapacity()
+    {
+        $this->capacity = max($this->count(), $this->nextCapacity());
+    }
+
+    /**
+     * Called when capacity should be decrease if it drops below a threshold.
+     */
+    private function decreaseCapacity()
+    {
+        $this->capacity = max(self::MIN_CAPACITY, (int) ($this->capacity()  * $this->getDecayFactor()));
+    }
+
+    /**
+     * @return bool whether capacity should be increased.
+     */
+    private function shouldDecreaseCapacity(): bool
+    {
+        return count($this) <= $this->capacity() * $this->getTruncateThreshold();
     }
 }

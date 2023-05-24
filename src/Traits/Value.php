@@ -13,12 +13,24 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Traits;
 
-use Drewlabs\Core\Helpers\Arr;
+use Drewlabs\Core\Helpers\Functional;
+use Drewlabs\PHPValue\Accessible;
+use Drewlabs\PHPValue\Contracts\ObjectInterface;
 
 trait Value
 {
     use BaseTrait;
     use Castable;
+    use HiddenAware;
+    use IteratorAware;
+
+
+    /**
+     * Properties container.
+     *
+     * @var Accessible|ObjectInterface
+     */
+    private $__DICT__;
 
     /**
      * Creates an instance of Drewlabs\PHPValue\ValueObject::class.
@@ -27,31 +39,88 @@ trait Value
      */
     public function __construct($attributes = [])
     {
-        $this->initialize();
-        $this->setPropertiesValue($attributes ?? []);
+        $this->buildPropsDefinitions(isset($this->__PROPERTIES__ ) ? $this->__PROPERTIES__  : []);
+        $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function (...$args) {
+            return $this->callPropertyGetter(...$args);
+        });
+        if (is_array($attributes)) {
+            $this->__DICT__ = new Accessible;
+            $this->__DICT__->merge($attributes);
+        } else if ($attributes instanceof ObjectInterface) {
+            $this->__DICT__ = $attributes;
+        } else {
+            $this->__DICT__ = new Accessible();
+        }
+    }
+
+
+    //#region Attributes
+    public function hasRawAttribute(string $name)
+    {
+        return null !== $this->__DICT__ && $this->__DICT__->propertyExists($this->getRawProperty($name));
+    }
+
+    public function getRawAttribute(string $name)
+    {
+        return $this->__DICT__->getPropertyValue($this->getRawProperty($name));
     }
 
     /**
-     * Convert the object to an array.
+     * @param mixed $value
      *
-     * @return array
+     * @return self
      */
+    private function setRawAttribute(string $name, $value)
+    {
+        $this->__DICT__->setPropertyValue($this->getRawProperty($name), $value);
+        return $this;
+    }
+    //#endrefion Attributes
+
     public function toArray()
     {
-        return Arr::create($this->getIterator());
+        return iterator_to_array($this->getIterator());
     }
 
-    final protected function getRawAttribute(string $name)
+    public function toJson()
     {
-        [$properties, $attributes] = [$this->getProperties() ?? [], $this->getRawAttributes()];
-        if (null !== ($value = $attributes[$name] ?? null)) {
-            return $value;
-        }
-        $key = Arr::search($name, $properties);
-        if ($key && ($value = $attributes[$key])) {
-            return $value;
-        }
-
-        return null;
+        return json_encode($this->toArray());
     }
+
+    //#region clone
+    public function __clone()
+    {
+        $this->__DICT__ = null !== $this->__DICT__ ? clone $this->__DICT__ : $this->__DICT__;
+        $this->__GET__PROPERTY__VALUE__ = $this->__GET__PROPERTY__VALUE__ ? clone $this->__GET__PROPERTY__VALUE__ : $this->__GET__PROPERTY__VALUE__;
+    }
+
+    public function clone()
+    {
+        return clone $this;
+    }
+    //#region clone
+
+    //#region String __repr__
+    public function __toString()
+    {
+        return json_encode($this->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+    //#endregion String __repr__
+
+    //#region Miscellanous
+    /**
+     * Set value properties from PHP object
+     * 
+     * @param object $object 
+     * 
+     * @return self 
+     */
+    public function fromObject(object $object)
+    {
+        foreach (get_object_vars($object) as $key => $value) {
+            $this->setRawAttribute(strval($key), $value);
+        }
+        return $this;
+    }
+    //#endregion Miscellaous
 }

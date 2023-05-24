@@ -17,12 +17,13 @@ use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 
 trait ArrayAccess
 {
-    public function __isset($name)
+    public function __isset($offset)
     {
-        return isset($this->getRawAttributes()[$name]);
+        // Add isset() method to value interface
+        return $this->hasRawAttribute($offset) && null !== $this->getRawAttribute($offset);
     }
 
-    public function __unset($name)
+    public function __unset($offset)
     {
         throw new ImmutableValueException(__CLASS__);
     }
@@ -30,7 +31,8 @@ trait ArrayAccess
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return $this->getRawAttributes()->offsetExists($offset);
+        // Add has() method to value interface
+        return $this->hasRawAttribute($offset);
     }
 
     #[\ReturnTypeWillChange]
@@ -39,7 +41,6 @@ trait ArrayAccess
         if (\is_int($offset)) {
             return;
         }
-
         return $this->__get($offset);
     }
 

@@ -20,14 +20,14 @@ trait IteratorAware
     {
         // If except columns are provided, we merge the except columns with the hidden columns
         // if order to filter them from the ouput dictionary
-        [$properties, $expects, $attributes] = [$this->getProperties(), $this->getHidden(), $this->getRawAttributes()];
-        foreach ($properties as $key => $value) {
-            if (!empty(array_intersect($expects, [$key, $value]))) {
+        $expects = $this->getHidden();
+        foreach ($this->getProperties() as $name) {
+            if (!empty(array_intersect($expects, [$name, $this->getRawProperty($name)]))) {
                 continue;
             }
             // Each property value is passed though the serialization pipe for it to be casted if
             // a cast or an serialization function is declared for it
-            yield $key => $this->callPropertyGetter($key, $this->getFromArrayAttribute($key, $attributes, $properties));
+            yield $name => $this->callPropertyGetter($name, $this->getRawAttribute($name));
         }
     }
 
@@ -38,6 +38,8 @@ trait IteratorAware
      */
     public function each(\Closure $callback)
     {
-        return $this->getRawAttributes()->each($callback);
+        foreach ($this->getIterator() as $key => $value) {
+            $callback($value, $key);
+        }
     }
 }

@@ -13,8 +13,48 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-class TestModel
+use Drewlabs\PHPValue\Contracts\ObjectInterface;
+
+class TestModel implements ObjectInterface
 {
+    /**
+     * Class properties
+     * 
+     * @var string[]
+     */
+    private $__PROPERTIES__ = ['title', 'label', 'comments'];
+
+    /**
+     * Class attributes
+     * 
+     * @var (string|string[][])[]
+     */
+    private $__DICT__ = [
+        'title' => 'Welcome to IT World',
+        'label' => 'Hello World!',
+        'comments' => [
+            [
+                'title' => 'HW issues',
+                'content' => 'Hello World issues',
+            ],
+        ],
+    ];
+
+    public function getPropertyValue(string $name)
+    {
+        return $this->__get($name);
+    }
+
+    public function propertyExists(string $name): bool
+    {
+        return in_array($name, $this->__PROPERTIES__);
+    }
+
+    public function setPropertyValue(string $name, $value)
+    {
+        return $this->__DICT__[$name] = $value;
+    }
+
     public function __get($name)
     {
         return array_merge($this->getRelations(), $this->attributesToArray())[$name] ?? null;
@@ -37,30 +77,17 @@ class TestModel
 
     public function attributesToArray()
     {
-        return [
-            'label' => 'Hello World!',
-        ];
+        return $this->__DICT__ ?? [];
     }
 
     public function getAttributes()
     {
-        return [
-            'label' => 'Hello World!',
-        ];
+        return array_merge($this->__DICT__, $this->getRelations());
     }
 
     public function toArray()
     {
-        return [
-            'title' => 'Welcome to IT World',
-            'label' => 'Hello World!',
-            'comments' => [
-                [
-                    'title' => 'HW issues',
-                    'content' => 'Hello World issues',
-                ],
-            ],
-        ];
+        return $this->__DICT__;
     }
 
     /**

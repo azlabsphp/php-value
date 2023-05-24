@@ -20,13 +20,10 @@ class Message implements ValueInterface
 {
     use Value;
 
-    protected function getJsonableAttributes()
-    {
-        return [
-            'to' => 'To',
-            'from' => 'From',
-            'logger' => 'Logger',
-            'address' => 'Address',
-        ];
-    }
+    private $__PROPERTIES__ = [
+        'to' => 'To',
+        'from' => 'From',
+        'logger' => 'Logger',
+        'address' => 'Address',
+    ];
 }

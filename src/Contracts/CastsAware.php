@@ -30,11 +30,13 @@ interface CastsAware
     public function setCasts(array $value);
 
     /**
-     * Returns the list of raw attributes of the object.
-     *
-     * @return array|mixed
+     * Returns raw value for the matching attribute name
+     * 
+     * @param string $name
+     * 
+     * @return mixed 
      */
-    public function getRawAttributes();
+    public function getRawAttribute(string $name);
 
     /**
      * Get value of a property configured as castable.
