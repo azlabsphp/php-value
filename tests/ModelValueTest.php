@@ -23,7 +23,7 @@ class ModelValueTest extends TestCase
 {
     public function test_get_label_property()
     {
-        $model = new TestModelValue(new TestModel());
+        $model = TestModelValue::new()->setModel(new TestModel());
         $this->assertSame($model->label, 'HELLO WORLD!', 'Expect label attribute getter to return HELLO WORLD!');
     }
 

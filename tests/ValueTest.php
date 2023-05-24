@@ -218,7 +218,6 @@ class ValueTest extends TestCase
         ]);
         $message = $message->addProperties(['address', 'ratings']);
         $message = $message->copy(['ratings' => 4.4]);
-        print_r([$message->getNotOwnedProperties(), $message->toArray()]);
         $this->assertEquals(4.4, $message->ratings);
 
     }
