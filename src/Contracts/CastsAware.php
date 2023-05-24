@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -30,11 +30,9 @@ interface CastsAware
     public function setCasts(array $value);
 
     /**
-     * Returns raw value for the matching attribute name
-     * 
-     * @param string $name
-     * 
-     * @return mixed 
+     * Returns raw value for the matching attribute name.
+     *
+     * @return mixed
      */
     public function getRawAttribute(string $name);
 

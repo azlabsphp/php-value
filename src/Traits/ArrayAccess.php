@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -41,6 +41,7 @@ trait ArrayAccess
         if (\is_int($offset)) {
             return;
         }
+
         return $this->__get($offset);
     }
 

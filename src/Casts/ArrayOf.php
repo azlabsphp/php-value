@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -23,7 +23,7 @@ class ArrayOf implements CastPropertyInterface
     use ArgumentsAware;
     use ProducesIterator;
 
-    public function set(string $name, $value, ?CastsAware $model = null)
+    public function set(string $name, $value, CastsAware $model = null)
     {
         if (\is_string($value) || null === $value || \is_bool($value) || is_numeric($value)) {
             $value = array_filter([$value], static function ($item) {
@@ -34,7 +34,7 @@ class ArrayOf implements CastPropertyInterface
         return [$name => $value];
     }
 
-    public function get(string $name, $value, ?CastsAware $model = null)
+    public function get(string $name, $value, CastsAware $model = null)
     {
         return iterator_to_array($this->createIterable($name, $value, $model));
     }

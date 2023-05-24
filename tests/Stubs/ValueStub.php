@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -15,12 +15,12 @@ namespace Drewlabs\PHPValue\Tests\Stubs;
 
 use Drewlabs\PHPValue\Contracts\CastsAware;
 use Drewlabs\PHPValue\Traits\Castable;
-use Drewlabs\PHPValue\Traits\Value;
+use Drewlabs\PHPValue\Traits\ObjectAdapter;
 
 class ValueStub implements CastsAware
 {
     use Castable;
-    use Value;
+    use ObjectAdapter;
 
     protected $__PROPERTIES__ = [
         'name',

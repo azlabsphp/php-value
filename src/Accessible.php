@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -13,10 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue;
 
-use Countable;
-use Drewlabs\PHPValue\Contracts\ObjectInterface;
-use IteratorAggregate;
-use Traversable;
+use Drewlabs\PHPValue\Contracts\Adaptable;
 
 /**
  * PHP stdClass extension usable as array accessible object.
@@ -48,13 +45,14 @@ use Traversable;
  * $array = $object->toArray();
  * ```
  */
-class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Countable
+class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \Countable
 {
     /**
-     * Minimum capacity
+     * Minimum capacity.
+     *
      * @var int
      */
-    const MIN_CAPACITY = 8;
+    public const MIN_CAPACITY = 8;
 
     /**
      * @var int internal capacity
@@ -62,36 +60,11 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
     private $capacity = self::MIN_CAPACITY;
 
     /**
-     * Internal map data structure
-     * 
+     * Internal map data structure.
+     *
      * @var array<Pair>
      */
     private $__PAIRS__ = [];
-
-    public function getPropertyValue(string $name)
-    {
-        if (false !== strpos($name, '.')) {
-            $keys = explode('.', $name);
-            $last = count($keys);
-            $index = 1;
-            $output = $this->offsetGet(trim($keys[0]));
-            while ($index < $last) {
-                if (!(($is_object = is_object($output)) || is_array($output))) {
-                    return null;
-                }
-                $prop = trim($keys[$index]);
-                $output = !$is_object ? $output[$prop] : $output->{$prop};
-                $index++;
-            }
-            return $output;
-        }
-        return $this->offsetGet($name);
-    }
-
-    public function setPropertyValue(string $name, $value)
-    {
-        $this->offsetSet($name, $value);
-    }
 
     public function __isset(string $name)
     {
@@ -104,10 +77,46 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
         return json_encode(iterator_to_array($this->getIterator()), \JSON_PRETTY_PRINT);
     }
 
+    public function __clone()
+    {
+        $pairs = [];
+        foreach ($this->__PAIRS__ as $key => $value) {
+            $pairs[$key] = \is_object($value) ? clone $value : $value;
+        }
+        $this->__PAIRS__ = $pairs;
+    }
+
+    public function getPropertyValue(string $name)
+    {
+        if (false !== strpos($name, '.')) {
+            $keys = explode('.', $name);
+            $last = \count($keys);
+            $index = 1;
+            $output = $this->offsetGet(trim($keys[0]));
+            while ($index < $last) {
+                if (!(($is_object = \is_object($output)) || \is_array($output))) {
+                    return null;
+                }
+                $prop = trim($keys[$index]);
+                $output = !$is_object ? $output[$prop] : $output->{$prop};
+                ++$index;
+            }
+
+            return $output;
+        }
+
+        return $this->offsetGet($name);
+    }
+
+    public function setPropertyValue(string $name, $value)
+    {
+        $this->offsetSet($name, $value);
+    }
+
     #[\ReturnTypeWillChange]
     public function offsetExists($offset): bool
     {
-        return $this->lookupKey($offset) !== null;
+        return null !== $this->lookupKey($offset);
     }
 
     #[\ReturnTypeWillChange]
@@ -138,13 +147,13 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
     {
         foreach ($this->__PAIRS__ as $position => $pair) {
             if ($pair->key === $offset) {
-                $pair  = $this->__PAIRS__[$position];
+                $pair = $this->__PAIRS__[$position];
                 array_splice($this->__PAIRS__, $position, 1, null);
                 $this->checkCapacity();
+
                 return;
             }
         }
-
     }
 
     /**
@@ -160,7 +169,7 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
 
     public function isEmpty()
     {
-        return count($this) === 0;
+        return 0 === \count($this);
     }
 
     /**
@@ -220,27 +229,19 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
         foreach ($attributes as $key => $value) {
             $this->offsetSet($key, $value);
         }
+
         return $this;
     }
 
     #[\ReturnTypeWillChange]
-    public function getIterator(): Traversable
+    public function getIterator(): \Traversable
     {
         foreach ($this->__PAIRS__ as $pair) {
             yield $pair->key => $pair->value;
         }
     }
 
-    public function __clone()
-    {
-        $pairs = [];
-        foreach ($this->__PAIRS__ as $key => $value) {
-            $pairs[$key] = is_object($value) ? clone $value : $value;
-        }
-        $this->__PAIRS__ = $pairs;
-    }
-
-    //#region \Ds Namespace
+    // #region \Ds Namespace
     /**
      * Returns the current capacity.
      */
@@ -250,13 +251,13 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
     }
 
     /**
-     * Returns the total element in the map
-     * 
-     * @return int<0, \max> 
+     * Returns the total element in the map.
+     *
+     * @return int<0, \max>
      */
     public function count(): int
     {
-        return count($this->__PAIRS__);
+        return \count($this->__PAIRS__);
     }
 
     /**
@@ -278,7 +279,7 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
     }
 
     /**
-     * @return float the structures growth factor.
+     * @return float the structures growth factor
      */
     private function getGrowthFactor(): float
     {
@@ -286,7 +287,7 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
     }
 
     /**
-     * @return float to multiply by when decreasing capacity.
+     * @return float to multiply by when decreasing capacity
      */
     private function getDecayFactor(): float
     {
@@ -295,7 +296,7 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
 
     /**
      * @return float the ratio between size and capacity when capacity should be
-     *               decreased.
+     *               decreased
      */
     private function getTruncateThreshold(): float
     {
@@ -317,7 +318,7 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
     }
 
     /**
-     * @return bool whether capacity should be increased.
+     * @return bool whether capacity should be increased
      */
     private function shouldIncreaseCapacity(): bool
     {
@@ -342,14 +343,14 @@ class Accessible implements \ArrayAccess, ObjectInterface, IteratorAggregate, Co
      */
     private function decreaseCapacity()
     {
-        $this->capacity = max(self::MIN_CAPACITY, (int) ($this->capacity()  * $this->getDecayFactor()));
+        $this->capacity = max(self::MIN_CAPACITY, (int) ($this->capacity() * $this->getDecayFactor()));
     }
 
     /**
-     * @return bool whether capacity should be increased.
+     * @return bool whether capacity should be increased
      */
     private function shouldDecreaseCapacity(): bool
     {
-        return count($this) <= $this->capacity() * $this->getTruncateThreshold();
+        return \count($this) <= $this->capacity() * $this->getTruncateThreshold();
     }
 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -13,9 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Contracts;
 
-use JsonSerializable;
-
-interface Serializable extends JsonSerializable
+interface Serializable extends \JsonSerializable
 {
     /**
      * Returns a JSON encoded string from the current object.

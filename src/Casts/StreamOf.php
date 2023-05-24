@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -26,9 +26,10 @@ class StreamOf extends CollectionOf
      *
      * @return mixed
      */
-    public function get(string $name, $value, ?CastsAware $model = null)
+    public function get(string $name, $value, CastsAware $model = null)
     {
         $iterable = $this->createIterable($name, $value, $model);
+
         return \function_exists('\Drewlabs\Support\Proxy\Stream') ?
             \call_user_func('\Drewlabs\Support\Proxy\Stream', $iterable) :
             $iterable;

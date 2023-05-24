@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -15,13 +15,14 @@ namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Contracts\CastsAware;
-use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 
 /**
  * @property string[] __PROPERTIES__
- * 
+ *
  * @implements \Drewlabs\PHPValue\Contracts\ValueInterface
+ * @mixin \Drewlabs\PHPValue\Traits\Macroable
+ * @mixin \Drewlabs\PHPValue\Traits\Castable
  */
 trait BaseTrait
 {
@@ -33,16 +34,16 @@ trait BaseTrait
     private $__GET__PROPERTY__VALUE__;
 
     /**
-     * Map of object property -> input property
-     * 
+     * Map of object property -> input property.
+     *
      * @var array<string,string>
      */
     private $__PROP__MAP__ = [];
 
     /**
      * List of properties added to the current object that are not in the current
-     * object base definition
-     * 
+     * object base definition.
+     *
      * @var array<string>
      */
     private $__MISC__PROPERTIES__ = [];
@@ -75,13 +76,12 @@ trait BaseTrait
         throw new ImmutableValueException(__CLASS__);
     }
 
-
     /**
-     * Creates new class instance
-     * 
-     * @param mixed ...$args 
-     * 
-     * @return self 
+     * Creates new class instance.
+     *
+     * @param mixed ...$args
+     *
+     * @return self
      */
     public static function new(...$args)
     {
@@ -91,8 +91,6 @@ trait BaseTrait
     /**
      * Merge object attributes.
      *
-     * @param array $attributes
-     *
      * @return BaseTrait
      */
     public function merge(array $attributes = [])
@@ -101,9 +99,7 @@ trait BaseTrait
     }
 
     /**
-     * Copy object properties changing existing attributes from values from `$attributes` parameter
-     *
-     * @param array $attributes
+     * Copy object properties changing existing attributes from values from `$attributes` parameter.
      *
      * @return self
      */
@@ -133,6 +129,7 @@ trait BaseTrait
                 yield $name => $this->callPropertyGetter($name, $this->getRawAttribute($name));
             }
         };
+
         return iterator_to_array($fn());
     }
 
@@ -141,41 +138,40 @@ trait BaseTrait
         return ($this->__GET__PROPERTY__VALUE__)(
             $key,
             $this->getRawAttribute($key),
-            \is_callable($default) ? $default : function () use ($default) {
+            \is_callable($default) ? $default : static function () use ($default) {
                 return $default;
             }
         );
     }
 
-    //#region Properties updates
+    // #region Properties updates
     public function getOwnedProperties()
     {
         return $this->__PROPERTIES__ ?? [];
     }
 
     /**
-     * Add a list of properties to the base objected properties
-     * 
-     * @param array $properties
-     * 
-     * @return self 
+     * Add a list of properties to the base objected properties.
+     *
+     * @return self
      */
     public function addProperties(array $properties = [])
     {
         $this->__MISC__PROPERTIES__ = array_unique(array_merge($this->getNotOwnedProperties(), array_diff($properties, $this->__PROPERTIES__ ?? [])));
+
         return $this;
     }
 
     /**
-     * Returns a list of not owned properties for the current value
-     * 
-     * @return array 
+     * Returns a list of not owned properties for the current value.
+     *
+     * @return array
      */
     public function getNotOwnedProperties()
     {
         return $this->__MISC__PROPERTIES__ ?? [];
     }
-    //#endregion Properties updates
+    // #endregion Properties updates
 
     // #region Protected & Private methods defintions
     /**
@@ -190,10 +186,11 @@ trait BaseTrait
         if (null !== $result) {
             $this->setRawAttribute($name, $result);
         }
+
         return $this;
     }
 
-    private function callPropertyGetter($name, $value, ?\Closure $default = null)
+    private function callPropertyGetter($name, $value, \Closure $default = null)
     {
         if ($this->hasPropertyGetter($name)) {
             return $this->{$this->propertyGetterName($name)}($value);
@@ -206,6 +203,7 @@ trait BaseTrait
         if ((interface_exists(CastsAware::class)) && ($this instanceof CastsAware) && (null !== ($this->getCasts()[$name] ?? null))) {
             return $this->getCastableProperty($name, $value, $default);
         }
+
         return $default();
     }
 
@@ -221,6 +219,7 @@ trait BaseTrait
                 $this->setAttribute($name, $result);
             }
         }
+
         return $this;
     }
 
@@ -273,7 +272,7 @@ trait BaseTrait
 
     private function buildPropsDefinitions(array $properties)
     {
-        // In case the properties attribute is not a dictionnary, we loop through each keys and 
+        // In case the properties attribute is not a dictionnary, we loop through each keys and
         // create a key=>value representation of the properties
         $objProps = [];
         foreach ($properties as $key => $value) {
@@ -287,36 +286,33 @@ trait BaseTrait
     }
 
     /**
-     * Return the raw property name corresponding to the `$name` property
-     * 
-     * @param string $name 
-     * @return string 
+     * Return the raw property name corresponding to the `$name` property.
+     *
+     * @return string
      */
-    private function  getRawProperty(string $name)
+    private function getRawProperty(string $name)
     {
         return $this->__PROP__MAP__[$name] ?? $name;
     }
 
     /**
-     * Construct `$name` property setter name
-     * 
-     * @param string $name 
-     * @return string 
+     * Construct `$name` property setter name.
+     *
+     * @return string
      */
     private function propertySetterName(string $name)
     {
-        return 'set' . Str::camelize($name) . 'Attribute';
+        return 'set'.Str::camelize($name).'Attribute';
     }
 
     /**
-     * Construct `$name` property getter name
-     * 
-     * @param string $name 
-     * @return string 
+     * Construct `$name` property getter name.
+     *
+     * @return string
      */
     private function propertyGetterName(string $name)
     {
-        return 'get' . Str::camelize($name) . 'Attribute';
+        return 'get'.Str::camelize($name).'Attribute';
     }
     // #endregion Protected & Private methods defintions
 }

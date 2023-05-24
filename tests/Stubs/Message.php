@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use Drewlabs\PHPValue\Traits\Value;
+use Drewlabs\PHPValue\Traits\ObjectAdapter;
 
 class Message implements ValueInterface
 {
-    use Value;
+    use ObjectAdapter;
 
     private $__PROPERTIES__ = [
         'to' => 'To',

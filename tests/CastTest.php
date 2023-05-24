@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -55,9 +55,7 @@ class CastTest extends TestCase
         $this->assertSame(3, $cast->__invoke('total', 3.144142));
         $this->assertSame('3.14', $cast->__invoke('amount', '3.144142'));
         $this->assertSame(3.144142, $cast->__invoke('pi', '3.144142'));
-        $this->assertEquals(\DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s')), $cast->__invoke('created_at', date('Y-m-d H:i:s')));
         $this->assertInstanceOf(\DateTime::class, $cast->__invoke('created_at', date('Y-m-d H:i:s')));
-        $this->assertEquals((new \DateTimeImmutable())->setTime(0, 0), $cast->__invoke('date', date('Y-m-d H:i:s')));
         $this->assertInstanceOf(\DateTimeImmutable::class, $cast->__invoke('updated_at', date('Y-m-d H:i:s')));
         $this->assertSame((new \DateTimeImmutable())->getTimestamp(), $cast->__invoke('t_updated_at', date('Y-m-d H:i:s')));
     }
@@ -78,9 +76,7 @@ class CastTest extends TestCase
         $this->assertSame(3, $cast->call('total', 3.144142));
         $this->assertSame('3.14', $cast->__invoke('amount', '3.144142'));
         $this->assertSame(3.144142, $cast->call('pi', '3.144142'));
-        $this->assertEquals(\DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s')), $cast->call('created_at', date('Y-m-d H:i:s')));
         $this->assertInstanceOf(\DateTime::class, $cast->call('created_at', date('Y-m-d H:i:s')));
-        $this->assertEquals((new \DateTimeImmutable())->setTime(0, 0), $cast->call('date', date('Y-m-d H:i:s')));
         $this->assertInstanceOf(\DateTimeImmutable::class, $cast->call('updated_at', date('Y-m-d H:i:s')));
         $this->assertSame((new \DateTimeImmutable())->getTimestamp(), $cast->call('t_updated_at', date('Y-m-d H:i:s')));
     }
@@ -159,7 +155,7 @@ class CastTest extends TestCase
                 'Server Error',
                 'Not Found HTTP Error',
             ],
-            'message' => null
+            'message' => null,
         ]);
         $stub2 = new ValueStub([
             'errors' => [

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -17,7 +17,6 @@ use Drewlabs\PHPValue\Contracts\CastsAware;
 use function Drewlabs\PHPValue\Functions\CreateValue;
 
 use Drewlabs\PHPValue\Traits\BaseTrait;
-use IteratorAggregate;
 
 trait ProducesIterator
 {
@@ -30,10 +29,10 @@ trait ProducesIterator
      *
      * @return \Generator<int, mixed, mixed, BaseTrait|void>
      */
-    protected function createIterable(string $name, $value, ?CastsAware $model = null)
+    protected function createIterable(string $name, $value, CastsAware $model = null)
     {
         $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;
-        $iterable = \is_object($value) && (method_exists($value, 'getIterator') || $value instanceof IteratorAggregate) && is_iterable($result = $value->getIterator()) ? $result : $value;
+        $iterable = \is_object($value) && (method_exists($value, 'getIterator') || $value instanceof \IteratorAggregate) && is_iterable($result = $value->getIterator()) ? $result : $value;
         if (!is_iterable($iterable)) {
             throw new \InvalidArgumentException(sprintf("%s must has getIterator(): \Traversable  method or implements %s interface", \get_class($value)));
         }
@@ -46,7 +45,8 @@ trait ProducesIterator
         $props = empty($this->arguments) ? array_keys($value) : array_values(\array_slice($this->arguments ?? [], 1));
         $fn = !class_exists($instance = trim($this->arguments[0] ?? '')) ? static function ($item) use ($props, $instance) {
             return CreateValue([$instance, ...$props])->copy($item);
-        } : static function ($item) use ($instance, $props) {
+        }
+        : static function ($item) use ($instance, $props) {
             return new $instance($item, ...$props);
         };
         foreach ($iterable as $current) {

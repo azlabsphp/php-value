@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -15,7 +15,7 @@ namespace Drewlabs\PHPValue\Traits;
 
 trait Proxy
 {
-    public function proxy($object, $method, $args = [], ?\Closure $default = null)
+    public function proxy($object, $method, $args = [], \Closure $default = null)
     {
         try {
             // Call the method on the provided object
@@ -56,7 +56,7 @@ trait Proxy
      *
      * @return mixed
      */
-    public function call($method, $args = [], ?\Closure $default = null)
+    public function call($method, $args = [], \Closure $default = null)
     {
         if ($method instanceof \Closure) {
             try {

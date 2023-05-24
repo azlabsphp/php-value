@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -23,7 +23,7 @@ class ModelValueTest extends TestCase
 {
     public function test_get_label_property()
     {
-        $model = TestModelValue::new()->setModel(new TestModel());
+        $model = TestModelValue::new()->adapt(new TestModel());
         $this->assertSame($model->label, 'HELLO WORLD!', 'Expect label attribute getter to return HELLO WORLD!');
     }
 

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -13,26 +13,31 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-use Drewlabs\PHPValue\Contracts\ObjectInterface;
+use Drewlabs\PHPValue\Contracts\Adaptable;
 
-class TestModelRelation1 implements ObjectInterface
+class TestModelRelation1 implements Adaptable
 {
     /**
-     * Class properties
-     * 
+     * Class properties.
+     *
      * @var string[]
      */
     private $__PROPERTIES__ = ['name', 'score'];
 
     /**
-     * Class attributes
-     * 
+     * Class attributes.
+     *
      * @var (float|string)[]
      */
     private $__DICT__ = [
         'name' => 'TEST PERSON',
         'score' => .72,
     ];
+
+    public function __get($name)
+    {
+        return $this->toArray()[$name] ?? null;
+    }
 
     public function getPropertyValue(string $name)
     {
@@ -41,17 +46,12 @@ class TestModelRelation1 implements ObjectInterface
 
     public function propertyExists(string $name): bool
     {
-        return in_array($name, $this->__PROPERTIES__);
+        return \in_array($name, $this->__PROPERTIES__, true);
     }
 
     public function setPropertyValue(string $name, $value)
     {
         return $this->__DICT__[$name] = $value;
-    }
-
-    public function __get($name)
-    {
-        return $this->toArray()[$name] ?? null;
     }
 
     public function getPrimaryKey()

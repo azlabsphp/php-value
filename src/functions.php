@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Functions;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use Drewlabs\PHPValue\Traits\Value as ValueTrait;
+use Drewlabs\PHPValue\Traits\ObjectAdapter as ValueTrait;
 use Drewlabs\PHPValue\Value;
 
 if (!\function_exists('CreateValue')) {
@@ -39,6 +39,7 @@ if (!\function_exists('CreateValue')) {
             public function useProperties(array $properties)
             {
                 $this->buildPropsDefinitions($properties);
+
                 return $this;
             }
         });

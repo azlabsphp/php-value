@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -23,12 +23,12 @@ class Value implements CastPropertyInterface
 {
     use ArgumentsAware;
 
-    public function set(string $name, $value, ?CastsAware $model = null)
+    public function set(string $name, $value, CastsAware $model = null)
     {
         return [$name => $value];
     }
 
-    public function get(string $name, $value, ?CastsAware $model = null)
+    public function get(string $name, $value, CastsAware $model = null)
     {
         // First we query for the value using the it property name if the value point to null reference
         $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;
@@ -41,9 +41,9 @@ class Value implements CastPropertyInterface
         if (empty($this->arguments)) {
             return CreateValue(array_keys($value))->copy($value);
         }
-        $props = empty($this->arguments) ? (is_array($value) ? array_keys($value) : []) : array_values(\array_slice($this->arguments ?? [], 1));
+        $props = empty($this->arguments) ? (\is_array($value) ? array_keys($value) : []) : array_values(\array_slice($this->arguments ?? [], 1));
         // Case the first item in the argument array is a class we create a new instance of it, else we create a default value object
         // from the attributes
-        return !class_exists($instance = trim($this->arguments[0] ?? '')) ?  CreateValue([$instance, ...$props])->copy($value) : new $instance($value, ...$props);
+        return !class_exists($instance = trim($this->arguments[0] ?? '')) ? CreateValue([$instance, ...$props])->copy($value) : new $instance($value, ...$props);
     }
 }

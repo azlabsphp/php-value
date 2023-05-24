@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -13,16 +13,14 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
-use Drewlabs\PHPValue\Contracts\ResolveModelAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Traits\ObjectAdapter;
 
-use Drewlabs\PHPValue\Traits\ModelAware;
-
-class TestResolvableValueModel implements ValueInterface, ResolveModelAware
+class TestResolvableValueModel implements ValueInterface
 {
-    use ModelAware;
+    use ObjectAdapter;
 
-    public function resolveModel()
+    public function getAdaptable()
     {
         return new TestModel();
     }

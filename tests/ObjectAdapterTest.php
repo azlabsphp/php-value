@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -26,7 +26,7 @@ use Drewlabs\PHPValue\Tests\Stubs\ValueStub;
 
 use PHPUnit\Framework\TestCase;
 
-class ValueTest extends TestCase
+class ObjectAdapterTest extends TestCase
 {
     public function test_Value_Object_Copy_Method()
     {
@@ -218,7 +218,48 @@ class ValueTest extends TestCase
         ]);
         $message = $message->addProperties(['address', 'ratings']);
         $message = $message->copy(['ratings' => 4.4]);
-        $this->assertEquals(4.4, $message->ratings);
+        $this->assertSame(4.4, $message->ratings);
+    }
 
+    public function test_object_adapter_macroable_trait()
+    {
+        $message = Message::new([
+            'From' => 'xxx-xxx-xxx',
+            'To' => 'yyy-yyy-yyy',
+        ]);
+
+        $message = $message->bind('sendMessage', function (string $text) {
+            printf("\nSending message %s, To: %s", $text, $this->to);
+
+            return true;
+        });
+
+        $this->assertTrue($message->sendMessage('Hello World!'));
+    }
+
+    public function test_object_adapter_macroable_bind_override_method_if_it_does_exists()
+    {
+        $message = Message::new([
+            'From' => 'xxx-xxx-xxx',
+            'To' => 'yyy-yyy-yyy',
+        ]);
+
+        $message = $message->bind('sendMessage', function (string $text) {
+            printf("\nSending message %s, To: %s", $text, $this->to);
+
+            return true;
+        });
+
+        $this->assertTrue($message->sendMessage('Hello World!'));
+
+        // Bind to the same method a new callback
+        $message = $message->bind('sendMessage', function (string $text) {
+            printf("\nFailed Sending message %s, To: %s", $text, $this->to);
+
+            return false;
+        });
+
+        // Expect the new callback to return false as result
+        $this->assertFalse($message->sendMessage('Hello World!'));
     }
 }

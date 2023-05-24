@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the drewlabs namespace.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue;
 
 /**
@@ -7,8 +18,6 @@ namespace Drewlabs\PHPValue;
  *
  * @property mixed $key
  * @property mixed $value
- *
- * @package Ds
  *
  * @template-covariant TKey
  * @template-covariant TValue
@@ -40,21 +49,21 @@ final class Pair implements \JsonSerializable
      */
     public function __construct($key = null, $value = null)
     {
-        $this->key   = $key;
+        $this->key = $key;
         $this->value = $value;
     }
 
     /**
-     *
      * @param mixed $name
      *
      * @return mixed|null
      */
     public function __isset($name)
     {
-        if ($name === 'key' || $name === 'value') {
+        if ('key' === $name || 'value' === $name) {
             return $this->$name !== null;
         }
+
         return false;
     }
 
@@ -66,24 +75,11 @@ final class Pair implements \JsonSerializable
      */
     public function __unset(string $name)
     {
-        if ($name === 'key' || $name === 'value') {
+        if ('key' === $name || 'value' === $name) {
             $this->$name = null;
+
             return;
         }
-        throw new OutOfBoundsException();
-    }
-
-    /**
-     * @param mixed $name
-     *
-     * @return mixed|null
-     */
-    public function &__get($name)
-    {
-        if ($name === 'key' || $name === 'value') {
-            return $this->$name;
-        }
-        throw new OutOfBoundsException();
     }
 
     /**
@@ -94,21 +90,11 @@ final class Pair implements \JsonSerializable
      */
     public function __set($name, $value)
     {
-        if ($name === 'key' || $name === 'value') {
+        if ('key' === $name || 'value' === $name) {
             $this->$name = $value;
+
             return;
         }
-        throw new OutOfBoundsException();
-    }
-
-    /**
-     * Returns a copy of the Pair
-     *
-     * @psalm-return self<TKey, TValue>
-     */
-    public function copy(): self
-    {
-        return new self($this->key, $this->value);
     }
 
     /**
@@ -124,20 +110,50 @@ final class Pair implements \JsonSerializable
     }
 
     /**
-     * @inheritDoc
+     * Returns a string representation of the pair.
+     */
+    public function __toString()
+    {
+        return 'object('.static::class.')';
+    }
+
+    /**
+     * @param mixed $name
+     *
+     * @return mixed|null
+     */
+    public function &__get($name)
+    {
+        if ('key' === $name || 'value' === $name) {
+            return $this->$name;
+        }
+    }
+
+    /**
+     * Returns a copy of the Pair.
+     *
+     * @psalm-return self<TKey, TValue>
+     */
+    public function copy(): self
+    {
+        return new self($this->key, $this->value);
+    }
+
+    /**
+     * {@inheritDoc}
      *
      * @psalm-return array{key: TKey, value: TValue}
      */
     public function toArray(): array
     {
         return [
-            'key'   => $this->key,
+            'key' => $this->key,
             'value' => $this->value,
         ];
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      *
      * @psalm-return array{key: TKey, value: TValue}
      */
@@ -145,13 +161,5 @@ final class Pair implements \JsonSerializable
     public function jsonSerialize()
     {
         return $this->toArray();
-    }
-
-    /**
-     * Returns a string representation of the pair.
-     */
-    public function __toString()
-    {
-        return 'object(' . get_class($this) . ')';
     }
 }

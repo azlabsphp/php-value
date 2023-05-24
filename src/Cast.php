@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Drewlabs package.
+ * This file is part of the drewlabs namespace.
  *
  * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
  *
@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue;
 
-use DateTime;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Contracts\CastPropertyInterface;
@@ -46,7 +45,7 @@ class Cast
      */
     private $castsAware;
 
-    public function __construct(?CastsAware $castsAware = null)
+    public function __construct(CastsAware $castsAware = null)
     {
         $this->map = $this->useDefaults();
         // Load list of casts definition values on the {@see CastsAware} instance
@@ -185,7 +184,7 @@ class Cast
      *
      * @return bool
      */
-    public function isClassCastable(?string $key = null)
+    public function isClassCastable(string $key = null)
     {
         if (!\array_key_exists($key, $this->casts ?? [])) {
             return false;
@@ -588,7 +587,7 @@ class Cast
      *
      * @return self
      */
-    private function setCastAwareInstance(?CastsAware $castAware = null)
+    private function setCastAwareInstance(CastsAware $castAware = null)
     {
         if ($castAware) {
             $this->castsAware = $castAware;
@@ -641,7 +640,7 @@ class Cast
                 return $this->castToPHPDate($value)->getTimestamp();
             },
             'decimal' => static function ($value, $decimals = 0) {
-                return number_format(floatval($value), (int) $decimals, '.', '');
+                return number_format((float) $value, (int) $decimals, '.', '');
             },
             'float' => function ($value) {
                 return $this->fromFloat($value);
