@@ -15,14 +15,14 @@ namespace Drewlabs\PHPValue\Functions;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Traits\ObjectAdapter as ValueTrait;
-use Drewlabs\PHPValue\Value;
+use Drewlabs\PHPValue\ObjectAdapter;
 
 if (!\function_exists('CreateAdapter')) {
 
     /**
      * Create a immutable object.
      *
-     * @return Value
+     * @return ObjectAdapter
      */
     function CreateAdapter(array $properties)
     {

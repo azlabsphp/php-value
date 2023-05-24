@@ -14,12 +14,9 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use Drewlabs\PHPValue\Traits\ObjectAdapter;
+use Drewlabs\PHPValue\Traits\ObjectAdapter as ObjectAdapterTrait;
 
-/**
- * Enhance the default {@see ValueObject} class with model bindings.
- */
-abstract class ModelValue implements ValueInterface, \IteratorAggregate
+abstract class ObjectAdapter implements ValueInterface, \IteratorAggregate
 {
-    use ObjectAdapter;
+    use ObjectAdapterTrait;
 }
