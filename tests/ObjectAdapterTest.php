@@ -17,7 +17,7 @@ use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
-use function Drewlabs\PHPValue\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateAdapter;
 use Drewlabs\PHPValue\Tests\Stubs\FileLogger;
 use Drewlabs\PHPValue\Tests\Stubs\Message;
 use Drewlabs\PHPValue\Tests\Stubs\User;
@@ -173,7 +173,7 @@ class ObjectAdapterTest extends TestCase
          * @property name
          * @property $lastname
          */
-        $value = CreateValue([
+        $value = CreateAdapter([
             'name',
             'lastname',
         ]);

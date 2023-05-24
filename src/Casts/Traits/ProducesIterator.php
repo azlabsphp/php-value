@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Casts\Traits;
 
 use Drewlabs\PHPValue\Contracts\CastsAware;
-use function Drewlabs\PHPValue\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateAdapter;
 
 use Drewlabs\PHPValue\Traits\BaseTrait;
 
@@ -37,14 +37,14 @@ trait ProducesIterator
             throw new \InvalidArgumentException(sprintf("%s must has getIterator(): \Traversable  method or implements %s interface", \get_class($value)));
         }
         if (empty($this->arguments)) {
-            return CreateValue(array_keys($value))->copy($value);
+            return CreateAdapter(array_keys($value))->copy($value);
         }
         /**
          * @var array $props
          */
         $props = empty($this->arguments) ? array_keys($value) : array_values(\array_slice($this->arguments ?? [], 1));
         $fn = !class_exists($instance = trim($this->arguments[0] ?? '')) ? static function ($item) use ($props, $instance) {
-            return CreateValue([$instance, ...$props])->copy($item);
+            return CreateAdapter([$instance, ...$props])->copy($item);
         }
         : static function ($item) use ($instance, $props) {
             return new $instance($item, ...$props);

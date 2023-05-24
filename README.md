@@ -8,16 +8,16 @@ Value object implementation tries to leverage the dynamic aspect of the PHP Prog
 
 ## Usage
 
-The library offer two interface for creating an object. 
+The library offer two interface for creating an object.
 
 Your can use OOP implementation you can extends the abstract [Drewlabs\PHPValue\Value] class:
 
 - Object oriented implementation
 
 ```php
-use Drewlabs\PHPValue\Value;
+use Drewlabs\PHPValue\ObjectAdapter;
 
-class ValueStub extends Value
+class ValueStub extends ObjectAdapter
 {
     protected $__PROPERTIES__ = [
         'name',
@@ -38,9 +38,9 @@ Or using the [Drewlabs\PHPValue\Functions\CreateValue] function.
 
 ```php
 // Imports
-use function Drewlabs\PHPValue\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateAdapter;
 
-$value =  CreateValue([
+$value =  CreateAdapter([
     // dynamic properties
     'name',
     'address'
@@ -53,8 +53,8 @@ Using both ways, you create an instance of [\Drewlabs\PHPValue\Value] class.
 
 ```php
 // Imports
-use function Drewlabs\PHPValue\Functions\CreateValue;
-$value =  CreateValue([
+use function Drewlabs\PHPValue\Functions\CreateAdapter;
+$value =  CreateAdapter([
     // dynamic properties
     'name',
     'address'
@@ -72,8 +72,8 @@ The value object is Array accessible meaning we can user [] operator to acces ob
 
 ```php
 // Imports
-use function Drewlabs\PHPValue\Functions\CreateValue;
-$value =  CreateValue([
+use function Drewlabs\PHPValue\Functions\CreateAdapter;
+$value =  CreateAdapter([
     // dynamic properties
     'name',
     'address'

@@ -17,14 +17,14 @@ use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Traits\ObjectAdapter as ValueTrait;
 use Drewlabs\PHPValue\Value;
 
-if (!\function_exists('CreateValue')) {
+if (!\function_exists('CreateAdapter')) {
 
     /**
      * Create a immutable object.
      *
      * @return Value
      */
-    function CreateValue(array $properties)
+    function CreateAdapter(array $properties)
     {
         $object = (new class() implements ValueInterface {
             use ValueTrait;

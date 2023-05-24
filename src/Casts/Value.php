@@ -15,7 +15,7 @@ namespace Drewlabs\PHPValue\Casts;
 
 use Drewlabs\PHPValue\Contracts\CastPropertyInterface;
 use Drewlabs\PHPValue\Contracts\CastsAware;
-use function Drewlabs\PHPValue\Functions\CreateValue;
+use function Drewlabs\PHPValue\Functions\CreateAdapter;
 
 use Drewlabs\PHPValue\Traits\ArgumentsAware;
 
@@ -39,11 +39,11 @@ class Value implements CastPropertyInterface
         }
         // Case the arguments is empty, we simply create a dynamic value instance
         if (empty($this->arguments)) {
-            return CreateValue(array_keys($value))->copy($value);
+            return CreateAdapter(array_keys($value))->copy($value);
         }
         $props = empty($this->arguments) ? (\is_array($value) ? array_keys($value) : []) : array_values(\array_slice($this->arguments ?? [], 1));
         // Case the first item in the argument array is a class we create a new instance of it, else we create a default value object
         // from the attributes
-        return !class_exists($instance = trim($this->arguments[0] ?? '')) ? CreateValue([$instance, ...$props])->copy($value) : new $instance($value, ...$props);
+        return !class_exists($instance = trim($this->arguments[0] ?? '')) ? CreateAdapter([$instance, ...$props])->copy($value) : new $instance($value, ...$props);
     }
 }
