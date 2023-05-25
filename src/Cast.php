@@ -520,17 +520,17 @@ class Cast
             return \DateTime::createFromFormat('Y-m-d H:i:s.u', $value->format('Y-m-d H:i:s.u'), $value->getTimezone());
         }
         if (is_numeric($value)) {
-            return \DateTime::createFromFormat(\DateTime::ISO8601, date(\DateTime::ISO8601, (int) $value));
+            return \DateTime::createFromFormat(\DateTime::ATOM, date(\DateTime::ATOM, (int) $value));
         }
         try {
             // Try to parse using database connection format
             $date = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
         } catch (\InvalidArgumentException $e) {
             // fallback to ISO8601 standard if format does not match database connection format
-            $date = \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+            $date = \DateTime::createFromFormat(\DateTime::ATOM, $value);
         }
 
-        return $date ?: \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+        return $date ?: \DateTime::createFromFormat(\DateTime::ATOM, $value);
     }
 
     private function castToPHPImmutableDate($value)
@@ -539,17 +539,17 @@ class Cast
             return \DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $value->format('Y-m-d H:i:s.u'), $value->getTimezone());
         }
         if (is_numeric($value)) {
-            return \DateTimeImmutable::createFromFormat(\DateTimeImmutable::ISO8601, date(\DateTimeImmutable::ISO8601, (int) $value));
+            return \DateTimeImmutable::createFromFormat(\DateTimeImmutable::ATOM, date(\DateTimeImmutable::ATOM, (int) $value));
         }
         try {
             // Try to parse using database connection format
             $date = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $value);
         } catch (\InvalidArgumentException $e) {
             // fallback to ISO8601 standard if format does not match database connection format
-            $date = \DateTimeImmutable::createFromFormat(\DateTimeImmutable::ISO8601, $value);
+            $date = \DateTimeImmutable::createFromFormat(\DateTimeImmutable::ATOM, $value);
         }
 
-        return $date ?: \DateTimeImmutable::createFromFormat(\DateTimeImmutable::ISO8601, $value);
+        return $date ?: \DateTimeImmutable::createFromFormat(\DateTimeImmutable::ATOM, $value);
     }
 
     private function fromFloat($value)
@@ -562,7 +562,7 @@ class Cast
             case 'NaN':
                 return \NAN;
             default:
-                return (float) $value;
+                return floatval($value);
         }
     }
 

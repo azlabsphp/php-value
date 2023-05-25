@@ -1,10 +1,6 @@
-# PHP value
+# PHP Value
 
-Library propose a PHP value object that provide interfaces for serialization and deserialization from PHP [array] or [\stdClass].
-
-Note: Implementation of the value object tries to enforce immutability of object by offering interfaces for copying properties into a new value instance instead of modifying state.
-
-Value object implementation tries to leverage the dynamic aspect of the PHP Programming language to provide flexible object structure, while enforcing the property define/declaration at initialization.
+The library provides utility objects for PHP application and projects.
 
 ## Usage
 

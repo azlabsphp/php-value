@@ -57,4 +57,21 @@ class UnknownTest extends TestCase
         $this->assertSame('Johnatan Pierce', $unknow->get()->name);
         $this->assertSame(32, $unknow->get()->age);
     }
+
+    public function test_unknown_cast_method()
+    {
+        $variable = Unknown::new('12');
+        $this->assertNotSame(12, $variable->get());
+        $this->assertSame(12, $variable->toInt());
+
+
+        $variable = Unknown::new('.457');
+        $this->assertSame(.46, $variable->toFloat(2));
+
+        $variable = Unknown::new(new ArrayIterator([1, 2, 3, 4, 5]));
+        $this->assertSame([1, 2, 3, 4, 5], $variable->toArray());
+
+        $variable = Unknown::new(4.5);
+        $this->assertSame('4.5', $variable->toString());
+    }
 }
