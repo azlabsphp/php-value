@@ -13,13 +13,24 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Contracts;
 
-interface ResolveModelAware
+interface HiddenAware
 {
-    /**
-     * Defines implementation for creating model instance attached
-     * to the value object.
-     *
-     * @return mixed
-     */
-    public function resolveModel();
+
+	/**
+	 * returns the list of hidden properties
+	 * 
+	 *
+	 * @return string[]
+	 */
+	public function getHidden();
+
+	/**
+	 * set properties hidden properties
+	 * 
+	 * @param array $values
+	 *
+	 * @return string[]
+	 */
+	public function setHidden(array $values);
+
 }

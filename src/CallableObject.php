@@ -53,7 +53,7 @@ class CallableObject
      */
     public static function new($callback)
     {
-        return new self(uniqid('callable').time(), $callback, []);
+        return new static(uniqid('callable').time(), $callback, []);
     }
 
     /**

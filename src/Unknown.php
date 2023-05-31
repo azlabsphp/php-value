@@ -45,7 +45,7 @@ final class Unknown
      */
     public static function new($value)
     {
-        return new self($value);
+        return new static($value);
     }
 
     /**

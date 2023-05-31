@@ -34,13 +34,24 @@ trait ObjectAdapter
     private $__ADAPTABLE__;
 
     /**
-     * Creates an instance of Drewlabs\PHPValue\ValueObject::class.
+     * Creates class instance
      *
      * @param array|Adaptable|Accessible $adaptable
      */
     public function __construct($adaptable = [])
     {
-        $this->buildPropsDefinitions($this->__PROPERTIES__ ?? []);
+    }
+
+    /**
+     * Boot the class instance
+     * 
+     * @param array<string>|array<string,string> $props 
+     * @param array|Adaptable|Accessible $adaptable 
+     * @return void 
+     */
+    protected function bootInstance($props, $adaptable = [])
+    {
+        $this->buildPropsDefinitions($props);
         $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function (...$args) {
             return $this->callPropertyGetter(...$args);
         });

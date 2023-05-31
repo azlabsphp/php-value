@@ -45,7 +45,7 @@ use Drewlabs\PHPValue\Contracts\Adaptable;
  * $array = $object->toArray();
  * ```
  */
-class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \Countable
+final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \Countable
 {
     /**
      * Minimum capacity.
@@ -343,7 +343,7 @@ class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \Counta
      */
     private function decreaseCapacity()
     {
-        $this->capacity = max(self::MIN_CAPACITY, (int) ($this->capacity() * $this->getDecayFactor()));
+        $this->capacity = max(static::MIN_CAPACITY, (int) ($this->capacity() * $this->getDecayFactor()));
     }
 
     /**

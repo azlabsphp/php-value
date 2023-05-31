@@ -16,6 +16,7 @@ namespace Drewlabs\PHPValue\Traits;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Contracts\CastsAware;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
 
 /**
  * @property string[] __PROPERTIES__
@@ -23,6 +24,9 @@ use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
  * @implements \Drewlabs\PHPValue\Contracts\ValueInterface
  * @mixin \Drewlabs\PHPValue\Traits\Macroable
  * @mixin \Drewlabs\PHPValue\Traits\Castable
+ * @mixin \Drewlabs\PHPValue\Contracts\HiddenAware
+ * @mixin \Drewlabs\PHPValue\Contracts\CastsAware
+ * @mixin \Drewlabs\PHPValue\Contracts\ValueInterface
  */
 trait BaseTrait
 {
@@ -47,6 +51,13 @@ trait BaseTrait
      * @var array<string>
      */
     private $__MISC__PROPERTIES__ = [];
+
+    /**
+     * List of properties owned by the current object
+     * 
+     * @var array
+     */
+    private $__OWN__PROPERTIES__ = [];
 
     /**
      * Makes class attributes accessible through -> syntax.
@@ -81,11 +92,11 @@ trait BaseTrait
      *
      * @param mixed ...$args
      *
-     * @return self
+     * @return static|ValueInterface
      */
     public static function new(...$args)
     {
-        return new self(...$args);
+        return new static(...$args);
     }
 
     /**
@@ -101,7 +112,7 @@ trait BaseTrait
     /**
      * Copy object properties changing existing attributes from values from `$attributes` parameter.
      *
-     * @return self
+     * @return static
      */
     public function copy(array $attributes = [])
     {
@@ -145,19 +156,31 @@ trait BaseTrait
     }
 
     // #region Properties updates
-    public function getOwnedProperties()
+    private function getProperties()
     {
-        return $this->__PROPERTIES__ ?? [];
+        return array_unique(array_merge($this->getOwnedProperties() ?? [], $this->getNotOwnedProperties() ?? []));
     }
+
+    /**
+	 * returns the list of owned properties
+	 *
+	 * @return string[]
+	 */
+	public function getOwnedProperties()
+	{
+		# code...
+		return $this->__OWN__PROPERTIES__ ?? [];
+	}
+
 
     /**
      * Add a list of properties to the base objected properties.
      *
-     * @return self
+     * @return static
      */
     public function addProperties(array $properties = [])
     {
-        $this->__MISC__PROPERTIES__ = array_unique(array_merge($this->getNotOwnedProperties(), array_diff($properties, $this->__PROPERTIES__ ?? [])));
+        $this->__MISC__PROPERTIES__ = array_unique(array_merge($this->getNotOwnedProperties(), array_diff($properties, $this->getOwnedProperties() ?? [])));
 
         return $this;
     }
@@ -210,10 +233,11 @@ trait BaseTrait
     /**
      * Attributes setter internal method.
      *
-     * @return self
+     * @return static
      */
     private function setAttributes(array $attributes)
     {
+        // Merge own properties and not owned properties
         foreach ($this->getProperties() as $name) {
             if (null !== ($result = ($attributes[$name] ?? $attributes[$this->getRawProperty($name)] ?? null))) {
                 $this->setAttribute($name, $result);
@@ -228,7 +252,7 @@ trait BaseTrait
      *
      * @param mixed $value
      *
-     * @return self|mixed
+     * @return static|mixed
      */
     private function setAttribute(string $name, $value)
     {
@@ -247,17 +271,6 @@ trait BaseTrait
         }
         // Else set the raw property value
         return $default();
-    }
-
-    /**
-     * Indicates wheter json attribute definition is an
-     * associative array or not along the list of property mappings.
-     *
-     * @return array
-     */
-    private function getProperties()
-    {
-        return array_unique(array_merge($this->__PROPERTIES__ ?? [], $this->__MISC__PROPERTIES__ ?? []));
     }
 
     private function hasPropertyGetter($name)
@@ -282,7 +295,7 @@ trait BaseTrait
         // Make properties definitions associative to uniformize
         // handlers
         $this->__PROP__MAP__ = $objProps;
-        $this->__PROPERTIES__ = array_keys($objProps);
+        $this->__OWN__PROPERTIES__ = array_keys($objProps);
     }
 
     /**

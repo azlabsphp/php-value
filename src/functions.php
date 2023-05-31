@@ -26,20 +26,76 @@ if (!\function_exists('CreateAdapter')) {
      */
     function CreateAdapter(array $properties)
     {
-        $object = (new class() implements ValueInterface {
+        $object = (new class() implements ValueInterface
+        {
+
             use ValueTrait;
 
             /**
-             * List of properties defines on the current class.
-             *
-             * @var string
+             * @var array
              */
-            private $__PROPERTIES__;
+            private $__HIDDEN__ = [];
 
+            /**
+             * @var array
+             */
+            private $__CASTS__ = [];
+        
             public function useProperties(array $properties)
             {
-                $this->buildPropsDefinitions($properties);
+                $this->bootInstance($properties);
+                return $this;
+            }
 
+            /**
+             * returns properties cast definitions
+             * 
+             *
+             * @return array
+             */
+            public function getCasts()
+            {
+                # code...
+                return $this->__CASTS__ ?? [];
+            }
+
+            /**
+             * set properties cast definitions
+             * 
+             * @param array $values
+             *
+             * @return string[]
+             */
+            public function setCasts(array $values)
+            {
+                # code...
+                $this->__CASTS__ = $values ?? $this->__CASTS__ ?? [];
+                return $this;
+            }
+
+            /**
+             * returns the list of hidden properties
+             * 
+             *
+             * @return string[]
+             */
+            public function getHidden()
+            {
+                # code...
+                return $this->__HIDDEN__ ?? [];
+            }
+
+            /**
+             * set properties hidden properties
+             * 
+             * @param array $values
+             *
+             * @return string[]
+             */
+            public function setHidden(array $values)
+            {
+                # code...
+                $this->__HIDDEN__ = $values;
                 return $this;
             }
         });

@@ -24,17 +24,6 @@ use Drewlabs\PHPValue\Cast;
  */
 trait Castable
 {
-    public function getCasts()
-    {
-        return $this->__CASTS__ ?? [];
-    }
-
-    public function setCasts(array $value)
-    {
-        $this->__CASTS__ = $value ?? $this->__CASTS__ ?? [];
-
-        return $this;
-    }
 
     public function getCastableProperty(string $key, $value, \Closure $default)
     {

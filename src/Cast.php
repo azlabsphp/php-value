@@ -203,7 +203,7 @@ class Cast
         if (class_exists($castType)) {
             return true;
         }
-        if (false === strpos($castType, '\\') && class_exists(self::NAMESPACE.'\\'.ucfirst($castType))) {
+        if (false === strpos($castType, '\\') && class_exists(static::NAMESPACE.'\\'.ucfirst($castType))) {
             return true;
         }
         throw new InvalidCastException($this->castsAware, $key, $castType);
@@ -438,9 +438,7 @@ class Cast
         if (\is_string($castType) && false !== strpos($castType, ':')) {
             $segments = explode(':', $castType, 2);
             // Use default Class Cast namespace if required
-            $castType = false === strpos($segments[0], '\\') && !class_exists($segments[0]) && class_exists(self::NAMESPACE.'\\'.ucfirst($segments[0])) ?
-                self::NAMESPACE.'\\'.ucfirst($segments[0]) :
-                $segments[0];
+            $castType = false === strpos($segments[0], '\\') && !class_exists($segments[0]) && class_exists(static::NAMESPACE.'\\'.ucfirst($segments[0])) ? static::NAMESPACE.'\\'.ucfirst($segments[0]) : $segments[0];
             $arguments = explode(',', $segments[1]);
         }
         if (is_subclass_of($castType, CastPropertyInterface::class)) {
@@ -575,9 +573,7 @@ class Cast
      */
     private function parseCasterClass($class)
     {
-        return false === strpos($class, ':')
-            ? $class
-            : trim(explode(':', $class, 2)[0]);
+        return false === strpos($class, ':') ? $class: trim(explode(':', $class, 2)[0]);
     }
 
     /**

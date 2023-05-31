@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests\Stubs;
 
+use Drewlabs\PHPValue\Contracts\Adaptable;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Traits\ObjectAdapter;
 
@@ -20,8 +21,72 @@ class TestModelRelation1Value implements ValueInterface
 {
     use ObjectAdapter;
 
-    protected $__PROPERTIES__ = [
+    private const __PROPERTIES__ = [
         'name',
         'score',
     ];
+
+    /**
+	 * Creates class instance
+	 * 	
+	 * @param array|Adaptable|Accessible $adaptable
+	 * 
+	 */
+	public function __construct($adaptable = null)
+	{
+		# code...
+		$this->bootInstance(static::__PROPERTIES__, $adaptable);
+	}
+
+    /**
+     * returns properties cast definitions
+     * 
+     *
+     * @return array
+     */
+    public function getCasts()
+    {
+        # code...
+        return $this->__CASTS__ ?? [];
+    }
+
+    /**
+     * set properties cast definitions
+     * 
+     * @param array $values
+     *
+     * @return string[]
+     */
+    public function setCasts(array $values)
+    {
+        # code...
+        $this->__CASTS__ = $values ?? $this->__CASTS__ ?? [];
+        return $this;
+    }
+
+    /**
+     * returns the list of hidden properties
+     * 
+     *
+     * @return string[]
+     */
+    public function getHidden()
+    {
+        # code...
+        return $this->__HIDDEN__ ?? [];
+    }
+
+    /**
+     * set properties hidden properties
+     * 
+     * @param array $values
+     *
+     * @return string[]
+     */
+    public function setHidden(array $values)
+    {
+        # code...
+        $this->__HIDDEN__ = $values;
+        return $this;
+    }
 }

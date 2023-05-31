@@ -136,7 +136,7 @@ final class Pair implements \JsonSerializable
      */
     public function copy(): self
     {
-        return new self($this->key, $this->value);
+        return new static($this->key, $this->value);
     }
 
     /**
