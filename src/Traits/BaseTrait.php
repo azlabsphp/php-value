@@ -162,15 +162,15 @@ trait BaseTrait
     }
 
     /**
-	 * returns the list of owned properties
-	 *
-	 * @return string[]
-	 */
-	public function getOwnedProperties()
-	{
-		# code...
-		return $this->__OWN__PROPERTIES__ ?? [];
-	}
+     * returns the list of owned properties
+     *
+     * @return string[]
+     */
+    public function getOwnedProperties()
+    {
+        # code...
+        return $this->__OWN__PROPERTIES__ ?? [];
+    }
 
 
     /**
@@ -218,12 +218,11 @@ trait BaseTrait
         // if order to filter them from the ouput dictionary
         $expects = $this->getOwnHiddenProperty();
         foreach ($properties = $this->getProperties() as $name) {
-            if (!empty(array_intersect($expects, [$name, $this->getRawProperty($name)]))) {
-                continue;
-            }
-
             $isComposedProperty = false !== strpos($name, '.') ? true : false;
             $propertyName =  $isComposedProperty ? explode('.', $name)[0] : $name;
+            if (($isComposedProperty && (false !== array_search($propertyName, $expects))) || !empty(array_intersect($expects, [$name, $this->getRawProperty($name)]))) {
+                continue;
+            }
             $result = $this->callPropertyGetter($propertyName, $this->getRawAttribute($propertyName));
             $isObject = is_object($result);
 
@@ -375,7 +374,7 @@ trait BaseTrait
      */
     private function propertySetterName(string $name)
     {
-        return 'set'.Str::camelize($name).'Attribute';
+        return 'set' . Str::camelize($name) . 'Attribute';
     }
 
     /**
@@ -385,7 +384,7 @@ trait BaseTrait
      */
     private function propertyGetterName(string $name)
     {
-        return 'get'.Str::camelize($name).'Attribute';
+        return 'get' . Str::camelize($name) . 'Attribute';
     }
 
 
@@ -404,7 +403,10 @@ trait BaseTrait
             if (!is_string($value)) {
                 continue;
             }
-            $array[] = false !== strpos($value, '.') ? explode('.', $value)[0] : $value;
+            if (false !== strpos($value, '.')) {
+                continue;
+            }
+            $array[] =  $value;
         }
 
         // return the constructed array
