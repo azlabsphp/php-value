@@ -16,28 +16,28 @@ namespace Drewlabs\PHPValue\Contracts;
 interface CastsAware
 {
     /**
-     * Returns list of properties that can be casted.
+     * returns list of properties that can be casted.
      *
      * @return array
      */
     public function getCasts();
 
     /**
-     * Set list of properties that can be casted.
+     * set list of properties that can be casted.
      *
      * @return self|mixed
      */
     public function setCasts(array $value);
 
     /**
-     * Returns raw value for the matching attribute name.
+     * returns raw value for the matching attribute name.
      *
      * @return mixed
      */
     public function getRawAttribute(string $name);
 
     /**
-     * Get value of a property configured as castable.
+     * get value of a property configured as castable.
      *
      * @param mixed $value
      *
@@ -46,7 +46,7 @@ interface CastsAware
     public function getCastableProperty(string $key, $value, \Closure $default);
 
     /**
-     * Set value of a property configured as castable.
+     * set value of a property configured as castable.
      *
      * @param mixed $value
      *

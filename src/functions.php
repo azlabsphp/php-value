@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Functions;
 
+use Drewlabs\PHPValue\Contracts\Adaptable;
+use Drewlabs\PHPValue\Contracts\HiddenAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Traits\ObjectAdapter as ValueTrait;
 use Drewlabs\PHPValue\ObjectAdapter;
@@ -24,9 +26,9 @@ if (!\function_exists('CreateAdapter')) {
      *
      * @return ObjectAdapter
      */
-    function CreateAdapter(array $properties)
+    function CreateAdapter(array $properties, Adaptable $instance = null)
     {
-        $object = (new class() implements ValueInterface
+        return (new class($properties, $instance) implements ValueInterface, HiddenAware
         {
 
             use ValueTrait;
@@ -40,11 +42,16 @@ if (!\function_exists('CreateAdapter')) {
              * @var array
              */
             private $__CASTS__ = [];
-        
-            public function useProperties(array $properties)
+
+            /**
+             * Create new class instance
+             * 
+             * @param array $properties 
+             * @param Adaptable|null $instance 
+             */
+            public function __construct(array $properties, Adaptable $instance = null)
             {
-                $this->bootInstance($properties);
-                return $this;
+                $this->bootInstance($properties, $instance);
             }
 
             /**
@@ -55,7 +62,6 @@ if (!\function_exists('CreateAdapter')) {
              */
             public function getCasts()
             {
-                # code...
                 return $this->__CASTS__ ?? [];
             }
 
@@ -81,7 +87,6 @@ if (!\function_exists('CreateAdapter')) {
              */
             public function getHidden()
             {
-                # code...
                 return $this->__HIDDEN__ ?? [];
             }
 
@@ -94,12 +99,9 @@ if (!\function_exists('CreateAdapter')) {
              */
             public function setHidden(array $values)
             {
-                # code...
                 $this->__HIDDEN__ = $values;
                 return $this;
             }
         });
-
-        return $object->useProperties($properties);
     }
 }

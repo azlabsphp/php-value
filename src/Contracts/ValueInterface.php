@@ -19,7 +19,7 @@ namespace Drewlabs\PHPValue\Contracts;
  * 
  * @package Drewlabs\PHPValue\Contracts
  */
-interface ValueInterface extends CastsAware, \ArrayAccess, \IteratorAggregate, Serializable
+interface ValueInterface extends CastsAware, \ArrayAccess, \IteratorAggregate, Serializable, AbstractPrototype
 {
     /**
      * Returns the parsed value of the provided `$name` attribute.

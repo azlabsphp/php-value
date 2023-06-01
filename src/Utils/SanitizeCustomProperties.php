@@ -90,12 +90,6 @@ class SanitizeCustomProperties
 
             $array[] = $property;
 
-            // Case the property contains `.` character, return the string before it
-            if (false !== strpos($property, '.')) {
-                yield explode('.', $property)[0];
-                continue;
-            }
-
             // By default yiel the property value as it is
             yield $property;
         }

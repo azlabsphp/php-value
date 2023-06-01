@@ -104,7 +104,6 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
 
             return $output;
         }
-
         return $this->offsetGet($name);
     }
 

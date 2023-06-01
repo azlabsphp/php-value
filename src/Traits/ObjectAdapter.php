@@ -21,8 +21,6 @@ trait ObjectAdapter
 {
     use BaseTrait;
     use Castable;
-    use HiddenAware;
-    use IteratorAware;
     use Macroable;
     use Proxy;
 

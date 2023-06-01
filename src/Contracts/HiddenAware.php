@@ -18,7 +18,6 @@ interface HiddenAware
 
 	/**
 	 * returns the list of hidden properties
-	 * 
 	 *
 	 * @return string[]
 	 */

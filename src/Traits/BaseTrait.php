@@ -14,12 +14,13 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\Core\Helpers\Str;
+use Drewlabs\PHPValue\Contracts\AbstractPrototype;
 use Drewlabs\PHPValue\Contracts\CastsAware;
+use Drewlabs\PHPValue\Contracts\HiddenAware;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 
 /**
- * @property string[] __PROPERTIES__
  *
  * @implements \Drewlabs\PHPValue\Contracts\ValueInterface
  * @mixin \Drewlabs\PHPValue\Traits\Macroable
@@ -140,7 +141,6 @@ trait BaseTrait
                 yield $name => $this->callPropertyGetter($name, $this->getRawAttribute($name));
             }
         };
-
         return iterator_to_array($fn());
     }
 
@@ -195,6 +195,66 @@ trait BaseTrait
         return $this->__MISC__PROPERTIES__ ?? [];
     }
     // #endregion Properties updates
+
+    //#region Hidden properties
+    /**
+     * Merge hidden property values.
+     *
+     * @return self
+     */
+    public function mergeHidden(?array $value = [])
+    {
+        $this->setHidden(array_merge($this->getHidden() ?? [], $value ?? []));
+        return $this;
+    }
+    //#endregion Hidden properties
+
+    // #region iterator methods
+
+    #[\ReturnTypeWillChange]
+    public function getIterator(): \Traversable
+    {
+        // If except columns are provided, we merge the except columns with the hidden columns
+        // if order to filter them from the ouput dictionary
+        $expects = $this->getOwnHiddenProperty();
+        foreach ($properties = $this->getProperties() as $name) {
+            if (!empty(array_intersect($expects, [$name, $this->getRawProperty($name)]))) {
+                continue;
+            }
+
+            $isComposedProperty = false !== strpos($name, '.') ? true : false;
+            $propertyName =  $isComposedProperty ? explode('.', $name)[0] : $name;
+            $result = $this->callPropertyGetter($propertyName, $this->getRawAttribute($propertyName));
+            $isObject = is_object($result);
+
+            // Check if the `$result` is and object and has `BaseTrait` as trait
+            if ($isComposedProperty && $isObject && $result instanceof AbstractPrototype) {
+                $result->addProperties($this->getPropertyAddedProperties($propertyName, $properties));
+            }
+
+            // merge hidden properties
+            if ($isObject && $result instanceof HiddenAware) {
+                $result->setHidden(array_merge($result->getHidden() ?? [], $this->getPropertyHiddenProperties($propertyName, $this->getHidden())));
+            }
+
+            // Each property value is passed though the serialization pipe for it to be casted if
+            // a cast or an serialization function is declared for it
+            yield $propertyName => $result;
+        }
+    }
+
+    /**
+     * Provides an object oriented iterator over the this object keys and values.
+     *
+     * @return \Traversable
+     */
+    public function each(\Closure $callback)
+    {
+        foreach ($this->getIterator() as $key => $value) {
+            $callback($value, $key);
+        }
+    }
+    // #endregion iterator methods
 
     // #region Protected & Private methods defintions
     /**
@@ -326,6 +386,84 @@ trait BaseTrait
     private function propertyGetterName(string $name)
     {
         return 'get'.Str::camelize($name).'Attribute';
+    }
+
+
+
+    /**
+     * returns object own hidden property
+     * 
+     * @return array 
+     */
+    private function getOwnHiddenProperty()
+    {
+        // initialize the output array
+        $array = [];
+
+        foreach ($this->getHidden() as $value) {
+            if (!is_string($value)) {
+                continue;
+            }
+            $array[] = false !== strpos($value, '.') ? explode('.', $value)[0] : $value;
+        }
+
+        // return the constructed array
+        return $array;
+    }
+
+
+    /**
+     * Get property added properties
+     * 
+     * @param mixed $name 
+     * @param array $properties
+     * 
+     * @return array 
+     */
+    private function getPropertyAddedProperties($name, array $properties)
+    {
+        // initialize the output array
+        $array = [];
+
+        foreach ($properties as $property) {
+            if (!is_string($property)) {
+                continue;
+            }
+            // make the sub property name from the property
+            if ("$name." === substr($property, 0, strlen($name) + 1)) {
+                $array[] = substr($property, strlen($name) + 1);
+            }
+        }
+
+        // return the constructed array
+        return $array;
+    }
+
+    /**
+     * Get property hidden properties
+     * 
+     * @param mixed $name 
+     * @param array $properties
+     * 
+     * @return array 
+     */
+    private function getPropertyHiddenProperties($name, array $properties)
+    {
+        // initialize the output array
+        $array = [];
+
+        foreach ($properties as $property) {
+            if (!is_string($property)) {
+                continue;
+            }
+            // make the sub property name from the property
+            if ("$name." === substr($property, 0, strlen($name) + 1)) {
+                $array[] = substr($property, strlen($name) + 1);
+            }
+        }
+
+        // return the constructed array
+        return $array;
     }
     // #endregion Protected & Private methods defintions
 }
