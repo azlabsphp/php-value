@@ -7,7 +7,7 @@ class SanitizeCustomPropertiesTest extends TestCase
 {
     public function test_sanitize_custom_properties__invoke()
     {
-        $result = (new SanitizeCustomProperties(sort: true))(['product.type', 'name', 12, 'ratings']);
+        $result = (new SanitizeCustomProperties(sort: true))(['product.type', '*', 'name', 12, 'ratings']);
         $this->assertEquals(['name', 'product', 'ratings'], $result);
     }
 
@@ -19,7 +19,7 @@ class SanitizeCustomPropertiesTest extends TestCase
 
     public function test_sanitize_custom_properties_revomes_duplicates()
     {
-        $result = (new SanitizeCustomProperties(sort: true))->call(['product.type', 'name', 'product.type', 'ratings', 'name']);
+        $result = (new SanitizeCustomProperties(sort: true))->call(['product.type', '*', 'name', 'product.type', 'ratings', 'name']);
         $this->assertEquals(['name', 'product', 'ratings'], $result);
 
     }
