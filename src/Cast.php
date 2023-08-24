@@ -287,7 +287,6 @@ class Cast
             [] : ((false === strpos($after = Str::after($castType[0].':', $name), ','))
                 ? [$after] :
                 explode(',', $after));
-
         return $castType[1]($value, ...$params);
     }
 
@@ -600,13 +599,13 @@ class Cast
                 return (string) $value;
             },
             'array' => static function ($value) {
-                return json_decode($value, true);
+                return is_string($value) ? json_decode($value, true) : (array)$value;
             },
             'json' => static function ($value) {
                 return json_decode($value, true);
             },
             'object' => static function ($value) {
-                return json_decode($value, false);
+                return is_string($value) ? json_decode($value, false) : (object)$value;
             },
             'bool' => static function ($value) {
                 return (bool) $value;

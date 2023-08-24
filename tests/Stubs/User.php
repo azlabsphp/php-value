@@ -108,4 +108,9 @@ class User implements ValueInterface
 		$this->__HIDDEN__ = $values;
 		return $this;
 	}
+
+	private function getAppends()
+	{
+		return ['email'];
+	}
 }

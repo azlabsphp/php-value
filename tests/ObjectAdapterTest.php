@@ -262,4 +262,18 @@ class ObjectAdapterTest extends TestCase
         // Expect the new callback to return false as result
         $this->assertFalse($message->sendMessage('Hello World!'));
     }
+
+    public function test_get_object_adapter_to_array_returns_an_array_with_appended_properties()
+    {
+        $user = new User([
+            'username' => 'USER-939',
+            'password' => 'secret',
+            'isVerified' => 0,
+            'details' => [],
+            'email' => 'azandrewdevelopper@gmail.com',
+            'roles' => [],
+        ]);
+
+        $this->assertEquals('azandrewdevelopper@gmail.com', $user->toArray()['email']);
+    }
 }

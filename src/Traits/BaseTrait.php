@@ -158,7 +158,7 @@ trait BaseTrait
     // #region Properties updates
     private function getProperties()
     {
-        return array_unique(array_merge($this->getOwnedProperties() ?? [], $this->getNotOwnedProperties() ?? []));
+        return array_unique(array_merge($this->getOwnedProperties() ?? [], $this->getNotOwnedProperties() ?? [], $this->getAppends() ?? []));
     }
 
     /**
@@ -466,6 +466,22 @@ trait BaseTrait
 
         // return the constructed array
         return $array;
+    }
+
+    /**
+     * getAppends method is a miscellanous method added
+     * to support appended properties from laravel framework.
+     * 
+     * **Note** By default it returns and empty array because
+     * the implementation was not meant to provide appended properties.
+     * But developpers can override the default behaviour to return the list
+     * of properties to append to the object
+     * 
+     * @return array[]
+     */
+    private function getAppends()
+    {
+        return [];
     }
     // #endregion Protected & Private methods defintions
 }
