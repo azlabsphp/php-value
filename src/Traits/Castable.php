@@ -59,6 +59,22 @@ trait Castable
         return $default();
     }
 
+    public function getCasts()
+    {
+        if (property_exists($this, '__CASTS__')) {
+            return $this->__CASTS__ ?? [];
+        }
+        return [];
+    }
+
+    public function setCasts()
+    {
+        if (property_exists($this, '__CASTS__')) {
+            $this->__CASTS__ = [];
+        }
+        return $this;
+    }
+
     /**
      * Set a given JSON attribute on the model.
      *
