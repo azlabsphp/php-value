@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Casts\Traits;
 
 use Drewlabs\PHPValue\Contracts\CastsAware;
+
 use function Drewlabs\PHPValue\Functions\CreateAdapter;
 
 use Drewlabs\PHPValue\Traits\BaseTrait;
@@ -34,7 +35,7 @@ trait ProducesIterator
         $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;
         $iterable = \is_object($value) && (method_exists($value, 'getIterator') || $value instanceof \IteratorAggregate) && is_iterable($result = $value->getIterator()) ? $result : $value;
         if (!is_iterable($iterable)) {
-            throw new \InvalidArgumentException(sprintf("%s must has getIterator(): \Traversable  method or implements %s interface", \get_class($value)));
+            throw new \InvalidArgumentException(sprintf("%s must has getIterator(): \Traversable  method or implements %s interface", $value::class));
         }
         if (empty($this->arguments)) {
             return CreateAdapter(array_keys($value))->copy($value);

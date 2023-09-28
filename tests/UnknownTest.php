@@ -64,7 +64,6 @@ class UnknownTest extends TestCase
         $this->assertNotSame(12, $variable->get());
         $this->assertSame(12, $variable->toInt());
 
-
         $variable = Unknown::new('.457');
         $this->assertSame(.46, $variable->toFloat(2));
 

@@ -15,13 +15,12 @@ namespace Drewlabs\PHPValue\Tests;
 
 use Drewlabs\PHPValue\ObjectProxy;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 class ObjectProxyTest extends TestCase
 {
     public function test_object_proxy_isset()
     {
-        $object = new \stdClass;
+        $object = new \stdClass();
         $object->value = 'My Value';
 
         $proxy = new ObjectProxy($object);
@@ -31,51 +30,49 @@ class ObjectProxyTest extends TestCase
         $this->assertTrue(!isset($proxy->value), 'Expect the value object to not be set after unset() call');
     }
 
-
     public function test_get_property_value()
     {
-        $person = new stdClass;
+        $person = new \stdClass();
         $person->name = 'John Doe';
         $person->age = 32;
 
-        $address = new stdClass;
+        $address = new \stdClass();
         $address->email = 'johndoe@example.com';
         $address->house = '21 Lincoln Street';
 
         $person->address = $address;
         $proxy = new ObjectProxy($person);
-        
-        $this->assertEquals('johndoe@example.com', $proxy->getPropertyValue('address.email'));
-        $this->assertEquals('21 Lincoln Street', $proxy->getPropertyValue('address.house'));
-        $this->assertEquals(32, $proxy->getPropertyValue('age'));
-    }
 
+        $this->assertSame('johndoe@example.com', $proxy->getPropertyValue('address.email'));
+        $this->assertSame('21 Lincoln Street', $proxy->getPropertyValue('address.house'));
+        $this->assertSame(32, $proxy->getPropertyValue('age'));
+    }
 
     public function test_object_proxy_set_property_value()
     {
-        $person = new stdClass;
+        $person = new \stdClass();
         $person->name = 'John Doe';
         $person->age = 32;
 
-        $address = new stdClass;
+        $address = new \stdClass();
         $address->email = 'johndoe@example.com';
         $address->house = '21 Lincoln Street';
 
         $person->address = $address;
         $proxy = new ObjectProxy($person);
-        
-        $this->assertEquals(null, $proxy->getPropertyValue('address.phone'));
+
+        $this->assertNull($proxy->getPropertyValue('address.phone'));
 
         $addressProxy = new ObjectProxy($address);
         $addressProxy->setPropertyValue('phone', '22898723456');
 
-        $this->assertEquals('22898723456', $proxy->getPropertyValue('address.phone'));
+        $this->assertSame('22898723456', $proxy->getPropertyValue('address.phone'));
     }
 
     public function test_object_proxy_property_exists()
     {
         // Initialiaze
-        $person = new stdClass;
+        $person = new \stdClass();
         $person->name = 'John Doe';
         $person->age = 32;
 

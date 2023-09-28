@@ -16,9 +16,9 @@ namespace Drewlabs\PHPValue;
 use Drewlabs\PHPValue\Contracts\Adaptable;
 
 /**
- * @method void __set(string $name, $value)
+ * @method void  __set(string $name, $value)
  * @method mixed __get(string $name)
- * 
+ *
  * PHP stdClass extension usable as array accessible object.
  *
  * ```php
@@ -91,7 +91,7 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
 
     public function getPropertyValue(string $name)
     {
-        if (false !== strpos($name, '.')) {
+        if (str_contains($name, '.')) {
             $keys = explode('.', $name);
             $last = \count($keys);
             $index = 1;
@@ -107,6 +107,7 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
 
             return $output;
         }
+
         return $this->offsetGet($name);
     }
 
@@ -124,7 +125,7 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        if (($pair = $this->lookupKey($offset))) {
+        if ($pair = $this->lookupKey($offset)) {
             return $pair->value;
         }
 
@@ -264,8 +265,6 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
 
     /**
      * Attempts to look up a key in the table.
-     *
-     * @param $key
      *
      * @return Pair|null
      *

@@ -16,8 +16,6 @@ namespace Drewlabs\PHPValue\Contracts;
 /**
  * @mixin \Drewlabs\PHPValue\Contracts\HiddenAware
  * @mixin \Drewlabs\PHPValue\Contracts\CastsAware
- * 
- * @package Drewlabs\PHPValue\Contracts
  */
 interface ValueInterface extends CastsAware, \ArrayAccess, \IteratorAggregate, Serializable, AbstractPrototype
 {

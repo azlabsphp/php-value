@@ -13,11 +13,10 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Contracts;
 
-
 interface AbstractPrototype
 {
     /**
-     * returns the list of owned properties
+     * returns the list of owned properties.
      *
      * @return string[]
      */

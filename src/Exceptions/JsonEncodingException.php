@@ -26,7 +26,7 @@ class JsonEncodingException extends \RuntimeException
      */
     public static function forAttribute($model, $key, $message)
     {
-        $class = \get_class($model);
+        $class = $model::class;
 
         return new static("Unable to encode attribute [{$key}] for model [{$class}] to JSON: {$message}.");
     }

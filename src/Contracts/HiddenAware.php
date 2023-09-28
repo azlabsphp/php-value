@@ -15,21 +15,17 @@ namespace Drewlabs\PHPValue\Contracts;
 
 interface HiddenAware
 {
+    /**
+     * returns the list of hidden properties.
+     *
+     * @return string[]
+     */
+    public function getHidden();
 
-	/**
-	 * returns the list of hidden properties
-	 *
-	 * @return string[]
-	 */
-	public function getHidden();
-
-	/**
-	 * set properties hidden properties
-	 * 
-	 * @param array $values
-	 *
-	 * @return string[]
-	 */
-	public function setHidden(array $values);
-
+    /**
+     * set properties hidden properties.
+     *
+     * @return string[]
+     */
+    public function setHidden(array $values);
 }

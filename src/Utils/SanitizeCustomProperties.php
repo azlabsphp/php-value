@@ -21,9 +21,7 @@ class SanitizeCustomProperties
     private $sort = false;
 
     /**
-     * Creates class instance
-     * 
-     * @param bool $sort 
+     * Creates class instance.
      */
     public function __construct(bool $sort = false)
     {
@@ -32,10 +30,9 @@ class SanitizeCustomProperties
 
     /**
      * Creates list of custom properties names removing `invalid` names
-     * from the provided list of values
-     * 
-     * @param array|iterable|\Traversable $values 
-     * @return array 
+     * from the provided list of values.
+     *
+     * @param array|iterable|\Traversable $values
      */
     public function __invoke($values): array
     {
@@ -43,15 +40,15 @@ class SanitizeCustomProperties
         if ($this->sort) {
             sort($array);
         }
+
         return $array;
     }
 
     /**
      * Creates list of custom properties names removing `invalid` names
-     * from the provided list of values
-     * 
-     * @param array|iterable|\Traversable $values 
-     * @return array 
+     * from the provided list of values.
+     *
+     * @param array|iterable|\Traversable $values
      */
     public function call($values): array
     {
@@ -59,14 +56,16 @@ class SanitizeCustomProperties
         if ($this->sort) {
             sort($array);
         }
+
         return $array;
     }
 
     /**
-     * Creates an iterable of properties
-     * 
-     * @param array|iterable|\Traversable $properties 
-     * @return \Traversable<int, mixed, mixed, void> 
+     * Creates an iterable of properties.
+     *
+     * @param array|iterable|\Traversable $properties
+     *
+     * @return \Traversable<int, mixed, mixed, void>
      */
     private function createIterator($properties)
     {
@@ -74,17 +73,17 @@ class SanitizeCustomProperties
 
         foreach ($properties as $property) {
             // escape the property if it equals * or it's a float, decimal or integer value
-            if (($property === '*') || is_numeric($property) ) {
+            if (('*' === $property) || is_numeric($property)) {
                 continue;
             }
 
             // property names must be a valid `PHP` string
-            if (!is_string($property)) {
+            if (!\is_string($property)) {
                 continue;
             }
 
             // we do not want to inclue duplicated properties, so we exclude the property if it was already handled
-            if (false !== array_search($property, $array)) {
+            if (false !== array_search($property, $array, true)) {
                 continue;
             }
 

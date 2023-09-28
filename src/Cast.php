@@ -203,7 +203,7 @@ class Cast
         if (class_exists($castType)) {
             return true;
         }
-        if (false === strpos($castType, '\\') && class_exists(static::NAMESPACE.'\\'.ucfirst($castType))) {
+        if (!str_contains($castType, '\\') && class_exists(static::NAMESPACE.'\\'.ucfirst($castType))) {
             return true;
         }
         throw new InvalidCastException($this->castsAware, $key, $castType);
@@ -283,10 +283,11 @@ class Cast
         }
         // We assume that the argument to the closure is specify after `:` and are seperated
         // by `,` operator
-        $params = false === strpos($name, ':') ?
-            [] : ((false === strpos($after = Str::after($castType[0].':', $name), ','))
+        $params = !str_contains($name, ':') ?
+            [] : ((!str_contains($after = Str::after($castType[0].':', $name), ','))
                 ? [$after] :
                 explode(',', $after));
+
         return $castType[1]($value, ...$params);
     }
 
@@ -434,10 +435,10 @@ class Cast
         // In case the configuration provided for casting the contains : we resolve the attribute
         // caster from the definition key as the part before `:` character and the output class as
         // the value after `:`
-        if (\is_string($castType) && false !== strpos($castType, ':')) {
+        if (\is_string($castType) && str_contains($castType, ':')) {
             $segments = explode(':', $castType, 2);
             // Use default Class Cast namespace if required
-            $castType = false === strpos($segments[0], '\\') && !class_exists($segments[0]) && class_exists(static::NAMESPACE.'\\'.ucfirst($segments[0])) ? static::NAMESPACE.'\\'.ucfirst($segments[0]) : $segments[0];
+            $castType = !str_contains($segments[0], '\\') && !class_exists($segments[0]) && class_exists(static::NAMESPACE.'\\'.ucfirst($segments[0])) ? static::NAMESPACE.'\\'.ucfirst($segments[0]) : $segments[0];
             $arguments = explode(',', $segments[1]);
         }
         if (is_subclass_of($castType, CastPropertyInterface::class)) {
@@ -470,8 +471,8 @@ class Cast
      */
     private function isParameterizedDateTimeCast($cast)
     {
-        return 0 === strncmp($cast, 'date:', 5) ||
-            0 === strncmp($cast, 'datetime:', 9);
+        return 0 === strncmp($cast, 'date:', 5)
+            || 0 === strncmp($cast, 'datetime:', 9);
     }
 
     /**
@@ -483,8 +484,8 @@ class Cast
      */
     private function isParameterizedImmutableDateTimeCast($cast)
     {
-        return 0 === strncmp($cast, 'immutable_date:', 15) ||
-            0 === strncmp($cast, 'immutable_datetime:', 19);
+        return 0 === strncmp($cast, 'immutable_date:', 15)
+            || 0 === strncmp($cast, 'immutable_datetime:', 19);
     }
 
     /**
@@ -559,7 +560,7 @@ class Cast
             case 'NaN':
                 return \NAN;
             default:
-                return floatval($value);
+                return (float) $value;
         }
     }
 
@@ -572,7 +573,7 @@ class Cast
      */
     private function parseCasterClass($class)
     {
-        return false === strpos($class, ':') ? $class: trim(explode(':', $class, 2)[0]);
+        return !str_contains($class, ':') ? $class : trim(explode(':', $class, 2)[0]);
     }
 
     /**
@@ -599,13 +600,13 @@ class Cast
                 return (string) $value;
             },
             'array' => static function ($value) {
-                return is_string($value) ? json_decode($value, true) : (array)$value;
+                return \is_string($value) ? json_decode($value, true) : (array) $value;
             },
             'json' => static function ($value) {
                 return json_decode($value, true);
             },
             'object' => static function ($value) {
-                return is_string($value) ? json_decode($value, false) : (object)$value;
+                return \is_string($value) ? json_decode($value, false) : (object) $value;
             },
             'bool' => static function ($value) {
                 return (bool) $value;

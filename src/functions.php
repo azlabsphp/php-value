@@ -16,8 +16,8 @@ namespace Drewlabs\PHPValue\Functions;
 use Drewlabs\PHPValue\Contracts\Adaptable;
 use Drewlabs\PHPValue\Contracts\HiddenAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use Drewlabs\PHPValue\Traits\ObjectAdapter as ValueTrait;
 use Drewlabs\PHPValue\ObjectAdapter;
+use Drewlabs\PHPValue\Traits\ObjectAdapter as ValueTrait;
 
 if (!\function_exists('CreateAdapter')) {
 
@@ -28,9 +28,7 @@ if (!\function_exists('CreateAdapter')) {
      */
     function CreateAdapter(array $properties, Adaptable $instance = null)
     {
-        return (new class($properties, $instance) implements ValueInterface, HiddenAware
-        {
-
+        return new class($properties, $instance) implements ValueInterface, HiddenAware {
             use ValueTrait;
 
             /**
@@ -44,10 +42,7 @@ if (!\function_exists('CreateAdapter')) {
             private $__CASTS__ = [];
 
             /**
-             * Create new class instance
-             * 
-             * @param array $properties 
-             * @param Adaptable|null $instance 
+             * Create new class instance.
              */
             public function __construct(array $properties, Adaptable $instance = null)
             {
@@ -55,8 +50,7 @@ if (!\function_exists('CreateAdapter')) {
             }
 
             /**
-             * returns properties cast definitions
-             * 
+             * returns properties cast definitions.
              *
              * @return array
              */
@@ -66,22 +60,20 @@ if (!\function_exists('CreateAdapter')) {
             }
 
             /**
-             * set properties cast definitions
-             * 
-             * @param array $values
+             * set properties cast definitions.
              *
              * @return string[]
              */
             public function setCasts(array $values)
             {
-                # code...
+                // code...
                 $this->__CASTS__ = $values ?? $this->__CASTS__ ?? [];
+
                 return $this;
             }
 
             /**
-             * returns the list of hidden properties
-             * 
+             * returns the list of hidden properties.
              *
              * @return string[]
              */
@@ -91,17 +83,16 @@ if (!\function_exists('CreateAdapter')) {
             }
 
             /**
-             * set properties hidden properties
-             * 
-             * @param array $values
+             * set properties hidden properties.
              *
              * @return string[]
              */
             public function setHidden(array $values)
             {
                 $this->__HIDDEN__ = $values;
+
                 return $this;
             }
-        });
+        };
     }
 }

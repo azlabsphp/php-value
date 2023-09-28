@@ -17,7 +17,9 @@ use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
+
 use function Drewlabs\PHPValue\Functions\CreateAdapter;
+
 use Drewlabs\PHPValue\Tests\Stubs\FileLogger;
 use Drewlabs\PHPValue\Tests\Stubs\Message;
 use Drewlabs\PHPValue\Tests\Stubs\User;
@@ -117,7 +119,7 @@ class ObjectAdapterTest extends TestCase
         $object->From = 'xxx-xxx-xxx';
         $object->To = 'yyy-yyy-yyy';
         // $object->Logger = new FileLogger();
-        $message = (Message::new())->fromObject($object);
+        $message = Message::new()->fromObject($object);
         $this->assertSame($message->From, 'xxx-xxx-xxx', 'Expect from property value to equals xxx-xxx-xxx');
     }
 
@@ -127,7 +129,7 @@ class ObjectAdapterTest extends TestCase
         $object->From = 'xxx-xxx-xxx';
         $object->To = 'yyy-yyy-yyy';
         $object->Logger = new FileLogger();
-        $message = (Message::new())->fromObject($object);
+        $message = Message::new()->fromObject($object);
         $this->assertIsArray($message->attributesToArray(), 'Expect attributesToArray() method to return an array');
         $this->assertSame($message['from'], 'xxx-xxx-xxx');
     }
@@ -146,7 +148,7 @@ class ObjectAdapterTest extends TestCase
         $geolocation->long = '4.8947352';
         $address->geolocation = $geolocation;
         $object->Address = $address;
-        $message = (Message::new())->fromObject($object);
+        $message = Message::new()->fromObject($object);
         $this->assertIsString((string) $message, 'Expect object to be stringeable');
     }
 
@@ -163,7 +165,7 @@ class ObjectAdapterTest extends TestCase
         $geolocation->long = '4.8947352';
         $address->geolocation = $geolocation;
         $object->Address = $address;
-        $message = (Message::new())->fromObject($object);
+        $message = Message::new()->fromObject($object);
         $this->assertSame('test@example.com', $message->getAttribute('Address.email'), 'Expect email to equals test@example.com');
     }
 
@@ -269,6 +271,6 @@ class ObjectAdapterTest extends TestCase
             'roles' => [],
         ]);
 
-        $this->assertEquals('azandrewdevelopper@gmail.com', $user->toArray()['email']);
+        $this->assertSame('azandrewdevelopper@gmail.com', $user->toArray()['email']);
     }
 }

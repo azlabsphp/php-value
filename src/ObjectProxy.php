@@ -16,10 +16,8 @@ namespace Drewlabs\PHPValue;
 use Drewlabs\PHPValue\Contracts\Adaptable;
 
 /**
- * @method void __set(string $name, $value)
+ * @method void  __set(string $name, $value)
  * @method mixed __get(string $name)
- * 
- * @package Drewlabs\PHPValue
  */
 class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAccess
 {
@@ -29,19 +27,54 @@ class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAc
     private $proxied;
 
     /**
-     * Creates an object proxy instant that provides
-     * 
-     * @param object $object 
-     * @return void 
+     * Creates an object proxy instant that provides.
+     *
+     * @return void
      */
     public function __construct(object $object)
     {
         $this->proxied = $object;
     }
 
+    public function __get(string $name)
+    {
+        return $this->proxied->offsetGet($name);
+    }
+
+    public function __set(string $name, $value)
+    {
+        $this->proxied->offsetSet($name, $value);
+    }
+
+    public function __call($name, $arguments)
+    {
+        return \call_user_func_array([$this->proxied, $name], $arguments);
+    }
+
+    public function __isset(string $name)
+    {
+        return isset($this->proxied->{$name});
+    }
+
+    public function __unset($name)
+    {
+        $this->offsetUnset($name);
+    }
+
+    public function __clone()
+    {
+        $this->proxied = clone $this->proxied;
+    }
+
+    // #region String __repr__
+    public function __toString()
+    {
+        return json_encode($this->toArray(), \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
+    }
+
     public function getPropertyValue(string $name)
     {
-        if (false !== strpos($name, '.')) {
+        if (str_contains($name, '.')) {
             $keys = explode('.', $name);
             $last = \count($keys);
             $index = 1;
@@ -57,6 +90,7 @@ class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAc
 
             return $output;
         }
+
         return $this->offsetGet($name);
     }
 
@@ -71,8 +105,8 @@ class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAc
     }
 
     /**
-     * Merged attributes into the proxied object
-     * 
+     * Merged attributes into the proxied object.
+     *
      * @param array<string,mixed> $attributes
      *
      * @throws \InvalidArgumentException
@@ -125,41 +159,6 @@ class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAc
         foreach (get_object_vars($this->proxied) as $key => $value) {
             yield $key => $value;
         }
-    }
-
-    public function __get(string $name)
-    {
-        return $this->proxied->offsetGet($name);
-    }
-
-    public function __set(string $name, $value)
-    {
-        $this->proxied->offsetSet($name, $value);
-    }
-
-    public function __call($name, $arguments)
-    {
-        return call_user_func_array([$this->proxied, $name], $arguments);
-    }
-
-    public function __isset(string $name)
-    {
-        return isset($this->proxied->{$name});
-    }
-
-    public function __unset($name)
-    {
-        $this->offsetUnset($name);
-    }
-
-    public function __clone()
-    {
-        $this->proxied = clone $this->proxied;
-    }
-    // #region String __repr__
-    public function __toString()
-    {
-        return json_encode($this->toArray(), \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
     }
     // #endregion Macros
 }

@@ -27,66 +27,61 @@ class TestModelRelation1Value implements ValueInterface
     ];
 
     /**
-	 * Creates class instance
-	 * 	
-	 * @param array|Adaptable|Accessible $adaptable
-	 * 
-	 */
-	public function __construct($adaptable = null)
-	{
-		# code...
-		$this->bootInstance(static::__PROPERTIES__, $adaptable);
-	}
+     * Creates class instance.
+     *
+     * @param array|Adaptable|Accessible $adaptable
+     */
+    public function __construct($adaptable = null)
+    {
+        // code...
+        $this->bootInstance(static::__PROPERTIES__, $adaptable);
+    }
 
     /**
-     * returns properties cast definitions
-     * 
+     * returns properties cast definitions.
      *
      * @return array
      */
     public function getCasts()
     {
-        # code...
+        // code...
         return $this->__CASTS__ ?? [];
     }
 
     /**
-     * set properties cast definitions
-     * 
-     * @param array $values
+     * set properties cast definitions.
      *
      * @return string[]
      */
     public function setCasts(array $values)
     {
-        # code...
+        // code...
         $this->__CASTS__ = $values ?? $this->__CASTS__ ?? [];
+
         return $this;
     }
 
     /**
-     * returns the list of hidden properties
-     * 
+     * returns the list of hidden properties.
      *
      * @return string[]
      */
     public function getHidden()
     {
-        # code...
+        // code...
         return $this->__HIDDEN__ ?? [];
     }
 
     /**
-     * set properties hidden properties
-     * 
-     * @param array $values
+     * set properties hidden properties.
      *
      * @return string[]
      */
     public function setHidden(array $values)
     {
-        # code...
+        // code...
         $this->__HIDDEN__ = $values;
+
         return $this;
     }
 }

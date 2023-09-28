@@ -17,12 +17,12 @@ use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Contracts\AbstractPrototype;
 use Drewlabs\PHPValue\Contracts\CastsAware;
 use Drewlabs\PHPValue\Contracts\HiddenAware;
-use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 
 /**
- *
  * @implements \Drewlabs\PHPValue\Contracts\ValueInterface
+ *
  * @mixin \Drewlabs\PHPValue\Traits\Macroable
  * @mixin \Drewlabs\PHPValue\Traits\Castable
  * @mixin \Drewlabs\PHPValue\Contracts\HiddenAware
@@ -54,16 +54,14 @@ trait BaseTrait
     private $__MISC__PROPERTIES__ = [];
 
     /**
-     * List of properties owned by the current object
-     * 
+     * List of properties owned by the current object.
+     *
      * @var array
      */
     private $__OWN__PROPERTIES__ = [];
 
     /**
      * Makes class attributes accessible through -> syntax.
-     *
-     * @param $name
      *
      * @return mixed
      */
@@ -141,6 +139,7 @@ trait BaseTrait
                 yield $name => $this->callPropertyGetter($name, $this->getRawAttribute($name));
             }
         };
+
         return iterator_to_array($fn());
     }
 
@@ -155,23 +154,16 @@ trait BaseTrait
         );
     }
 
-    // #region Properties updates
-    private function getProperties()
-    {
-        return array_unique(array_merge($this->getOwnedProperties() ?? [], $this->getNotOwnedProperties() ?? [], $this->getAppends() ?? []));
-    }
-
     /**
-     * returns the list of owned properties
+     * returns the list of owned properties.
      *
      * @return string[]
      */
     public function getOwnedProperties()
     {
-        # code...
+        // code...
         return $this->__OWN__PROPERTIES__ ?? [];
     }
-
 
     /**
      * Add a list of properties to the base objected properties.
@@ -196,7 +188,7 @@ trait BaseTrait
     }
     // #endregion Properties updates
 
-    //#region Hidden properties
+    // #region Hidden properties
     /**
      * Merge hidden property values.
      *
@@ -205,9 +197,10 @@ trait BaseTrait
     public function mergeHidden(?array $value = [])
     {
         $this->setHidden(array_merge($this->getHidden() ?? [], $value ?? []));
+
         return $this;
     }
-    //#endregion Hidden properties
+    // #endregion Hidden properties
 
     // #region iterator methods
 
@@ -218,13 +211,13 @@ trait BaseTrait
         // if order to filter them from the ouput dictionary
         $expects = $this->getOwnHiddenProperty();
         foreach ($properties = $this->getProperties() as $name) {
-            $isComposedProperty = false !== strpos($name, '.') ? true : false;
-            $propertyName =  $isComposedProperty ? explode('.', $name)[0] : $name;
-            if (($isComposedProperty && (false !== array_search($propertyName, $expects))) || !empty(array_intersect($expects, [$name, $this->getRawProperty($name)]))) {
+            $isComposedProperty = str_contains($name, '.') ? true : false;
+            $propertyName = $isComposedProperty ? explode('.', $name)[0] : $name;
+            if (($isComposedProperty && (false !== array_search($propertyName, $expects, true))) || !empty(array_intersect($expects, [$name, $this->getRawProperty($name)]))) {
                 continue;
             }
             $result = $this->callPropertyGetter($propertyName, $this->getRawAttribute($propertyName));
-            $isObject = is_object($result);
+            $isObject = \is_object($result);
 
             // Check if the `$result` is and object and has `BaseTrait` as trait
             if ($isComposedProperty && $isObject && $result instanceof AbstractPrototype) {
@@ -252,6 +245,12 @@ trait BaseTrait
         foreach ($this->getIterator() as $key => $value) {
             $callback($value, $key);
         }
+    }
+
+    // #region Properties updates
+    private function getProperties()
+    {
+        return array_unique(array_merge($this->getOwnedProperties() ?? [], $this->getNotOwnedProperties() ?? [], $this->getAppends() ?? []));
     }
     // #endregion iterator methods
 
@@ -282,7 +281,7 @@ trait BaseTrait
         };
         // If the current object is instance of {@see CastsAware} and interface
         // exist {@see CastAware} we call the getCastableProperty method
-        if ((interface_exists(CastsAware::class)) && ($this instanceof CastsAware) && (null !== ($this->getCasts()[$name] ?? null))) {
+        if (interface_exists(CastsAware::class) && ($this instanceof CastsAware) && (null !== ($this->getCasts()[$name] ?? null))) {
             return $this->getCastableProperty($name, $value, $default);
         }
 
@@ -374,7 +373,7 @@ trait BaseTrait
      */
     private function propertySetterName(string $name)
     {
-        return 'set' . Str::camelize($name) . 'Attribute';
+        return 'set'.Str::camelize($name).'Attribute';
     }
 
     /**
@@ -384,15 +383,13 @@ trait BaseTrait
      */
     private function propertyGetterName(string $name)
     {
-        return 'get' . Str::camelize($name) . 'Attribute';
+        return 'get'.Str::camelize($name).'Attribute';
     }
 
-
-
     /**
-     * returns object own hidden property
-     * 
-     * @return array 
+     * returns object own hidden property.
+     *
+     * @return array
      */
     private function getOwnHiddenProperty()
     {
@@ -400,27 +397,25 @@ trait BaseTrait
         $array = [];
 
         foreach ($this->getHidden() as $value) {
-            if (!is_string($value)) {
+            if (!\is_string($value)) {
                 continue;
             }
-            if (false !== strpos($value, '.')) {
+            if (str_contains($value, '.')) {
                 continue;
             }
-            $array[] =  $value;
+            $array[] = $value;
         }
 
         // return the constructed array
         return $array;
     }
 
-
     /**
-     * Get property added properties
-     * 
-     * @param mixed $name 
-     * @param array $properties
-     * 
-     * @return array 
+     * Get property added properties.
+     *
+     * @param mixed $name
+     *
+     * @return array
      */
     private function getPropertyAddedProperties($name, array $properties)
     {
@@ -428,12 +423,12 @@ trait BaseTrait
         $array = [];
 
         foreach ($properties as $property) {
-            if (!is_string($property)) {
+            if (!\is_string($property)) {
                 continue;
             }
             // make the sub property name from the property
-            if ("$name." === substr($property, 0, strlen($name) + 1)) {
-                $array[] = substr($property, strlen($name) + 1);
+            if ("$name." === substr($property, 0, \strlen($name) + 1)) {
+                $array[] = substr($property, \strlen($name) + 1);
             }
         }
 
@@ -442,12 +437,11 @@ trait BaseTrait
     }
 
     /**
-     * Get property hidden properties
-     * 
-     * @param mixed $name 
-     * @param array $properties
-     * 
-     * @return array 
+     * Get property hidden properties.
+     *
+     * @param mixed $name
+     *
+     * @return array
      */
     private function getPropertyHiddenProperties($name, array $properties)
     {
@@ -455,12 +449,12 @@ trait BaseTrait
         $array = [];
 
         foreach ($properties as $property) {
-            if (!is_string($property)) {
+            if (!\is_string($property)) {
                 continue;
             }
             // make the sub property name from the property
-            if ("$name." === substr($property, 0, strlen($name) + 1)) {
-                $array[] = substr($property, strlen($name) + 1);
+            if ("$name." === substr($property, 0, \strlen($name) + 1)) {
+                $array[] = substr($property, \strlen($name) + 1);
             }
         }
 
@@ -471,12 +465,12 @@ trait BaseTrait
     /**
      * getAppends method is a miscellanous method added
      * to support appended properties from laravel framework.
-     * 
+     *
      * **Note** By default it returns and empty array because
      * the implementation was not meant to provide appended properties.
      * But developpers can override the default behaviour to return the list
      * of properties to append to the object
-     * 
+     *
      * @return array[]
      */
     private function getAppends()

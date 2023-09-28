@@ -27,6 +27,14 @@ class User implements ValueInterface
 {
     use ObjectAdapter;
 
+    private const __PROPERTIES__ = [
+        'username',
+        'password',
+        'isVerified',
+        'details',
+        'roles',
+    ];
+
     protected $__CASTS__ = [
         'isVerified' => 'bool',
         'details' => 'value: '.UserDetails::class,
@@ -37,80 +45,67 @@ class User implements ValueInterface
         'password',
     ];
 
-    private const __PROPERTIES__ = [
-        'username',
-        'password',
-        'isVerified',
-        'details',
-        'roles',
-    ];
-	
     /**
-	 * Creates class instance
-	 * 	
-	 * @param array|Adaptable|Accessible $adaptable
-	 * 
-	 */
-	public function __construct($adaptable = null)
-	{
-		# code...
-		$this->bootInstance(static::__PROPERTIES__, $adaptable);
-	}
+     * Creates class instance.
+     *
+     * @param array|Adaptable|Accessible $adaptable
+     */
+    public function __construct($adaptable = null)
+    {
+        // code...
+        $this->bootInstance(static::__PROPERTIES__, $adaptable);
+    }
 
-	/**
-	 * returns properties cast definitions
-	 * 
-	 *
-	 * @return array
-	 */
-	public function getCasts()
-	{
-		# code...
-		return $this->__CASTS__ ?? [];
-	}
+    /**
+     * returns properties cast definitions.
+     *
+     * @return array
+     */
+    public function getCasts()
+    {
+        // code...
+        return $this->__CASTS__ ?? [];
+    }
 
-	/**
-	 * set properties cast definitions
-	 * 
-	 * @param array $values
-	 *
-	 * @return string[]
-	 */
-	public function setCasts(array $values)
-	{
-		# code...
-		$this->__CASTS__ = $values ?? $this->__CASTS__ ?? [];
-		return $this;
-	}
+    /**
+     * set properties cast definitions.
+     *
+     * @return string[]
+     */
+    public function setCasts(array $values)
+    {
+        // code...
+        $this->__CASTS__ = $values ?? $this->__CASTS__ ?? [];
 
-	/**
-	 * returns the list of hidden properties
-	 * 
-	 *
-	 * @return string[]
-	 */
-	public function getHidden()
-	{
-		# code...
-		return $this->__HIDDEN__ ?? [];
-	}
+        return $this;
+    }
 
-	/**
-	 * set properties hidden properties
-	 * 
-	 * @param array $values
-	 *
-	 * @return string[]
-	 */
-	public function setHidden(array $values)
-	{
-		# code...
-		$this->__HIDDEN__ = $values;
-		return $this;
-	}
+    /**
+     * returns the list of hidden properties.
+     *
+     * @return string[]
+     */
+    public function getHidden()
+    {
+        // code...
+        return $this->__HIDDEN__ ?? [];
+    }
 
-	private function getAppends()
-	{
-		return ['email'];
-	}
+    /**
+     * set properties hidden properties.
+     *
+     * @return string[]
+     */
+    public function setHidden(array $values)
+    {
+        // code...
+        $this->__HIDDEN__ = $values;
+
+        return $this;
+    }
+
+    private function getAppends()
+    {
+        return ['email'];
+    }
 }

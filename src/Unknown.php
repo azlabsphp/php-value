@@ -13,10 +13,9 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue;
 
-use DateTimeImmutable;
-
 /**
  * @template TValue
+ *
  * @template-covariant TValue
  */
 final class Unknown
@@ -34,6 +33,40 @@ final class Unknown
     public function __construct($value)
     {
         $this->value = $value;
+    }
+
+    /**
+     * Object desrtuctor.
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        unset($this->value);
+    }
+
+    /**
+     * Clone the current instance.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        // We only care of cloning the boxed variable if the variable is an object
+        if ($this->isObject()) {
+            $this->value = clone $this->value;
+        }
+    }
+
+    /**
+     * Unset the current object. If the current instance is unset
+     * the internal variable value is also unset.
+     *
+     * @return void
+     */
+    public function __unset($name)
+    {
+        $this->unset();
     }
 
     /**
@@ -159,21 +192,21 @@ final class Unknown
     }
 
     /**
-     * Cast the boxed variable instance into provided type
-     * 
-     * @param class-string<\T> $type 
-     * 
-     * @return \T 
+     * Cast the boxed variable instance into provided type.
+     *
+     * @param class-string<\T> $type
+     *
+     * @return \T
      */
     public function cast(string $type)
     {
         switch ($type) {
             case 'int':
-                return intval($this->get());
+                return (int) $this->get();
             case 'string':
-                return strval($this->get());
+                return (string) $this->get();
             case 'float':
-                return floatval($this->get());
+                return (float) $this->get();
             case 'array':
                 return $this->castToArray($this->get());
             case 'date':
@@ -184,8 +217,8 @@ final class Unknown
     }
 
     /**
-     * Cast boxed variable to `integer` value type
-     * 
+     * Cast boxed variable to `integer` value type.
+     *
      * @return int
      */
     public function toInt()
@@ -194,8 +227,8 @@ final class Unknown
     }
 
     /**
-     * Cast boxed variable to string value type
-     * 
+     * Cast boxed variable to string value type.
+     *
      * @return string
      */
     public function toString()
@@ -204,24 +237,26 @@ final class Unknown
     }
 
     /**
-     * Cast boxed variable to `floating point` value type
-     * 
-     * @param int $precision 
-     * @param int $mode 
-     * @return float 
+     * Cast boxed variable to `floating point` value type.
+     *
+     * @param int $precision
+     * @param int $mode
+     *
+     * @return float
      */
-    public function toFloat($precision = 0, $mode = PHP_ROUND_HALF_UP)
+    public function toFloat($precision = 0, $mode = \PHP_ROUND_HALF_UP)
     {
         /**
          * @var float
          */
         $result = $this->cast('float');
+
         return round($result, $precision, $mode);
     }
 
     /**
-     * Cast boxed variable to `tableau` value type
-     * 
+     * Cast boxed variable to `tableau` value type.
+     *
      * @return string
      */
     public function toArray()
@@ -230,8 +265,8 @@ final class Unknown
     }
 
     /**
-     * Cast boxed variable to PHP `date time` value type
-     * 
+     * Cast boxed variable to PHP `date time` value type.
+     *
      * @return \DateTimeInterface
      */
     public function toDate()
@@ -250,50 +285,27 @@ final class Unknown
     }
 
     /**
-     * Clone the current instance.
+     * Cast the iterable instance to PHP `tableau`.
      *
-     * @return void
-     */
-    public function __clone()
-    {
-        // We only care of cloning the boxed variable if the variable is an object
-        if ($this->isObject()) {
-            $this->value = clone $this->value;
-        }
-    }
-
-    /**
-     * Unset the current object. If the current instance is unset
-     * the internal variable value is also unset.
-     *
-     * @return void
-     */
-    public function __unset($name)
-    {
-        $this->unset();
-    }
-
-    /**
-     * Cast the iterable instance to PHP `tableau`
-     * @param iterable $value 
-     * @return array 
+     * @return array
      */
     private function castToArray(iterable $value)
     {
         if ($value instanceof \Traversable) {
             return iterator_to_array($value);
         }
-        return (array)($value);
+
+        return (array) $value;
     }
 
     /**
      * Provides a class instance casting or return the value if class
      * does not exits in the runtime context.
-     * 
-     * @param class-string<T> $type 
-     * @param mixed $value
-     * 
-     * @return T 
+     *
+     * @param class-string<T> $type
+     * @param mixed           $value
+     *
+     * @return T
      */
     private function defaultCast(string $type, $value)
     {
@@ -301,10 +313,11 @@ final class Unknown
     }
 
     /**
-     * Cast `$value` to PHP date time immutable instance
-     * 
-     * @param string|int|\DateTimeInterface $value 
-     * @return DateTimeImmutable|false 
+     * Cast `$value` to PHP date time immutable instance.
+     *
+     * @param string|int|\DateTimeInterface $value
+     *
+     * @return \DateTimeImmutable|false
      */
     private function castToDate($value)
     {
@@ -321,16 +334,7 @@ final class Unknown
             // fallback to ISO8601 standard if format does not match database connection format
             $date = \DateTimeImmutable::createFromFormat(\DateTime::ATOM, $value);
         }
-        return $date ?: \DateTimeImmutable::createFromFormat(\DateTime::ATOM, $value);
-    }
 
-    /**
-     * Object desrtuctor.
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        unset($this->value);
+        return $date ?: \DateTimeImmutable::createFromFormat(\DateTime::ATOM, $value);
     }
 }

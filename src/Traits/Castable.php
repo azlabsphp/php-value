@@ -24,7 +24,6 @@ use Drewlabs\PHPValue\Cast;
  */
 trait Castable
 {
-
     public function getCastableProperty(string $key, $value, \Closure $default)
     {
         $cast = new Cast($this);
@@ -64,6 +63,7 @@ trait Castable
         if (property_exists($this, '__CASTS__')) {
             return $this->__CASTS__ ?? [];
         }
+
         return [];
     }
 
@@ -72,6 +72,7 @@ trait Castable
         if (property_exists($this, '__CASTS__')) {
             $this->__CASTS__ = $value;
         }
+
         return $this;
     }
 
