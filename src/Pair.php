@@ -114,7 +114,7 @@ final class Pair implements \JsonSerializable
      */
     public function __toString()
     {
-        return 'object('.static::class.')';
+        return 'object('.get_class($this).')';
     }
 
     /**

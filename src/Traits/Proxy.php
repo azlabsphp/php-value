@@ -20,7 +20,7 @@ trait Proxy
         try {
             // Call the method on the provided object
             return $object->{$method}(...$args);
-        } catch (\Error|\BadMethodCallException $e) {
+        } catch (\Error | \BadMethodCallException $e) {
             // Call the default method if the specified method does not exits
             if ((null !== $default) && \is_callable($default)) {
                 return $default(...$args);
@@ -30,18 +30,12 @@ trait Proxy
                 throw $e;
             }
             if (
-                $matches['class'] !== $object::class
+                $matches['class'] !== get_class($object)
                 || $matches['method'] !== $method
             ) {
                 throw $e;
             }
-            throw new \BadMethodCallException(
-                sprintf(
-                    'Call to undefined method %s::%s()',
-                    static::class,
-                    $method
-                )
-            );
+            throw new \BadMethodCallException(sprintf('Call to undefined method %s::%s()', get_class($this), $method));
         }
     }
 
@@ -61,7 +55,7 @@ trait Proxy
         if ($method instanceof \Closure) {
             try {
                 return (new \ReflectionFunction($method))->invoke(...$args);
-            } catch (\Error|\BadMethodCallException|\ReflectionException $e) {
+            } catch (\Error | \BadMethodCallException | \ReflectionException $e) {
                 // Call the default method if the specified method does not exits
                 if ((null !== $default) && \is_callable($default)) {
                     return $default(...$args);

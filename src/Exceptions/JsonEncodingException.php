@@ -18,16 +18,15 @@ class JsonEncodingException extends \RuntimeException
     /**
      * Create a new JSON encoding exception for an attribute.
      *
-     * @param mixed  $model
+     * @param mixed  $instance
      * @param mixed  $key
      * @param string $message
      *
      * @return static
      */
-    public static function forAttribute($model, $key, $message)
+    public static function forAttribute($instance, $key, $message)
     {
-        $class = $model::class;
-
-        return new static("Unable to encode attribute [{$key}] for model [{$class}] to JSON: {$message}.");
+        $class = get_class($instance);
+        return new static(sprintf("Unable to encode attribute [%s] for model [%s] to JSON: %s.", $key, $class, $message));
     }
 }
