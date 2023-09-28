@@ -67,10 +67,10 @@ trait Castable
         return [];
     }
 
-    public function setCasts()
+    public function setCasts(array $value)
     {
         if (property_exists($this, '__CASTS__')) {
-            $this->__CASTS__ = [];
+            $this->__CASTS__ = $value;
         }
         return $this;
     }
