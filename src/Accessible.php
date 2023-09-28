@@ -16,6 +16,9 @@ namespace Drewlabs\PHPValue;
 use Drewlabs\PHPValue\Contracts\Adaptable;
 
 /**
+ * @method void __set(string $name, $value)
+ * @method mixed __get(string $name)
+ * 
  * PHP stdClass extension usable as array accessible object.
  *
  * ```php
@@ -97,8 +100,8 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
                 if (!(($is_object = \is_object($output)) || \is_array($output))) {
                     return null;
                 }
-                $prop = trim($keys[$index]);
-                $output = !$is_object ? $output[$prop] : $output->{$prop};
+                $property = trim($keys[$index]);
+                $output = !$is_object ? $output[$property] ?? null : $output->{$property} ?? null;
                 ++$index;
             }
 

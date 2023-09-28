@@ -228,9 +228,7 @@ class ObjectAdapterTest extends TestCase
             'To' => 'yyy-yyy-yyy',
         ]);
 
-        $message = $message->bind('sendMessage', function (string $text) {
-            printf("\nSending message %s, To: %s", $text, $this->to);
-
+        $message = $message->bind('sendMessage', function (string $_) {
             return true;
         });
 
@@ -244,8 +242,7 @@ class ObjectAdapterTest extends TestCase
             'To' => 'yyy-yyy-yyy',
         ]);
 
-        $message = $message->bind('sendMessage', function (string $text) {
-            printf("\nSending message %s, To: %s", $text, $this->to);
+        $message = $message->bind('sendMessage', function (string $_) {
 
             return true;
         });
@@ -253,9 +250,7 @@ class ObjectAdapterTest extends TestCase
         $this->assertTrue($message->sendMessage('Hello World!'));
 
         // Bind to the same method a new callback
-        $message = $message->bind('sendMessage', function (string $text) {
-            printf("\nFailed Sending message %s, To: %s", $text, $this->to);
-
+        $message = $message->bind('sendMessage', function (string $_) {
             return false;
         });
 

@@ -16,6 +16,8 @@ namespace Drewlabs\PHPValue\Traits;
 use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\PHPValue\Accessible;
 use Drewlabs\PHPValue\Contracts\Adaptable;
+use Drewlabs\PHPValue\ObjectProxy;
+use stdClass;
 
 trait ObjectAdapter
 {
@@ -44,7 +46,7 @@ trait ObjectAdapter
      * Boot the class instance
      * 
      * @param array<string>|array<string,string> $props 
-     * @param array|Adaptable|Accessible $adaptable 
+     * @param array|object|Adaptable|Accessible $adaptable 
      * @return void 
      */
     protected function bootInstance($props, $adaptable = [])
@@ -53,16 +55,24 @@ trait ObjectAdapter
         $this->__GET__PROPERTY__VALUE__ = Functional::memoize(function (...$args) {
             return $this->callPropertyGetter(...$args);
         });
+
         if (\is_array($adaptable)) {
-            $this->__ADAPTABLE__ = new Accessible();
-            foreach ($adaptable as $key => $value) {
-                $this->__ADAPTABLE__->setPropertyValue($key, $value);
-            }
-        } elseif ($adaptable instanceof Adaptable) {
+            $this->__ADAPTABLE__ = new ObjectProxy((object)$adaptable);
+            return;
+        } 
+        
+        if ($adaptable instanceof Adaptable) {
             $this->__ADAPTABLE__ = $adaptable;
-        } else {
-            $this->__ADAPTABLE__ = new Accessible();
+            return;
+        } 
+
+        if (is_object($adaptable)) {
+            $this->__ADAPTABLE__ = new ObjectProxy($adaptable);
+            return;
         }
+
+        // Set the adaptable property to equal an accessble instance without property
+        $this->__ADAPTABLE__ = new ObjectProxy(new stdClass);
     }
 
     // #region Macros
