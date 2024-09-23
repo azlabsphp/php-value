@@ -3,6 +3,7 @@
     "description": "PHP object builder and serialization library",
     "type": "library",
     "require-dev": {
+        "drewlabs/collections": "^0.3.0",
         "phpunit/phpunit": "^9.5"
     },
     "license": "MIT",

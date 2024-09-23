@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Support\Tests\Unit;
+namespace Drewlabs\PHPValue\Tests;
 
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Tests\Stubs\TestModel;

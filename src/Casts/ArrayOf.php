@@ -17,6 +17,7 @@ use Drewlabs\PHPValue\Casts\Traits\ProducesIterator;
 use Drewlabs\PHPValue\Contracts\CastPropertyInterface;
 use Drewlabs\PHPValue\Contracts\CastsAware;
 use Drewlabs\PHPValue\Traits\ArgumentsAware;
+use Drewlabs\PHPValue\Utils\Arr;
 
 class ArrayOf implements CastPropertyInterface
 {
@@ -36,6 +37,8 @@ class ArrayOf implements CastPropertyInterface
 
     public function get(string $name, $value, CastsAware $model = null)
     {
-        return iterator_to_array($this->createIterable($name, $value, $model));
+        return new Arr(iterator_to_array($this->createIterable($name, $value, $model)), function ($item, array $properties = [], array $hidden = []) {
+            return $item->addProperties($properties)->setHidden(array_merge($item->getHidden(), $hidden));
+        });
     }
 }

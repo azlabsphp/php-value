@@ -1,0 +1,5 @@
+# RoadMap
+
+- Add memoizer to optimize properties construction logic [x]
+- Review and optimize value class [x]
+- Update collectionOf to return an abstract object type instead of framework implementation [x]

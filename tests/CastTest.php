@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Drewlabs\Support\Tests\Unit;
+namespace Drewlabs\PHPValue\Tests;
 
 use Drewlabs\PHPValue\Cast;
 use Drewlabs\PHPValue\Tests\Stubs\FileLogger;
@@ -101,7 +101,7 @@ class CastTest extends TestCase
         $this->assertFalse($cast->isClassCastable('message'));
         $cast->setCasts([
             'message' => Message::class,
-            'test' => TestModel::class.':hello',
+            'test' => TestModel::class . ':hello',
         ]);
         $this->assertTrue($cast->isClassCastable('message'));
         $this->assertTrue($cast->isClassCastable('test'));
@@ -144,8 +144,9 @@ class CastTest extends TestCase
         $this->assertInstanceOf(LikeStub::class, $result[0]);
         $this->assertSame(2, $result[0]->getCount());
 
+        /** @var \Drewlabs\Collections\Contracts\StreamInterface */
         $result = $cast->getClassCastableProperty('errors', null);
-        $this->assertSame('Not Found HTTP Error', iterator_to_array($result)[1]->getMessage());
+        $this->assertSame('Server Error', $result->first()->getMessage());
     }
 
     public function test_cast_value_return_null_if_source_is_null_or_missing()
