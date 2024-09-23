@@ -11,6 +11,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+namespace Drewlabs\PHPValue\Tests;
+
 use Drewlabs\PHPValue\Utils\SanitizeCustomProperties;
 use PHPUnit\Framework\TestCase;
 
@@ -32,6 +34,5 @@ class SanitizeCustomPropertiesTest extends TestCase
     {
         $result = (new SanitizeCustomProperties(sort: true))->call(['product.type', '*', 'name', 'product.type', 'ratings', 'name']);
         $this->assertSame(['name', 'product.type', 'ratings'], $result);
-
     }
 }

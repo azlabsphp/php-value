@@ -14,10 +14,12 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Casts\Traits;
 
 use Drewlabs\PHPValue\Contracts\CastsAware;
+use Drewlabs\PHPValue\Contracts\ValueInterface;
 
 use function Drewlabs\PHPValue\Functions\CreateAdapter;
-
 use Drewlabs\PHPValue\Traits\BaseTrait;
+use Generator;
+use InvalidArgumentException;
 
 trait ProducesIterator
 {
@@ -30,6 +32,15 @@ trait ProducesIterator
      *
      * @return \Generator<int, mixed, mixed, BaseTrait|void>
      */
+
+     /**
+      * 
+      * @param string $name 
+      * @param mixed $value 
+      * @param CastsAware|null $model 
+      * @return \Traversable<ValueInterface> 
+      * @throws InvalidArgumentException 
+      */
     protected function createIterable(string $name, $value, CastsAware $model = null)
     {
         $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;
@@ -40,9 +51,7 @@ trait ProducesIterator
         if (empty($this->arguments)) {
             return CreateAdapter(array_keys($value))->copy($value);
         }
-        /**
-         * @var array $props
-         */
+
         $props = empty($this->arguments) ? array_keys($value) : array_values(\array_slice($this->arguments ?? [], 1));
         $fn = !class_exists($instance = trim($this->arguments[0] ?? '')) ? static function ($item) use ($props, $instance) {
             return CreateAdapter([$instance, ...$props])->copy($item);

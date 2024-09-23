@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Drewlabs\PHPValue\Casts;
 
 use Drewlabs\PHPValue\Contracts\CastsAware;
+use Drewlabs\PHPValue\Utils\Stream;
 
 class StreamOf extends CollectionOf
 {
@@ -30,8 +31,11 @@ class StreamOf extends CollectionOf
     {
         $iterable = $this->createIterable($name, $value, $model);
 
-        return \function_exists('\Drewlabs\Support\Proxy\Stream') ?
-            \call_user_func('\Drewlabs\Support\Proxy\Stream', $iterable) :
-            $iterable;
+        return new Stream(
+            \Drewlabs\Collections\Streams\Stream::of($this->createIterable($name, $value, $model)),
+            function ($item, array $properties = [], array $hidden = []) {
+                return $item->addProperties($properties)->setHidden(array_merge($item->getHidden(), $hidden));
+            }
+        );
     }
 }

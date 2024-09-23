@@ -11,8 +11,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+namespace Drewlabs\PHPValue\Tests;
+
+use ArrayIterator;
 use Drewlabs\PHPValue\Unknown;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class UnknownTest extends TestCase
 {

@@ -31,19 +31,13 @@ if (!\function_exists('CreateAdapter')) {
         return new class($properties, $instance) implements ValueInterface, HiddenAware {
             use ValueTrait;
 
-            /**
-             * @var array
-             */
+            /** @var array */
             private $__HIDDEN__ = [];
 
-            /**
-             * @var array
-             */
+            /** @var array */
             private $__CASTS__ = [];
 
-            /**
-             * Create new class instance.
-             */
+            /** Create new class instance. */
             public function __construct(array $properties, Adaptable $instance = null)
             {
                 $this->bootInstance($properties, $instance);
