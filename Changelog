@@ -25,3 +25,7 @@
 ## [v0.1.10] 2022-11-02
 
 - Added streamOf, arrayOf and collectionOf type caster implementations to support casting list of value to a specific type
+
+## [v0.3.2] & [v0.2.30] 2024-09-23
+
+- Review collectionOf, arrayOf and StreamOf implementation to return utility classes which implement AbstractPrototype and HiddenAware contracts
