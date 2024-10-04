@@ -50,4 +50,14 @@ class Stream implements AbstractPrototype, HiddenAware, JsonSerializable
     {
         return $this->proxy($this->items, $name, $arguments);
     }
+
+    /**
+     * Returns the list of items
+     * 
+     * @return \Illuminate\Collections\Contracts\StreamInterface 
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
 }
