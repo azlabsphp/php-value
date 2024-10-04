@@ -37,4 +37,14 @@ class Collection implements AbstractPrototype, HiddenAware, JsonSerializable
     {
         return $this->proxy($this->items, $name, $arguments);
     }
+
+    /**
+     * Returns the list of items
+     * 
+     * @return \Illuminate\Collection\Collection|\Drewlabs\Collections\Collection 
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
 }

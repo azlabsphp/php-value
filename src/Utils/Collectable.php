@@ -17,7 +17,7 @@ use Closure;
 
 trait Collectable
 {
-    
+
     /** @var mixed */
     private $items;
 

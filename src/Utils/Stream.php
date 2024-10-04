@@ -22,7 +22,6 @@ use JsonSerializable;
 
 class Stream implements AbstractPrototype, HiddenAware, JsonSerializable
 {
-
     use Collectable;
     use Proxy;
 
@@ -49,5 +48,15 @@ class Stream implements AbstractPrototype, HiddenAware, JsonSerializable
     public function __call($name, $arguments)
     {
         return $this->proxy($this->items, $name, $arguments);
+    }
+
+    /**
+     * Returns the list of items
+     * 
+     * @return \Illuminate\Collections\Contracts\StreamInterface 
+     */
+    public function getItems()
+    {
+        return $this->items;
     }
 }

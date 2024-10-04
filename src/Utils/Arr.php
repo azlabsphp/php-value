@@ -55,4 +55,14 @@ class Arr implements AbstractPrototype, HiddenAware, JsonSerializable, ArrayAcce
             return call_user_func_array($this->map, [$item, $this->properties, $this->hidden]);
         }, $this->items);
     }
+
+    /**
+     * Returns the list of items
+     * 
+     * @return array 
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
 }
