@@ -39,7 +39,7 @@ class CollectionOf implements CastPropertyInterface
     public function get(string $name, $value, CastsAware $model = null)
     {
         $iterable = $this->createIterable($name, $value, $model);
-        $callback = function ($item, array $properties = [], array $hidden) {
+        $callback = function ($item, array $properties = [], array $hidden = []) {
             return $item->addProperties($properties)->setHidden(array_merge($item->getHidden(), $hidden));
         };
         try {
