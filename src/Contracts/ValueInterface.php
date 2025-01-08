@@ -43,7 +43,7 @@ interface ValueInterface extends CastsAware, \ArrayAccess, \IteratorAggregate, S
      * class property values while modifying them with values of specified property names
      * passed by the caller
      *
-     * @return self
+     * @return static
      */
     public function copy(array $attributes = []);
 }

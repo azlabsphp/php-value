@@ -23,12 +23,12 @@ class Accessible implements CastPropertyInterface
 {
     use ArgumentsAware;
 
-    public function set(string $name, $value, CastsAware $model = null)
+    public function set(string $name, $value, ?CastsAware $model = null)
     {
         return [$name => $value instanceof AccessibleClass ? $value->toArray() : $value];
     }
 
-    public function get(string $name, $value, CastsAware $model = null)
+    public function get(string $name, $value, ?CastsAware $model = null)
     {
         $accessible = new AccessibleClass();
         $value = null === $value ? $model->getRawAttribute($name) ?? null : $value;

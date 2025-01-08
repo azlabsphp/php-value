@@ -24,12 +24,12 @@ class Value implements CastPropertyInterface
 {
     use ArgumentsAware;
 
-    public function set(string $name, $value, CastsAware $model = null)
+    public function set(string $name, $value, ?CastsAware $model = null)
     {
         return [$name => $value];
     }
 
-    public function get(string $name, $value, CastsAware $model = null)
+    public function get(string $name, $value, ?CastsAware $model = null)
     {
         // First we query for the value using the it property name if the value point to null reference
         $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;

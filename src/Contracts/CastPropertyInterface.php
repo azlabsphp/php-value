@@ -18,7 +18,7 @@ interface CastPropertyInterface
     /**
      * Set the arguments to use when casting property.
      *
-     * @return self
+     * @return static
      */
     public function setArguments(array $arguments);
 
@@ -29,7 +29,7 @@ interface CastPropertyInterface
      *
      * @return mixed
      */
-    public function set(string $name, $value, CastsAware $model = null);
+    public function set(string $name, $value, ?CastsAware $model = null);
 
     /**
      * Transform property from it underlying {@see Value}.
@@ -38,5 +38,5 @@ interface CastPropertyInterface
      *
      * @return mixed
      */
-    public function get(string $name, $value, CastsAware $model = null);
+    public function get(string $name, $value, ?CastsAware $model = null);
 }

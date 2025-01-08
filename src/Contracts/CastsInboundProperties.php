@@ -22,5 +22,5 @@ interface CastsInboundProperties
      *
      * @return mixed
      */
-    public function set(string $name, $value, CastsAware $model = null);
+    public function set(string $name, $value, ?CastsAware $model = null);
 }

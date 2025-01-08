@@ -271,7 +271,7 @@ trait BaseTrait
         return $this;
     }
 
-    private function callPropertyGetter($name, $value, \Closure $default = null)
+    private function callPropertyGetter($name, $value, ?\Closure $default = null)
     {
         if ($this->hasPropertyGetter($name)) {
             return $this->{$this->propertyGetterName($name)}($value);

@@ -24,7 +24,7 @@ class ArrayOf implements CastPropertyInterface
     use ArgumentsAware;
     use ProducesIterator;
 
-    public function set(string $name, $value, CastsAware $model = null)
+    public function set(string $name, $value, ?CastsAware $model = null)
     {
         if (\is_string($value) || null === $value || \is_bool($value) || is_numeric($value)) {
             $value = array_filter([$value], static function ($item) {
@@ -35,7 +35,7 @@ class ArrayOf implements CastPropertyInterface
         return [$name => $value];
     }
 
-    public function get(string $name, $value, CastsAware $model = null)
+    public function get(string $name, $value, ?CastsAware $model = null)
     {
         return new Arr(iterator_to_array($this->createIterable($name, $value, $model)), function ($item, array $properties = [], array $hidden = []) {
             return $item->addProperties($properties)->setHidden(array_merge($item->getHidden(), $hidden));
