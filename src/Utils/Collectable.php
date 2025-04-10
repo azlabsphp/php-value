@@ -13,11 +13,8 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Utils;
 
-use Closure;
-
 trait Collectable
 {
-    
     /** @var mixed */
     private $items;
 
@@ -27,7 +24,7 @@ trait Collectable
     /** @var string[] */
     private $hidden = [];
 
-    /** @var Closure */
+    /** @var \Closure */
     private $map;
 
     public function getHidden()
@@ -38,6 +35,7 @@ trait Collectable
     public function setHidden(array $values)
     {
         $this->hidden = $values;
+
         return $this;
     }
 
@@ -49,6 +47,7 @@ trait Collectable
     public function addProperties(array $properties = [])
     {
         $this->properties = array_unique(array_merge($this->getNotOwnedProperties(), array_diff($properties, $this->getOwnedProperties() ?? [])));
+
         return $this;
     }
 

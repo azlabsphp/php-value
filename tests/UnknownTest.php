@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Tests;
 
-use ArrayIterator;
 use Drewlabs\PHPValue\Unknown;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 class UnknownTest extends TestCase
 {
@@ -37,7 +35,7 @@ class UnknownTest extends TestCase
 
     public function test_unknown_clone_creates_a_copy_of_the_boxed_variable()
     {
-        $object = new stdClass();
+        $object = new \stdClass();
         $object->name = 'John Doe';
         $object->age = 29;
 
@@ -71,7 +69,7 @@ class UnknownTest extends TestCase
         $variable = Unknown::new('.457');
         $this->assertSame(.46, $variable->toFloat(2));
 
-        $variable = Unknown::new(new ArrayIterator([1, 2, 3, 4, 5]));
+        $variable = Unknown::new(new \ArrayIterator([1, 2, 3, 4, 5]));
         $this->assertSame([1, 2, 3, 4, 5], $variable->toArray());
 
         $variable = Unknown::new(4.5);

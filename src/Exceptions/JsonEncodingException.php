@@ -27,6 +27,7 @@ class JsonEncodingException extends \RuntimeException
     public static function forAttribute($instance, $key, $message)
     {
         $class = get_class($instance);
-        return new static(sprintf("Unable to encode attribute [%s] for model [%s] to JSON: %s.", $key, $class, $message));
+
+        return new static(sprintf('Unable to encode attribute [%s] for model [%s] to JSON: %s.', $key, $class, $message));
     }
 }

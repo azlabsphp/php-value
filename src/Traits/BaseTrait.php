@@ -327,6 +327,7 @@ trait BaseTrait
         if (interface_exists(CastsAware::class) && $this instanceof CastsAware && (null !== ($this->getCasts()[$name] ?? null))) {
             return $this->setCastableProperty($name, $value, $default);
         }
+
         // Else set the raw property value
         return $default();
     }

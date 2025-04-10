@@ -101,7 +101,7 @@ class CastTest extends TestCase
         $this->assertFalse($cast->isClassCastable('message'));
         $cast->setCasts([
             'message' => Message::class,
-            'test' => TestModel::class . ':hello',
+            'test' => TestModel::class.':hello',
         ]);
         $this->assertTrue($cast->isClassCastable('message'));
         $this->assertTrue($cast->isClassCastable('test'));

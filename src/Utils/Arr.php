@@ -1,25 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the drewlabs namespace.
+ *
+ * (c) Sidoine Azandrew <azandrewdevelopper@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Drewlabs\PHPValue\Utils;
 
-use ArrayAccess;
-use Closure;
-use Drewlabs\Core\Helpers\Iter;
 use Drewlabs\PHPValue\Contracts\AbstractPrototype;
 use Drewlabs\PHPValue\Contracts\HiddenAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
-use JsonSerializable;
 
-/** @package Drewlabs\PHPValue */
-class Arr implements AbstractPrototype, HiddenAware, JsonSerializable, ArrayAccess
+class Arr implements AbstractPrototype, HiddenAware, \JsonSerializable, \ArrayAccess
 {
     use Collectable;
 
     /**
-     * Collection class constructor
-     * 
-     * @param array $items
-     * @param Closure(ValueInterface $value, array $properties, array $hidden): mixed $map
+     * Collection class constructor.
+     *
+     * @param \Closure(ValueInterface $value, array $properties, array $hidden): mixed $map
      */
     public function __construct(array $items, \Closure $map)
     {
@@ -40,7 +45,7 @@ class Arr implements AbstractPrototype, HiddenAware, JsonSerializable, ArrayAcce
 
     public function offsetSet($offset, $value): void
     {
-        $this->items[$offset] =  $value;
+        $this->items[$offset] = $value;
     }
 
     public function offsetUnset($offset): void
@@ -52,14 +57,12 @@ class Arr implements AbstractPrototype, HiddenAware, JsonSerializable, ArrayAcce
     public function jsonSerialize()
     {
         return array_map(function (ValueInterface $item) {
-            return call_user_func_array($this->map, [$item, $this->properties, $this->hidden]);
+            return \call_user_func_array($this->map, [$item, $this->properties, $this->hidden]);
         }, $this->items);
     }
 
     /**
-     * Returns the list of items
-     * 
-     * @return array 
+     * Returns the list of items.
      */
     public function getItems(): array
     {

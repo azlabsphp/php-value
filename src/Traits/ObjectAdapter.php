@@ -48,6 +48,7 @@ trait ObjectAdapter
         if ($macro = $this->lookupCallable($name)) {
             return $macro->call(...$arguments);
         }
+
         // Or proxy method cal to adaptable instance
         return $this->proxy($this->getAdaptable(), $name, $arguments);
     }

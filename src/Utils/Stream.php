@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 /*
@@ -18,18 +17,16 @@ use Drewlabs\PHPValue\Contracts\AbstractPrototype;
 use Drewlabs\PHPValue\Contracts\HiddenAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Traits\Proxy;
-use JsonSerializable;
 
-class Stream implements AbstractPrototype, HiddenAware, JsonSerializable
+class Stream implements AbstractPrototype, HiddenAware, \JsonSerializable
 {
-
     use Collectable;
     use Proxy;
 
     /**
-     * Collection class constructor
-     * 
-     * @param \Illuminate\Collections\Contracts\StreamInterface $items
+     * Collection class constructor.
+     *
+     * @param \Illuminate\Collections\Contracts\StreamInterface                       $items
      * @param Closure(ValueInterface $value, array $properties, array $hidden): mixed $map
      */
     public function __construct($items, \Closure $map)
@@ -38,23 +35,23 @@ class Stream implements AbstractPrototype, HiddenAware, JsonSerializable
         $this->map = $map;
     }
 
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
-    {
-        return $this->items->map(function (ValueInterface $item) {
-            return call_user_func_array($this->map, [$item, $this->properties, $this->hidden]);
-        });
-    }
-
     public function __call($name, $arguments)
     {
         return $this->proxy($this->items, $name, $arguments);
     }
 
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return $this->items->map(function (ValueInterface $item) {
+            return \call_user_func_array($this->map, [$item, $this->properties, $this->hidden]);
+        });
+    }
+
     /**
-     * Returns the list of items
-     * 
-     * @return \Illuminate\Collections\Contracts\StreamInterface 
+     * Returns the list of items.
+     *
+     * @return \Illuminate\Collections\Contracts\StreamInterface
      */
     public function getItems()
     {

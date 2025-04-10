@@ -39,17 +39,18 @@ class CollectionOf implements CastPropertyInterface
     public function get(string $name, $value, ?CastsAware $model = null)
     {
         $iterable = $this->createIterable($name, $value, $model);
-        $callback = function ($item, array $properties = [], array $hidden = []) {
+        $callback = static function ($item, array $properties = [], array $hidden = []) {
             return $item->addProperties($properties)->setHidden(array_merge($item->getHidden(), $hidden));
         };
         try {
             // #TODO: Use implementation which does not call framework collection implementation
-            if (function_exists('collect')) {
+            if (\function_exists('collect')) {
                 return new Collection(collect($iterable), $callback);
             }
+
             return new Collection(new \Drewlabs\Collections\Collection($iterable), $callback);
         } catch (\Throwable $_) {
-            // fallback to array implementation if collection implementation is not provided 
+            // fallback to array implementation if collection implementation is not provided
             return new Arr(iterator_to_array($iterable), $callback);
         }
     }

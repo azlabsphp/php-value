@@ -43,6 +43,7 @@ class Value implements CastPropertyInterface
             return CreateAdapter(array_keys($value))->copy($value);
         }
         $props = empty($this->arguments) ? (\is_array($value) ? array_keys($value) : []) : array_values(\array_slice($this->arguments ?? [], 1));
+
         // Case the first item in the argument array is a class we create a new instance of it, else we create a default value object
         // from the attributes
         return !class_exists($instance = trim($this->arguments[0] ?? '')) ? CreateAdapter([$instance, ...$props])->copy($value) : new $instance($value, ...$props);

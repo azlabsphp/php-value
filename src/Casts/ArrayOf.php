@@ -37,7 +37,7 @@ class ArrayOf implements CastPropertyInterface
 
     public function get(string $name, $value, ?CastsAware $model = null)
     {
-        return new Arr(iterator_to_array($this->createIterable($name, $value, $model)), function ($item, array $properties = [], array $hidden = []) {
+        return new Arr(iterator_to_array($this->createIterable($name, $value, $model)), static function ($item, array $properties = [], array $hidden = []) {
             return $item->addProperties($properties)->setHidden(array_merge($item->getHidden(), $hidden));
         });
     }

@@ -178,8 +178,6 @@ class Cast
     /**
      * Determine if the given key is cast using a custom class.
      *
-     * @param string $key
-     *
      * @throws InvalidCastException
      *
      * @return bool
@@ -578,8 +576,6 @@ class Cast
 
     /**
      * Create a Cast instance from user propvided cast aware class.
-     *
-     * @param CastsAware $castAware
      *
      * @return self
      */

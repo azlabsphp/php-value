@@ -17,9 +17,8 @@ use Drewlabs\PHPValue\Contracts\CastsAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 
 use function Drewlabs\PHPValue\Functions\CreateAdapter;
+
 use Drewlabs\PHPValue\Traits\BaseTrait;
-use Generator;
-use InvalidArgumentException;
 
 trait ProducesIterator
 {
@@ -33,14 +32,13 @@ trait ProducesIterator
      * @return \Generator<int, mixed, mixed, BaseTrait|void>
      */
 
-     /**
-      * 
-      * @param string $name 
-      * @param mixed $value 
-      * @param CastsAware|null $model 
-      * @return \Traversable<ValueInterface> 
-      * @throws InvalidArgumentException 
-      */
+    /**
+     * @param mixed $value
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return \Traversable<ValueInterface>
+     */
     protected function createIterable(string $name, $value, ?CastsAware $model = null)
     {
         $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;

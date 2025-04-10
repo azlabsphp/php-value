@@ -33,7 +33,7 @@ class StreamOf extends CollectionOf
 
         return new Stream(
             \Drewlabs\Collections\Streams\Stream::of($this->createIterable($name, $value, $model)),
-            function ($item, array $properties = [], array $hidden = []) {
+            static function ($item, array $properties = [], array $hidden = []) {
                 return $item->addProperties($properties)->setHidden(array_merge($item->getHidden(), $hidden));
             }
         );
