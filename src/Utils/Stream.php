@@ -24,7 +24,7 @@ class Stream implements AbstractPrototype, HiddenAware, \JsonSerializable
     use Proxy;
 
     /**
-     * Collection class constructor.
+     * collection class constructor.
      *
      * @param \Illuminate\Collections\Contracts\StreamInterface                       $items
      * @param Closure(ValueInterface $value, array $properties, array $hidden): mixed $map

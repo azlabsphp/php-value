@@ -49,7 +49,7 @@ trait ObjectAdapter
             return $macro->call(...$arguments);
         }
 
-        // Or proxy method cal to adaptable instance
+        // or proxy method cal to adaptable instance
         return $this->proxy($this->getAdaptable(), $name, $arguments);
     }
 
@@ -66,7 +66,7 @@ trait ObjectAdapter
     {
         return json_encode($this->toArray(), \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
     }
-    // #endregion Macros
+    //
 
     // #region Attributes
     public function hasRawAttribute(string $name)
@@ -94,9 +94,9 @@ trait ObjectAdapter
     {
         return clone $this;
     }
-    // #endregion String __repr__
+    // #endregion
 
-    // #region Miscellanous
+    // #region miscellanous
     /**
      * Set value properties from PHP object.
      *
@@ -110,7 +110,7 @@ trait ObjectAdapter
 
         return $this;
     }
-    // #endregion Miscellaous
+    // #endregion
 
     // #region Adaptable getter and setter
     /**
@@ -185,5 +185,5 @@ trait ObjectAdapter
 
         return $this;
     }
-    // #endregion Adaptable getter and setter
+    // #endregion
 }

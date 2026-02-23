@@ -16,6 +16,7 @@ namespace Drewlabs\PHPValue;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
 use Drewlabs\PHPValue\Traits\ObjectAdapter as ObjectAdapterTrait;
 
+#[\AllowDynamicProperties]
 abstract class ObjectAdapter implements ValueInterface, \IteratorAggregate
 {
     use ObjectAdapterTrait;

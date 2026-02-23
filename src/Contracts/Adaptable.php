@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Contracts;
 
+/**
+ * @method mixed __call(string $name, $arguments)
+ */
 interface Adaptable
 {
     /**

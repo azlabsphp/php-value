@@ -139,6 +139,7 @@ class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAc
         return property_exists($this->proxied, $name);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($name)
     {
         return property_exists($this->proxied, $name) ? $this->proxied->{$name} : null;

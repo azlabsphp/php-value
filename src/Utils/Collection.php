@@ -16,10 +16,12 @@ namespace Drewlabs\PHPValue\Utils;
 use Drewlabs\PHPValue\Contracts\AbstractPrototype;
 use Drewlabs\PHPValue\Contracts\HiddenAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Traits\Proxy;
 
 class Collection implements AbstractPrototype, HiddenAware, \JsonSerializable
 {
     use Collectable;
+    use Proxy;
 
     /**
      * Collection class constructor.

@@ -48,6 +48,7 @@ use Drewlabs\PHPValue\Contracts\Adaptable;
  * $array = $object->toArray();
  * ```
  */
+#[\AllowDynamicProperties]
 final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \Countable
 {
     /**
