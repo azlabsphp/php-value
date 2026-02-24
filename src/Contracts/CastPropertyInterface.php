@@ -29,7 +29,7 @@ interface CastPropertyInterface
      *
      * @return mixed
      */
-    public function set(string $name, $value, CastsAware $model = null);
+    public function set(string $name, $value, ?CastsAware $model = null);
 
     /**
      * Transform property from it underlying {@see Value}.
@@ -38,5 +38,5 @@ interface CastPropertyInterface
      *
      * @return mixed
      */
-    public function get(string $name, $value, CastsAware $model = null);
+    public function get(string $name, $value, ?CastsAware $model = null);
 }

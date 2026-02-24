@@ -15,7 +15,7 @@ namespace Drewlabs\PHPValue\Traits;
 
 trait Proxy
 {
-    public function proxy($object, $method, $args = [], \Closure $default = null)
+    public function proxy($object, $method, $args = [], ?\Closure $default = null)
     {
         try {
             // Call the method on the provided object
@@ -50,7 +50,7 @@ trait Proxy
      *
      * @return mixed
      */
-    public function call($method, $args = [], \Closure $default = null)
+    public function call($method, $args = [], ?\Closure $default = null)
     {
         if ($method instanceof \Closure) {
             try {

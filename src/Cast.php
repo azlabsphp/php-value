@@ -45,7 +45,7 @@ class Cast
      */
     private $castsAware;
 
-    public function __construct(CastsAware $castsAware = null)
+    public function __construct(?CastsAware $castsAware = null)
     {
         $this->map = $this->useDefaults();
         // Load list of casts definition values on the {@see CastsAware} instance
@@ -184,7 +184,7 @@ class Cast
      *
      * @return bool
      */
-    public function isClassCastable(string $key = null)
+    public function isClassCastable(?string $key = null)
     {
         if (!\array_key_exists($key, $this->casts ?? [])) {
             return false;
@@ -583,7 +583,7 @@ class Cast
      *
      * @return self
      */
-    private function setCastAwareInstance(CastsAware $castAware = null)
+    private function setCastAwareInstance(?CastsAware $castAware = null)
     {
         if ($castAware) {
             $this->castsAware = $castAware;

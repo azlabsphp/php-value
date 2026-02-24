@@ -27,7 +27,7 @@ class StreamOf extends CollectionOf
      *
      * @return mixed
      */
-    public function get(string $name, $value, CastsAware $model = null)
+    public function get(string $name, $value, ?CastsAware $model = null)
     {
         $iterable = $this->createIterable($name, $value, $model);
 

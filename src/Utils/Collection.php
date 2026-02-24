@@ -6,12 +6,14 @@ use Closure;
 use Drewlabs\PHPValue\Contracts\AbstractPrototype;
 use Drewlabs\PHPValue\Contracts\HiddenAware;
 use Drewlabs\PHPValue\Contracts\ValueInterface;
+use Drewlabs\PHPValue\Traits\Proxy;
 use JsonSerializable;
 
 /** @package Drewlabs\PHPValue */
 class Collection implements AbstractPrototype, HiddenAware, JsonSerializable
 {
     use Collectable;
+    use Proxy;
 
     /**
      * Collection class constructor

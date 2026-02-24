@@ -41,7 +41,7 @@ trait ProducesIterator
       * @return \Traversable<ValueInterface> 
       * @throws InvalidArgumentException 
       */
-    protected function createIterable(string $name, $value, CastsAware $model = null)
+    protected function createIterable(string $name, $value, ?CastsAware $model = null)
     {
         $value = $value ?? ($model ? $model->getRawAttribute($name) : null) ?? null;
         $iterable = \is_object($value) && (method_exists($value, 'getIterator') || $value instanceof \IteratorAggregate) && is_iterable($result = $value->getIterator()) ? $result : $value;
