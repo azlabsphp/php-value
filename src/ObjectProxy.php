@@ -41,11 +41,21 @@ class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAc
         return $this->proxied->offsetGet($name);
     }
 
+    /**
+     * @param string $name 
+     * @param mixed $value 
+     * @return void 
+     */
     public function __set(string $name, $value)
     {
         $this->proxied->offsetSet($name, $value);
     }
 
+    /**
+     * @param mixed $name 
+     * @param mixed $arguments 
+     * @return mixed 
+     */
     public function __call($name, $arguments)
     {
         return \call_user_func_array([$this->proxied, $name], $arguments);
@@ -56,6 +66,10 @@ class ObjectProxy implements Adaptable, \IteratorAggregate, \Countable, \ArrayAc
         return isset($this->proxied->{$name});
     }
 
+    /**
+     * @param mixed $name 
+     * @return void 
+     */
     public function __unset($name)
     {
         $this->offsetUnset($name);

@@ -36,11 +36,7 @@ Or using the [Drewlabs\PHPValue\Functions\CreateValue] function.
 // Imports
 use function Drewlabs\PHPValue\Functions\CreateAdapter;
 
-$value =  CreateAdapter([
-    // dynamic properties
-    'name',
-    'address'
-]);
+$value =  CreateAdapter(['name', 'address']);
 ```
 
 Using both ways, you create an instance of [\Drewlabs\PHPValue\Value] class.
@@ -50,16 +46,11 @@ Using both ways, you create an instance of [\Drewlabs\PHPValue\Value] class.
 ```php
 // Imports
 use function Drewlabs\PHPValue\Functions\CreateAdapter;
-$value =  CreateAdapter([
-    // dynamic properties
-    'name',
-    'address'
-]);
+
+$value =  CreateAdapter([ 'name', 'address' ]);
 
 // This tries to create a deep copy of the object
-$value1 = $value->copy([
-    'name' => 'Sidoine Azandrew'
-]);
+$value1 = $value->copy(['name' => 'Sidoine Azandrew' ]);
 ```
 
 - Getting property of the object
@@ -70,14 +61,11 @@ The value object is Array accessible meaning we can user [] operator to acces ob
 // Imports
 use function Drewlabs\PHPValue\Functions\CreateAdapter;
 $value =  CreateAdapter([
-    // dynamic properties
     'name',
     'address'
 ]);
 
 $result = $value['name']; 
-// Same as
 $result = $value->name;
-// Same as
 $result = $value->getAttribute('name');
 ```

@@ -26,8 +26,8 @@ class Stream implements AbstractPrototype, HiddenAware, \JsonSerializable
     /**
      * collection class constructor.
      *
-     * @param \Illuminate\Collections\Contracts\StreamInterface                       $items
-     * @param Closure(ValueInterface $value, array $properties, array $hidden): mixed $map
+     * @param mixed                       $items
+     * @param \Closure(ValueInterface $value, array $properties, array $hidden): mixed $map
      */
     public function __construct($items, \Closure $map)
     {
@@ -35,6 +35,11 @@ class Stream implements AbstractPrototype, HiddenAware, \JsonSerializable
         $this->map = $map;
     }
 
+    /**
+     * @param mixed $name 
+     * @param mixed $arguments 
+     * @return mixed 
+     */
     public function __call($name, $arguments)
     {
         return $this->proxy($this->items, $name, $arguments);
@@ -51,7 +56,7 @@ class Stream implements AbstractPrototype, HiddenAware, \JsonSerializable
     /**
      * Returns the list of items.
      *
-     * @return \Illuminate\Collections\Contracts\StreamInterface
+     * @return mixed
      */
     public function getItems()
     {

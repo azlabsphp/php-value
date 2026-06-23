@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Traits;
 
+use Closure;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Contracts\AbstractPrototype;
 use Drewlabs\PHPValue\Contracts\CastsAware;
@@ -63,6 +64,8 @@ trait BaseTrait
     /**
      * Makes class attributes accessible through -> syntax.
      *
+     * @param mixed $name
+     * 
      * @return mixed
      */
     public function __get($name)
@@ -87,7 +90,7 @@ trait BaseTrait
     }
 
     /**
-     * Creates new class instance.
+     * creates new class instance.
      *
      * @param mixed ...$args
      *
@@ -207,8 +210,6 @@ trait BaseTrait
     #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
-        // If except columns are provided, we merge the except columns with the hidden columns
-        // if order to filter them from the ouput dictionary
         $expects = $this->getOwnHiddenProperty();
         foreach ($properties = $this->getProperties() as $name) {
             $isComposedProperty = str_contains($name, '.') ? true : false;
@@ -271,15 +272,26 @@ trait BaseTrait
         return $this;
     }
 
+    /**
+     * property getter class method
+     * 
+     * @param mixed $name 
+     * @param mixed $value 
+     * @param null|Closure $default
+     * 
+     * @return mixed 
+     */
     private function callPropertyGetter($name, $value, ?\Closure $default = null)
     {
         if ($this->hasPropertyGetter($name)) {
             return $this->{$this->propertyGetterName($name)}($value);
         }
+
         $default = static function () use ($value, $default) {
             return null === $value ? ($default ? $default() : $value) : $value;
         };
-        // If the current object is instance of {@see CastsAware} and interface
+        
+        // if the current object is instance of {@see CastsAware} and interface
         // exist {@see CastAware} we call the getCastableProperty method
         if (interface_exists(CastsAware::class) && ($this instanceof CastsAware) && (null !== ($this->getCasts()[$name] ?? null))) {
             return $this->getCastableProperty($name, $value, $default);
@@ -321,22 +333,35 @@ trait BaseTrait
         $default = function () use ($name, $value) {
             $this->setRawAttribute($name, $value);
         };
-        // If the current class instance  implements {@see CastsAware} interface
+
+        // if the current class instance  implements {@see CastsAware} interface
         // we calls {@see CastsAware::setCastableProperty} method to set property value
         // using it cast conterpart
         if (interface_exists(CastsAware::class) && $this instanceof CastsAware && (null !== ($this->getCasts()[$name] ?? null))) {
             return $this->setCastableProperty($name, $value, $default);
         }
 
-        // Else set the raw property value
+        // else set the raw property value
         return $default();
     }
 
+    /**
+     * check if class has property getter
+     * 
+     * @param mixed $name 
+     * @return bool 
+     */
     private function hasPropertyGetter($name)
     {
         return method_exists($this, $this->propertyGetterName($name));
     }
 
+    /**
+     * check if class has property setter
+     * 
+     * @param mixed $name 
+     * @return bool 
+     */
     private function hasPropertySetter($name)
     {
         return method_exists($this, $this->propertySetterName($name));

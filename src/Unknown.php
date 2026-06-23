@@ -193,10 +193,12 @@ final class Unknown
 
     /**
      * Cast the boxed variable instance into provided type.
+     * 
+     * @template T
      *
-     * @param class-string<\T> $type
+     * @param class-string<T> $type
      *
-     * @return \T
+     * @return T
      */
     public function cast(string $type)
     {
@@ -301,6 +303,8 @@ final class Unknown
     /**
      * Provides a class instance casting or return the value if class
      * does not exits in the runtime context.
+     * 
+     * @template T
      *
      * @param class-string<T> $type
      * @param mixed           $value

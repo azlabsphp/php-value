@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue;
 
+use DateTime;
+use DateTimeImmutable;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Str;
 use Drewlabs\PHPValue\Contracts\CastPropertyInterface;
@@ -54,6 +56,12 @@ class Cast
         $this->setCastAwareInstance($castsAware);
     }
 
+    /**
+     * @param string $name 
+     * @param mixed $value 
+     * @param mixed ...$params 
+     * @return mixed|null 
+     */
     public function __invoke(string $name, $value, ...$params)
     {
         if (null === ($this->casts[$name] ?? null)) {
@@ -109,6 +117,12 @@ class Cast
         return $this;
     }
 
+    /**
+     * @param string $name 
+     * @param mixed $value 
+     * @param mixed ...$params 
+     * @return mixed|null 
+     */
     public function call(string $name, $value, ...$params)
     {
         return $this->__invoke($name, $value, ...$params);
@@ -155,6 +169,7 @@ class Cast
      *
      * @param mixed $key
      * @param mixed $value
+     * @param mixed ...$params
      *
      * @return mixed
      */
@@ -212,6 +227,7 @@ class Cast
      *
      * @param string $key
      * @param mixed  $value
+     * @param mixed ...$params
      *
      * @return mixed
      */
@@ -237,11 +253,22 @@ class Cast
         return $value;
     }
 
+    /**
+     * checks if configured value matching $key is a callable
+     *  
+     * @param mixed $key 
+     * @return bool 
+     */
     public function isClosureCastable($key)
     {
         return !\is_string($this->casts[$key] ?? null) && \is_callable($this->casts[$key] ?? null);
     }
 
+    /**
+     * @param mixed $key 
+     * @param mixed $value 
+     * @return null|mixed 
+     */
     public function getClosureCastableAttributeValue($key, $value)
     {
         $castType = $this->casts[$key] ?? null;
@@ -252,6 +279,10 @@ class Cast
         return $castType($value);
     }
 
+    /**
+     * @param mixed $key 
+     * @return bool 
+     */
     public function isPrimitiveCastable($key)
     {
         $castName = $this->casts[$key] ?? null;
@@ -264,6 +295,7 @@ class Cast
      *
      * @param mixed $key
      * @param mixed $value
+     * @param mixed ...$params
      *
      * @return mixed
      */
@@ -289,6 +321,13 @@ class Cast
         return $castType[1]($value, ...$params);
     }
 
+    /**
+     * checks if casting is configured for provided $key
+     * 
+     * @param mixed $key 
+     * @param mixed $types 
+     * @return bool|false 
+     */
     public function hasCast($key, $types = null)
     {
         if (\array_key_exists($key, $this->casts ?? [])) {
@@ -355,6 +394,14 @@ class Cast
         return $enumClass::from($value)->value;
     }
 
+    /**
+     * compute cast property value
+     * 
+     * @param mixed $key 
+     * @param mixed $value
+     * 
+     * @return array 
+     */
     public function computeClassCastablePropertyValue($key, $value)
     {
         $caster = $this->resolveCasterClass($key);
@@ -363,27 +410,16 @@ class Cast
         };
         if (null === $value) {
             $result = array_map(
-                static function () {
-                },
+                static function () {},
                 $valueNormalizer(
                     $key,
-                    method_exists($caster, 'set') ?
-                        $caster->set(
-                            $key,
-                            $value,
-                            $this->castsAware
-                        ) : $caster
+                    method_exists($caster, 'set') ? $caster->set($key, $value, $this->castsAware ) : $caster
                 )
             );
         } else {
             $result = $valueNormalizer(
                 $key,
-                method_exists($caster, 'set') ?
-                    $caster->set(
-                        $key,
-                        $value,
-                        $this->castsAware
-                    ) : $caster
+                method_exists($caster, 'set') ? $caster->set($key, $value, $this->castsAware) : $caster
             );
         }
         if ($caster instanceof CastsInboundProperties || !\is_object($value)) {
@@ -510,6 +546,10 @@ class Cast
         return 0 === strncmp($cast, 'int:', 4) || 0 === strncmp($cast, 'integer:', 4);
     }
 
+    /**
+     * @param mixed $value 
+     * @return DateTime|false 
+     */
     private function castToPHPDate($value)
     {
         if ($value instanceof \DateTimeInterface) {
@@ -529,6 +569,10 @@ class Cast
         return $date ?: \DateTime::createFromFormat(\DateTime::ATOM, $value);
     }
 
+    /**
+     * @param mixed $value 
+     * @return DateTimeImmutable|false 
+     */
     private function castToPHPImmutableDate($value)
     {
         if ($value instanceof \DateTimeInterface) {
@@ -548,6 +592,10 @@ class Cast
         return $date ?: \DateTimeImmutable::createFromFormat(\DateTimeImmutable::ATOM, $value);
     }
 
+    /**
+     * @param mixed $value 
+     * @return float 
+     */
     private function fromFloat($value)
     {
         switch ((string) $value) {
@@ -650,6 +698,10 @@ class Cast
         ];
     }
 
+    /**
+     * @param mixed $name 
+     * @return string|null 
+     */
     private function getCastTypeName($name)
     {
         if ($this->isParameterizedDateTimeCast($name)) {

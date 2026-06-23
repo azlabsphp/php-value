@@ -15,19 +15,25 @@ namespace Drewlabs\PHPValue\Traits;
 
 use Drewlabs\PHPValue\Exceptions\ImmutableValueException;
 
+
+/**
+ * @method bool hasRawAttribute($offset)
+ */
 trait ArrayAccess
 {
+    /** @param mixed $offset */
     public function __isset($offset)
     {
-        // Add isset() method to value interface
         return $this->hasRawAttribute($offset) && null !== $this->getRawAttribute($offset);
     }
 
+    /** @param mixed $offset */
     public function __unset($offset)
     {
         throw new ImmutableValueException(__CLASS__);
     }
 
+    /** @param mixed $offset */
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
@@ -35,6 +41,7 @@ trait ArrayAccess
         return $this->hasRawAttribute($offset);
     }
 
+    /** @param mixed $offset */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {

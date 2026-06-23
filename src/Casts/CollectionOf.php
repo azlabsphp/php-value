@@ -45,7 +45,7 @@ class CollectionOf implements CastPropertyInterface
         try {
             // #TODO: Use implementation which does not call framework collection implementation
             if (\function_exists('collect')) {
-                return new Collection(collect($iterable), $callback);
+                return new Collection(call_user_func('collect' , $iterable), $callback);
             }
 
             return new Collection(new \Drewlabs\Collections\Collection($iterable), $callback);

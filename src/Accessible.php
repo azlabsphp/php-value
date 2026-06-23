@@ -257,7 +257,7 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
     /**
      * Returns the total element in the map.
      *
-     * @return int<0, \max>
+     * @return int
      */
     public function count(): int
     {
@@ -267,9 +267,12 @@ final class Accessible implements \ArrayAccess, Adaptable, \IteratorAggregate, \
     /**
      * Attempts to look up a key in the table.
      *
-     * @return Pair|null
+     * @template Pair<TKey, TValue>|null
+     * 
+     * @param string $key
+     * 
+     * @return Pair|null $key
      *
-     * @psalm-return Pair<TKey, TValue>|null
      */
     private function lookupKey($key)
     {

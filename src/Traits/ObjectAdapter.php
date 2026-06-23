@@ -42,6 +42,11 @@ trait ObjectAdapter
     }
 
     // #region Macros
+    /**
+     * @param mixed $name 
+     * @param mixed $arguments 
+     * @return mixed 
+     */
     public function __call($name, $arguments)
     {
         // Call the macro if exists on the current instance
