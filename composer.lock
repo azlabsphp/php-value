@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c62c4630d87e8ff47ef050e6636525e1",
+    "content-hash": "5d14216b49f30d2858055e1580c3cad4",
     "packages": [
         {
             "name": "brick/math",
@@ -67,16 +67,16 @@
         },
         {
             "name": "drewlabs/core-helpers",
-            "version": "v0.3.5",
+            "version": "v0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azlabsphp/drewlabs-core-helpers.git",
-                "reference": "6a143449c43800d9e299ceee505e29f5bdd80460"
+                "reference": "6dcd837234d1ee56cff4cb09ad1c71a8d521a90e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azlabsphp/drewlabs-core-helpers/zipball/6a143449c43800d9e299ceee505e29f5bdd80460",
-                "reference": "6a143449c43800d9e299ceee505e29f5bdd80460",
+                "url": "https://api.github.com/repos/azlabsphp/drewlabs-core-helpers/zipball/6dcd837234d1ee56cff4cb09ad1c71a8d521a90e",
+                "reference": "6dcd837234d1ee56cff4cb09ad1c71a8d521a90e",
                 "shasum": ""
             },
             "require": {
@@ -115,9 +115,9 @@
             "description": "Set of global function for handling utility task ranging from array, string and datetimes manipulations",
             "support": {
                 "issues": "https://github.com/azlabsphp/drewlabs-core-helpers/issues",
-                "source": "https://github.com/azlabsphp/drewlabs-core-helpers/tree/v0.3.5"
+                "source": "https://github.com/azlabsphp/drewlabs-core-helpers/tree/v0.4.2"
             },
-            "time": "2026-02-23T11:43:12+00:00"
+            "time": "2026-06-23T19:09:09+00:00"
         },
         {
             "name": "psr/http-factory",
@@ -591,20 +591,20 @@
         },
         {
             "name": "drewlabs/collections",
-            "version": "v0.3.0",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azlabsphp/collections.git",
-                "reference": "37677104eda0bdeb8dfdc869364daa5f986d5eab"
+                "reference": "e0cc98cd7f7937de26d614e17fa57679518b306b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azlabsphp/collections/zipball/37677104eda0bdeb8dfdc869364daa5f986d5eab",
-                "reference": "37677104eda0bdeb8dfdc869364daa5f986d5eab",
+                "url": "https://api.github.com/repos/azlabsphp/collections/zipball/e0cc98cd7f7937de26d614e17fa57679518b306b",
+                "reference": "e0cc98cd7f7937de26d614e17fa57679518b306b",
                 "shasum": ""
             },
             "require": {
-                "drewlabs/core-helpers": "^0.3",
+                "drewlabs/core-helpers": "^0.3|^0.4",
                 "drewlabs/overloadable": "^0.3"
             },
             "require-dev": {
@@ -629,22 +629,22 @@
             "description": "Containers & Streams API implementation",
             "support": {
                 "issues": "https://github.com/azlabsphp/collections/issues",
-                "source": "https://github.com/azlabsphp/collections/tree/v0.3.0"
+                "source": "https://github.com/azlabsphp/collections/tree/v0.3.1"
             },
-            "time": "2024-03-21T20:03:27+00:00"
+            "time": "2026-06-23T19:32:53+00:00"
         },
         {
             "name": "drewlabs/overloadable",
-            "version": "v0.3.0",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/azandrew-sidoine/drewlabs-php-overloadable.git",
-                "reference": "1bed2b7bea6cab12d58af17ff36c3d01a08801c6"
+                "url": "https://github.com/azlabsphp/overloadable.git",
+                "reference": "83ce38dc235df102563ef88f7c1a7d29b8deb724"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/drewlabs-php-overloadable/zipball/1bed2b7bea6cab12d58af17ff36c3d01a08801c6",
-                "reference": "1bed2b7bea6cab12d58af17ff36c3d01a08801c6",
+                "url": "https://api.github.com/repos/azlabsphp/overloadable/zipball/83ce38dc235df102563ef88f7c1a7d29b8deb724",
+                "reference": "83ce38dc235df102563ef88f7c1a7d29b8deb724",
                 "shasum": ""
             },
             "require": {
@@ -672,9 +672,9 @@
             ],
             "description": "Provides function overloading to PHP language. It's an experimental feature as it may not be optimized for all use-case",
             "support": {
-                "source": "https://github.com/azandrew-sidoine/drewlabs-php-overloadable/tree/v0.3.0"
+                "source": "https://github.com/azlabsphp/overloadable/tree/v0.3.1"
             },
-            "time": "2024-03-21T18:56:25+00:00"
+            "time": "2026-06-23T19:29:57+00:00"
         },
         {
             "name": "myclabs/deep-copy",
