@@ -10,3 +10,5 @@ Changelog export-ignore
 phpunit.xml export-ignore
 /.github export-ignore 
 README export-ignore
+.phpunit.cache export-ignore
+.phpunit.result.cache export-ignore

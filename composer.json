@@ -4,7 +4,7 @@
     "type": "library",
     "require-dev": {
         "drewlabs/collections": "^0.3.0",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^12.0 | ^13.0"
     },
     "license": "MIT",
     "authors": [
@@ -29,8 +29,8 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": "^7.2|^8.0",
-        "drewlabs/core-helpers": "^0.3",
+        "php": ">=8.2",
+        "drewlabs/core-helpers": "^0.3 | ^0.4",
         "symfony/polyfill-php81": "^1.24"
     },
     "keywords": [
