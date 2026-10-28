@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Traits;
 
+use Closure;
 use Drewlabs\Core\Helpers\Arr;
 use Drewlabs\Core\Helpers\Functional;
 use Drewlabs\Core\Helpers\Str;
@@ -24,6 +25,15 @@ use Drewlabs\PHPValue\Cast;
  */
 trait Castable
 {
+    /**
+     * returns the value of a property after explicit casting
+     * 
+     * @param string $key 
+     * @param mixed $value 
+     * @param Closure $default
+     * 
+     * @return mixed 
+     */
     public function getCastableProperty(string $key, $value, \Closure $default)
     {
         $cast = new Cast($this);
@@ -32,6 +42,14 @@ trait Castable
         return null !== $value ? $value : $default();
     }
 
+    /**
+     * set the casted value for the given property
+     * 
+     * @param string $key 
+     * @param mixed $value 
+     * @param Closure $default 
+     * @return mixed 
+     */
     public function setCastableProperty(string $key, $value, \Closure $default)
     {
         $cast = new Cast($this);
@@ -43,8 +61,8 @@ trait Castable
             return $this->setRawAttribute($key, $cast->computeEnumCastablePropertyValue($key, $value));
         }
         if ($cast->isClassCastable($key)) {
-            foreach ($cast->computeClassCastablePropertyValue($key, $value) ?? [] as $name => $value) {
-                $this->setRawAttribute($name, $value);
+            foreach ($cast->computeClassCastablePropertyValue($key, $value) ?? [] as $name => $v) {
+                $this->setRawAttribute($name, $v);
             }
         }
 

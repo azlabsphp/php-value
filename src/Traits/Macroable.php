@@ -45,7 +45,9 @@ trait Macroable
     /**
      * Attempts to look up a key in the table.
      *
-     * @psalm-return CallableObject<TKey, callable>|null
+     * @template T
+     * 
+     * @psalm-return CallableObject<T, callable>|null
      */
     protected function lookupCallable(string $name)
     {

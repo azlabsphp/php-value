@@ -13,8 +13,21 @@ declare(strict_types=1);
 
 namespace Drewlabs\PHPValue\Traits;
 
+use Closure;
+use Error;
+use BadMethodCallException;
+
 trait Proxy
 {
+    /**
+     * @param mixed $object 
+     * @param mixed $method 
+     * @param array $args 
+     * @param null|Closure $default 
+     * @return mixed 
+     * @throws Error 
+     * @throws BadMethodCallException 
+     */
     public function proxy($object, $method, $args = [], ?\Closure $default = null)
     {
         try {

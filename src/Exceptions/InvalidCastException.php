@@ -48,7 +48,7 @@ class InvalidCastException extends \RuntimeException
     public function __construct($instance, $property, $castType)
     {
         $class = get_class($instance);
-        parent::__construct("Call to undefined cast [{$castType}] on property [{$property}] in model [{$class}].");
+        parent::__construct("call to undefined cast [{$castType}] on property [{$property}] in model [{$class}].");
         $this->model = $class;
         $this->property = $property;
         $this->castType = $castType;

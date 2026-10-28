@@ -30,7 +30,7 @@ trait ArgumentsAware
     }
 
     /**
-     * Return the list of current object arguments.
+     * return the list of current object arguments.
      *
      * @return array
      */

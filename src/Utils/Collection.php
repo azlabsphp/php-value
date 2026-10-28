@@ -26,7 +26,7 @@ class Collection implements AbstractPrototype, HiddenAware, \JsonSerializable
     /**
      * Collection class constructor.
      *
-     * @param \Illuminate\Collection\Collection|\Drewlabs\Collections\Collection       $items
+     * @param mixed       $items
      * @param \Closure(ValueInterface $value, array $properties, array $hidden): mixed $map
      */
     public function __construct($items, \Closure $map)
@@ -35,6 +35,11 @@ class Collection implements AbstractPrototype, HiddenAware, \JsonSerializable
         $this->map = $map;
     }
 
+    /**
+     * @param mixed $name 
+     * @param mixed $arguments 
+     * @return mixed 
+     */
     public function __call($name, $arguments)
     {
         return $this->proxy($this->items, $name, $arguments);
@@ -49,9 +54,9 @@ class Collection implements AbstractPrototype, HiddenAware, \JsonSerializable
     }
 
     /**
-     * Returns the list of items.
+     * returns the list of items.
      *
-     * @return \Illuminate\Collection\Collection|\Drewlabs\Collections\Collection
+     * @return mixed
      */
     public function getItems()
     {
